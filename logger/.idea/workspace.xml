@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="23dad653-f61d-497e-b761-36576241aa00" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../app/src/main/assets/subway.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/cpp/include/sys/stime.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/cpp/utils/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/cpp/utils/include/sys/cQueue.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/cpp/utils/src/CMakeLists.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/cpp/utils/src/cQueue.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/cn/skyruler/xml/model/City.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/cn/skyruler/xml/model/MetroData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/cn/skyruler/xml/model/MetroLine.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/cn/skyruler/xml/model/Station.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/cn/skyruler/xml/model/SubItem.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/cn/skyruler/xml/parser/MetroParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/src/main/java/cn/skyruler/xml/parser/XmlParser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/cpp/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/cpp/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/cpp/crc/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/cpp/crc/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/cpp/crc/crc_native.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/cpp/crc/crc_native.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/cpp/include/sys/blockingQueue.h" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/cpp/include/sys/blockingQueue.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/cpp/logger/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/cpp/logger/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/cn/skyruler/android/crc/Crc.java" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/cn/skyruler/android/crc/Crc.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/src/main/java/com/skyruler/android/middleware/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/../app/src/main/java/com/skyruler/android/middleware/MainActivity.java" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view />
+      </state>
+    </system>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="-6" />
+    <option name="width" value="1936" />
+    <option name="height" value="1056" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="AndroidView" />
+      <pane id="Scope" />
+      <pane id="ProjectPane" />
+      <pane id="PackagesPane" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="android.project.structure.last.selected" value="SDK Location" />
+    <property name="android.project.structure.proportion" value="0.15" />
+    <property name="android.sdk.path" value="E:/Android/sdk" />
+    <property name="settings.editor.selected.configurable" value="AndroidSdkUpdater" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="&lt;template&gt;" type="Applet" default="true" selected="false">
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+    </configuration>
+    <configuration default="true" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration name="&lt;template&gt;" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" default="true" selected="false">
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
+    </configuration>
+    <configuration default="true" type="Application" factoryName="Application">
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="TestNG">
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="23dad653-f61d-497e-b761-36576241aa00" name="Default Changelist" comment="" />
+      <created>1589880783114</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1589880783114</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" visible="true" weight="0.32978156" />
+      <window_info id="Structure" side_tool="true" />
+      <window_info id="Build Variants" side_tool="true" />
+      <window_info id="Image Layers" />
+      <window_info id="Designer" />
+      <window_info id="Resources Explorer" />
+      <window_info id="Capture Tool" />
+      <window_info id="Favorites" side_tool="true" />
+      <window_info id="Captures" order="0" weight="0.25" />
+      <window_info anchor="bottom" id="Version Control" />
+      <window_info anchor="bottom" id="TODO" />
+      <window_info anchor="bottom" id="Terminal" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="bottom" id="Build" weight="0.3295325" />
+      <window_info anchor="right" id="Capture Analysis" />
+      <window_info anchor="right" id="Gradle" />
+      <window_info anchor="right" id="Theme Preview" />
+      <window_info anchor="right" id="Android WiFi ADB" />
+      <window_info anchor="right" id="Palette&#9;" />
+      <window_info anchor="right" id="Codota" />
+    </layout>
+  </component>
+  <component name="masterDetails">
+    <states>
+      <state key="ProjectJDKs.UI">
+        <settings>
+          <last-edited>1.8</last-edited>
+          <splitter-proportions>
+            <option name="proportions">
+              <list>
+                <option value="0.2" />
+              </list>
+            </option>
+          </splitter-proportions>
+        </settings>
+      </state>
+    </states>
+  </component>
+</project>
