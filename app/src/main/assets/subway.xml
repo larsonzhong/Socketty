@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MetroDataManager>
+	<City Name="长沙市">
+		<MetroLine EndTime="23:00" LID="0" MaxSpeed_KMperH="80" Name="地铁1号线(开福区政府-尚双塘)" Speed_KMperH="60" StartTime="06:30">
+			<Station Latitude="28.2653135398" Longitude="112.979792994" Name="开福区政府" SID="0" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.2653135398" Longitude="112.979792994" />
+			</SubItems>
+			<Station Latitude="28.2544655291" Longitude="112.983136461" Name="马厂" SID="1" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.2544655291" Longitude="112.983136461" />
+				<SubItem Latitude="28.2544655291" Longitude="112.983136461" />
+				<SubItem Latitude="28.2503741637" Longitude="112.984576126" />
+				<SubItem Latitude="28.2493993253" Longitude="112.984713273" />
+				<SubItem Latitude="28.2486195493" Longitude="112.984436162" />
+				<SubItem Latitude="28.2474003107" Longitude="112.983669583" />
+				<SubItem Latitude="28.246069517" Longitude="112.98272144" />
+				<SubItem Latitude="28.2405732537" Longitude="112.97899029" />
+			</SubItems>
+			<Station Latitude="28.239301808" Longitude="112.97817015" Name="北辰三角洲" SID="2" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.239301808" Longitude="112.97817015" />
+				<SubItem Latitude="28.239301808" Longitude="112.97817015" />
+				<SubItem Latitude="28.2341292416" Longitude="112.975086209" />
+				<SubItem Latitude="28.2295906599" Longitude="112.974021777" />
+				<SubItem Latitude="28.2274308766" Longitude="112.97357021" />
+				<SubItem Latitude="28.2266970816" Longitude="112.973502778" />
+				<SubItem Latitude="28.2264720365" Longitude="112.973533765" />
+			</SubItems>
+			<Station Latitude="28.2258686788" Longitude="112.973721357" Name="开福寺" SID="3" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.2258686788" Longitude="112.973721357" />
+				<SubItem Latitude="28.2258686788" Longitude="112.973721357" />
+				<SubItem Latitude="28.2244934103" Longitude="112.974273075" />
+				<SubItem Latitude="28.2239752095" Longitude="112.974364046" />
+			</SubItems>
+			<Station Latitude="28.2168327709" Longitude="112.972735355" Name="文昌阁" SID="4" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.2168327709" Longitude="112.972735355" />
+				<SubItem Latitude="28.2168327709" Longitude="112.972735355" />
+			</SubItems>
+			<Station Latitude="28.2096731346" Longitude="112.970987456" Name="培元桥" SID="5" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.2096731346" Longitude="112.970987456" />
+				<SubItem Latitude="28.2096731346" Longitude="112.970987456" />
+				<SubItem Latitude="28.2071242924" Longitude="112.970332027" />
+				<SubItem Latitude="28.2047108134" Longitude="112.970311756" />
+			</SubItems>
+			<Station Latitude="28.1987354906" Longitude="112.97083101" Name="五一广场" SID="6" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1987354906" Longitude="112.97083101" />
+				<SubItem Latitude="28.1987354906" Longitude="112.97083101" />
+				<SubItem Latitude="28.1974338002" Longitude="112.970924981" />
+				<SubItem Latitude="28.1964240021" Longitude="112.970921044" />
+			</SubItems>
+			<Station Latitude="28.1926926648" Longitude="112.970846036" Name="黄兴广场" SID="7" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1926926648" Longitude="112.970846036" />
+				<SubItem Latitude="28.1926926648" Longitude="112.970846036" />
+				<SubItem Latitude="28.1890511161" Longitude="112.970636136" />
+			</SubItems>
+			<Station Latitude="28.1869712849" Longitude="112.970501333" Name="南门口" SID="8" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1869712849" Longitude="112.970501333" />
+				<SubItem Latitude="28.1869712849" Longitude="112.970501333" />
+				<SubItem Latitude="28.1843124315" Longitude="112.970356764" />
+				<SubItem Latitude="28.1832505036" Longitude="112.970343453" />
+				<SubItem Latitude="28.1822298223" Longitude="112.970661616" />
+				<SubItem Latitude="28.1812490836" Longitude="112.971204775" />
+				<SubItem Latitude="28.1792877206" Longitude="112.973084029" />
+			</SubItems>
+			<Station Latitude="28.1772164286" Longitude="112.976314432" Name="侯家塘" SID="9" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1772164286" Longitude="112.976314432" />
+				<SubItem Latitude="28.1772164286" Longitude="112.976314432" />
+				<SubItem Latitude="28.1758579042" Longitude="112.979059937" />
+				<SubItem Latitude="28.1756245408" Longitude="112.979377183" />
+				<SubItem Latitude="28.1753653045" Longitude="112.979537832" />
+				<SubItem Latitude="28.1713689946" Longitude="112.979675754" />
+				<SubItem Latitude="28.1704419775" Longitude="112.97979341" />
+			</SubItems>
+			<Station Latitude="28.1694186711" Longitude="112.980186365" Name="南湖路" SID="10" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1694186711" Longitude="112.980186365" />
+				<SubItem Latitude="28.1694186711" Longitude="112.980186365" />
+				<SubItem Latitude="28.1684795839" Longitude="112.980537409" />
+				<SubItem Latitude="28.1673544196" Longitude="112.980653903" />
+				<SubItem Latitude="28.1658698246" Longitude="112.980464901" />
+			</SubItems>
+			<Station Latitude="28.1635868251" Longitude="112.980057976" Name="黄土岭" SID="11" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1635868251" Longitude="112.980057976" />
+				<SubItem Latitude="28.1635868251" Longitude="112.980057976" />
+				<SubItem Latitude="28.1632254716" Longitude="112.979970024" />
+				<SubItem Latitude="28.1619571294" Longitude="112.979208276" />
+				<SubItem Latitude="28.1609882124" Longitude="112.978607318" />
+				<SubItem Latitude="28.1602563735" Longitude="112.97841143" />
+				<SubItem Latitude="28.1595110465" Longitude="112.978433931" />
+			</SubItems>
+			<Station Latitude="28.1568729382" Longitude="112.979067553" Name="涂家冲" SID="12" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1568729382" Longitude="112.979067553" />
+				<SubItem Latitude="28.1568729382" Longitude="112.979067553" />
+				<SubItem Latitude="28.1544248959" Longitude="112.979644312" />
+				<SubItem Latitude="28.151479508" Longitude="112.979834458" />
+				<SubItem Latitude="28.1471468244" Longitude="112.980816387" />
+				<SubItem Latitude="28.1433967519" Longitude="112.981450579" />
+			</SubItems>
+			<Station Latitude="28.1394781177" Longitude="112.981795275" Name="铁道学院" SID="13" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1394781177" Longitude="112.981795275" />
+				<SubItem Latitude="28.1394781177" Longitude="112.981795275" />
+				<SubItem Latitude="28.1377969604" Longitude="112.981753852" />
+				<SubItem Latitude="28.1283206558" Longitude="112.981271545" />
+			</SubItems>
+			<Station Latitude="28.1277004562" Longitude="112.981275161" Name="友谊路" SID="14" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1277004562" Longitude="112.981275161" />
+				<SubItem Latitude="28.1277004562" Longitude="112.981275161" />
+			</SubItems>
+			<Station Latitude="28.1144788521" Longitude="112.981908022" Name="省政府" SID="15" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1144788521" Longitude="112.981908022" />
+				<SubItem Latitude="28.1144788521" Longitude="112.981908022" />
+			</SubItems>
+			<Station Latitude="28.1025376551" Longitude="112.982764603" Name="桂花坪" SID="16" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1025376551" Longitude="112.982764603" />
+				<SubItem Latitude="28.1025376551" Longitude="112.982764603" />
+				<SubItem Latitude="28.1006985439" Longitude="112.982876658" />
+			</SubItems>
+			<Station Latitude="28.086053568" Longitude="112.983653222" Name="大托" SID="17" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.086053568" Longitude="112.983653222" />
+				<SubItem Latitude="28.086053568" Longitude="112.983653222" />
+			</SubItems>
+			<Station Latitude="28.0771837526" Longitude="112.984089132" Name="中信广场" SID="18" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.0771837526" Longitude="112.984089132" />
+				<SubItem Latitude="28.0771837526" Longitude="112.984089132" />
+				<SubItem Latitude="28.0726671462" Longitude="112.984267335" />
+				<SubItem Latitude="28.0720869116" Longitude="112.984375709" />
+				<SubItem Latitude="28.0715815275" Longitude="112.984494992" />
+				<SubItem Latitude="28.0710718517" Longitude="112.984637241" />
+				<SubItem Latitude="28.0678532772" Longitude="112.985887257" />
+				<SubItem Latitude="28.0659965242" Longitude="112.986620781" />
+			</SubItems>
+			<Station Latitude="28.0659965242" Longitude="112.986620781" Name="尚双塘" SID="19" StationTime="0" />
+		</MetroLine>
+		<MetroLine EndTime="22:30" LID="1" MaxSpeed_KMperH="80" Name="磁浮快线(磁浮机场站-磁浮高铁站)" Speed_KMperH="60" StartTime="07:00">
+			<Station Latitude="28.1950580502" Longitude="113.212802191" Name="磁浮机场站" SID="0" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1950580502" Longitude="113.212802191" />
+				<SubItem Latitude="28.1951648684" Longitude="113.208819485" />
+				<SubItem Latitude="28.1946245179" Longitude="113.208134057" />
+				<SubItem Latitude="28.1940316615" Longitude="113.207710705" />
+				<SubItem Latitude="28.1897620248" Longitude="113.206749883" />
+				<SubItem Latitude="28.1887330591" Longitude="113.206136997" />
+				<SubItem Latitude="28.1885244772" Longitude="113.205182711" />
+				<SubItem Latitude="28.1893358956" Longitude="113.188778578" />
+				<SubItem Latitude="28.1887190107" Longitude="113.169513788" />
+				<SubItem Latitude="28.186371949" Longitude="113.154498129" />
+				<SubItem Latitude="28.1850357246" Longitude="113.141123243" />
+				<SubItem Latitude="28.1837438893" Longitude="113.135457755" />
+				<SubItem Latitude="28.1819165774" Longitude="113.131327775" />
+				<SubItem Latitude="28.1804060577" Longitude="113.1305774" />
+			</SubItems>
+			<Station Latitude="28.1640826564" Longitude="113.127482775" Name="磁浮榔梨" SID="1" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1640826564" Longitude="113.127482775" />
+				<SubItem Latitude="28.1640826564" Longitude="113.127482775" />
+				<SubItem Latitude="28.1627253367" Longitude="113.12711415" />
+				<SubItem Latitude="28.1623863319" Longitude="113.126616206" />
+				<SubItem Latitude="28.1622465104" Longitude="113.120625077" />
+				<SubItem Latitude="28.1617410857" Longitude="113.103412079" />
+				<SubItem Latitude="28.1613806295" Longitude="113.080106227" />
+				<SubItem Latitude="28.160454711" Longitude="113.071723061" />
+				<SubItem Latitude="28.1602315802" Longitude="113.064593466" />
+				<SubItem Latitude="28.1596857454" Longitude="113.063042719" />
+				<SubItem Latitude="28.1587915991" Longitude="113.062196444" />
+				<SubItem Latitude="28.1514842235" Longitude="113.06155704" />
+			</SubItems>
+			<Station Latitude="28.1514842235" Longitude="113.06155704" Name="磁浮高铁站" SID="2" StationTime="0" />
+		</MetroLine>
+		<MetroLine EndTime="23:00" LID="2" MaxSpeed_KMperH="80" Name="地铁2号线(梅溪湖西-光达)" Speed_KMperH="60" StartTime="06:30">
+			<Station Latitude="28.1890858788" Longitude="112.876266181" Name="梅溪湖西" SID="0" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1890858788" Longitude="112.876266181" />
+				<SubItem Latitude="28.1894721795" Longitude="112.876504966" />
+				<SubItem Latitude="28.1895625051" Longitude="112.876613391" />
+				<SubItem Latitude="28.1933923805" Longitude="112.885516704" />
+			</SubItems>
+			<Station Latitude="28.1942930467" Longitude="112.886924243" Name="麓云路" SID="1" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1942930467" Longitude="112.886924243" />
+				<SubItem Latitude="28.1942930467" Longitude="112.886924243" />
+				<SubItem Latitude="28.1951499105" Longitude="112.888269384" />
+				<SubItem Latitude="28.1955127943" Longitude="112.888861607" />
+				<SubItem Latitude="28.1990072671" Longitude="112.892353452" />
+				<SubItem Latitude="28.1996741436" Longitude="112.893420848" />
+			</SubItems>
+			<Station Latitude="28.2001768677" Longitude="112.895121495" Name="文化艺术中心" SID="2" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.2001768677" Longitude="112.895121495" />
+				<SubItem Latitude="28.2001768677" Longitude="112.895121495" />
+				<SubItem Latitude="28.2018062346" Longitude="112.90184195" />
+				<SubItem Latitude="28.2019762005" Longitude="112.902291709" />
+				<SubItem Latitude="28.2023340118" Longitude="112.902859443" />
+				<SubItem Latitude="28.2025599649" Longitude="112.903049556" />
+				<SubItem Latitude="28.2027671789" Longitude="112.903120463" />
+			</SubItems>
+			<Station Latitude="28.2049065323" Longitude="112.902752436" Name="梅溪湖东" SID="3" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.2049065323" Longitude="112.902752436" />
+				<SubItem Latitude="28.2049065323" Longitude="112.902752436" />
+				<SubItem Latitude="28.2086525068" Longitude="112.90221034" />
+				<SubItem Latitude="28.2090170188" Longitude="112.902247034" />
+				<SubItem Latitude="28.2096045038" Longitude="112.902651235" />
+				<SubItem Latitude="28.2100522764" Longitude="112.903431231" />
+				<SubItem Latitude="28.2104811535" Longitude="112.905003279" />
+				<SubItem Latitude="28.2107482408" Longitude="112.906159441" />
+			</SubItems>
+			<Station Latitude="28.2109460086" Longitude="112.908582113" Name="望城坡" SID="4" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.2109460086" Longitude="112.908582113" />
+				<SubItem Latitude="28.2109460086" Longitude="112.908582113" />
+				<SubItem Latitude="28.2112114191" Longitude="112.915227727" />
+				<SubItem Latitude="28.2111943169" Longitude="112.917058703" />
+				<SubItem Latitude="28.211130073" Longitude="112.918484746" />
+				<SubItem Latitude="28.2110387853" Longitude="112.919399602" />
+				<SubItem Latitude="28.2109092439" Longitude="112.920069947" />
+				<SubItem Latitude="28.2105740086" Longitude="112.92114417" />
+				<SubItem Latitude="28.2099299861" Longitude="112.922590145" />
+			</SubItems>
+			<Station Latitude="28.2095107552" Longitude="112.923178515" Name="金星路" SID="5" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.2095107552" Longitude="112.923178515" />
+				<SubItem Latitude="28.2095107552" Longitude="112.923178515" />
+				<SubItem Latitude="28.2068218994" Longitude="112.927223801" />
+				<SubItem Latitude="28.2064354989" Longitude="112.928285221" />
+				<SubItem Latitude="28.2061488974" Longitude="112.931340767" />
+			</SubItems>
+			<Station Latitude="28.2060642478" Longitude="112.934669602" Name="西湖公园" SID="6" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.2060642478" Longitude="112.934669602" />
+				<SubItem Latitude="28.2060642478" Longitude="112.934669602" />
+				<SubItem Latitude="28.206061725" Longitude="112.935277879" />
+				<SubItem Latitude="28.2060338151" Longitude="112.935496556" />
+				<SubItem Latitude="28.2057995376" Longitude="112.936312696" />
+				<SubItem Latitude="28.2032280121" Longitude="112.94265799" />
+				<SubItem Latitude="28.2028043596" Longitude="112.943623674" />
+				<SubItem Latitude="28.2025732052" Longitude="112.944179997" />
+				<SubItem Latitude="28.2022999444" Longitude="112.944729402" />
+			</SubItems>
+			<Station Latitude="28.201085817" Longitude="112.94584777" Name="溁湾镇" SID="7" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.201085817" Longitude="112.94584777" />
+				<SubItem Latitude="28.201085817" Longitude="112.94584777" />
+				<SubItem Latitude="28.1999937171" Longitude="112.94678526" />
+				<SubItem Latitude="28.1996868603" Longitude="112.947240336" />
+				<SubItem Latitude="28.1995869441" Longitude="112.947567105" />
+				<SubItem Latitude="28.1994002865" Longitude="112.948432115" />
+				<SubItem Latitude="28.1991521082" Longitude="112.950752829" />
+			</SubItems>
+			<Station Latitude="28.1987547559" Longitude="112.956875968" Name="橘子洲" SID="8" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1987547559" Longitude="112.956875968" />
+				<SubItem Latitude="28.1987547559" Longitude="112.956875968" />
+				<SubItem Latitude="28.1983927272" Longitude="112.962305179" />
+			</SubItems>
+			<Station Latitude="28.1985733423" Longitude="112.963749631" Name="湘江中路" SID="9" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1985733423" Longitude="112.963749631" />
+				<SubItem Latitude="28.1985733423" Longitude="112.963749631" />
+				<SubItem Latitude="28.198804809" Longitude="112.965674807" />
+			</SubItems>
+			<Station Latitude="28.1987354906" Longitude="112.97083101" Name="五一广场" SID="10" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1987354906" Longitude="112.97083101" />
+				<SubItem Latitude="28.1987354906" Longitude="112.97083101" />
+				<SubItem Latitude="28.1983878862" Longitude="112.976906133" />
+			</SubItems>
+			<Station Latitude="28.1983398916" Longitude="112.978554508" Name="芙蓉广场" SID="11" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1983398916" Longitude="112.978554508" />
+				<SubItem Latitude="28.1983398916" Longitude="112.978554508" />
+				<SubItem Latitude="28.1982840553" Longitude="112.980000938" />
+				<SubItem Latitude="28.1982427065" Longitude="112.98119232" />
+				<SubItem Latitude="28.1983230895" Longitude="112.982671334" />
+			</SubItems>
+			<Station Latitude="28.1981832415" Longitude="112.986323149" Name="迎宾路口" SID="12" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1981832415" Longitude="112.986323149" />
+				<SubItem Latitude="28.1981832415" Longitude="112.986323149" />
+			</SubItems>
+			<Station Latitude="28.1977844507" Longitude="112.995169845" Name="袁家岭" SID="13" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1977844507" Longitude="112.995169845" />
+				<SubItem Latitude="28.1977844507" Longitude="112.995169845" />
+				<SubItem Latitude="28.1977041705" Longitude="112.996289185" />
+				<SubItem Latitude="28.1974497741" Longitude="113.003875616" />
+				<SubItem Latitude="28.1974341885" Longitude="113.00409679" />
+				<SubItem Latitude="28.1973931064" Longitude="113.004293973" />
+			</SubItems>
+			<Station Latitude="28.1970067554" Longitude="113.005183015" Name="长沙火车站" SID="14" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1970067554" Longitude="113.005183015" />
+				<SubItem Latitude="28.1970067554" Longitude="113.005183015" />
+				<SubItem Latitude="28.1967061215" Longitude="113.005844802" />
+				<SubItem Latitude="28.1963458259" Longitude="113.006783843" />
+				<SubItem Latitude="28.1955876531" Longitude="113.009703562" />
+				<SubItem Latitude="28.1953899379" Longitude="113.010749371" />
+			</SubItems>
+			<Station Latitude="28.1953101899" Longitude="113.012229199" Name="锦泰广场" SID="15" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1953101899" Longitude="113.012229199" />
+				<SubItem Latitude="28.1953101899" Longitude="113.012229199" />
+			</SubItems>
+			<Station Latitude="28.1948001943" Longitude="113.024651608" Name="万家丽广场" SID="16" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1948001943" Longitude="113.024651608" />
+				<SubItem Latitude="28.1948001943" Longitude="113.024651608" />
+				<SubItem Latitude="28.1947707311" Longitude="113.029931979" />
+				<SubItem Latitude="28.1947447512" Longitude="113.031271967" />
+				<SubItem Latitude="28.1946664278" Longitude="113.031729926" />
+				<SubItem Latitude="28.1944754689" Longitude="113.032156039" />
+				<SubItem Latitude="28.1940577755" Longitude="113.032570371" />
+				<SubItem Latitude="28.1935565733" Longitude="113.032900976" />
+				<SubItem Latitude="28.1928090455" Longitude="113.033082202" />
+			</SubItems>
+			<Station Latitude="28.1875243132" Longitude="113.032967143" Name="人民东路" SID="17" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1875243132" Longitude="113.032967143" />
+				<SubItem Latitude="28.1875243132" Longitude="113.032967143" />
+				<SubItem Latitude="28.1797015901" Longitude="113.032814375" />
+				<SubItem Latitude="28.1789972762" Longitude="113.033177675" />
+				<SubItem Latitude="28.1777857238" Longitude="113.034006757" />
+				<SubItem Latitude="28.1748532083" Longitude="113.037621637" />
+				<SubItem Latitude="28.1738710113" Longitude="113.038365033" />
+				<SubItem Latitude="28.172822443" Longitude="113.038663006" />
+			</SubItems>
+			<Station Latitude="28.1714723772" Longitude="113.03867601" Name="长沙大道" SID="18" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1714723772" Longitude="113.03867601" />
+				<SubItem Latitude="28.1714723772" Longitude="113.03867601" />
+				<SubItem Latitude="28.1692252339" Longitude="113.038709755" />
+				<SubItem Latitude="28.1647804321" Longitude="113.038597171" />
+				<SubItem Latitude="28.162172144" Longitude="113.038702719" />
+			</SubItems>
+			<Station Latitude="28.1608769649" Longitude="113.038749902" Name="沙湾公园" SID="19" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1608769649" Longitude="113.038749902" />
+				<SubItem Latitude="28.1608769649" Longitude="113.038749902" />
+				<SubItem Latitude="28.1572575247" Longitude="113.03895496" />
+				<SubItem Latitude="28.155707921" Longitude="113.039314478" />
+				<SubItem Latitude="28.1543491879" Longitude="113.04024869" />
+				<SubItem Latitude="28.1527676942" Longitude="113.041967074" />
+				<SubItem Latitude="28.1514011925" Longitude="113.044332949" />
+				<SubItem Latitude="28.1502183612" Longitude="113.046570702" />
+				<SubItem Latitude="28.1496408883" Longitude="113.047940952" />
+				<SubItem Latitude="28.1494508073" Longitude="113.048923433" />
+			</SubItems>
+			<Station Latitude="28.1494471526" Longitude="113.050663659" Name="杜花路" SID="20" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1494471526" Longitude="113.050663659" />
+				<SubItem Latitude="28.1494471526" Longitude="113.050663659" />
+				<SubItem Latitude="28.1494201448" Longitude="113.052996032" />
+			</SubItems>
+			<Station Latitude="28.1495367839" Longitude="113.058947671" Name="长沙火车南站" SID="21" StationTime="0" />
+			<SubItems>
+				<SubItem Latitude="28.1495367839" Longitude="113.058947671" />
+				<SubItem Latitude="28.1495367839" Longitude="113.058947671" />
+				<SubItem Latitude="28.1495369404" Longitude="113.061635869" />
+				<SubItem Latitude="28.149595976" Longitude="113.062611841" />
+				<SubItem Latitude="28.1511732807" Longitude="113.079185705" />
+			</SubItems>
+			<Station Latitude="28.1511732807" Longitude="113.079185705" Name="光达" SID="22" StationTime="0" />
+		</MetroLine>
+	</City>
+</MetroDataManager>
