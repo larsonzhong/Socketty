@@ -79,16 +79,16 @@ public class MetroParser implements XmlParser<MetroData> {
                     metroLine.setName(parser.getAttributeValue(i));
                     break;
                 case "LID":
-                    metroLine.setLid(Integer.parseInt(parser.getAttributeValue(i)));
+                    metroLine.setLid(Byte.parseByte(parser.getAttributeValue(i)));
                     break;
                 case "StartTime":
                     metroLine.setStartTime(parser.getAttributeValue(i));
                     break;
                 case "MaxSpeed_KMperH":
-                    metroLine.setMaxSpeed(Integer.parseInt(parser.getAttributeValue(i)));
+                    metroLine.setMaxSpeed(Short.parseShort(parser.getAttributeValue(i)));
                     break;
                 case "Speed_KMperH":
-                    metroLine.setAvgSpeed(Integer.parseInt(parser.getAttributeValue(i)));
+                    metroLine.setAvgSpeed(Short.parseShort(parser.getAttributeValue(i)));
                     break;
                 case "EndTime":
                     metroLine.setEndTime(parser.getAttributeValue(i));
@@ -124,7 +124,7 @@ public class MetroParser implements XmlParser<MetroData> {
                     station.setName(parser.getAttributeValue(i));
                     break;
                 case "SID":
-                    station.setSid(Integer.parseInt(parser.getAttributeValue(i)));
+                    station.setSid(Byte.parseByte(parser.getAttributeValue(i)));
                     break;
                 case "Latitude":
                     station.setLatitude(Float.parseFloat(parser.getAttributeValue(i)));

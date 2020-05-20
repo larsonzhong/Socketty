@@ -1,5 +1,6 @@
 package com.skyruler.xml.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,6 +13,7 @@ public class City {
     private List<MetroLine> mMetroLines;
 
     public City() {
+        mMetroLines = new ArrayList<>();
     }
 
     public City(String name) {

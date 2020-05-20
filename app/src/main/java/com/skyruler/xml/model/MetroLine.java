@@ -1,5 +1,8 @@
 package com.skyruler.xml.model;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,16 +10,18 @@ import java.util.List;
  * @email: luojun@skyruler.cn
  * @date: Created 2020/5/19 14:59
  */
-public class MetroLine {
+public class MetroLine implements ByteSerializable {
+    public static final int BYTES = 5;
     private String mName;
-    private int mLid;
-    private int mMaxSpeed;
-    private int mAvgSpeed;
+    private byte mLid;
+    private short mAvgSpeed;
+    private short mMaxSpeed;
     private String mStartTime;
     private String mEndTime;
     private List<Station> mStations;
 
     public MetroLine() {
+        mStations = new ArrayList<>();
     }
 
     public String getName() {
@@ -27,27 +32,27 @@ public class MetroLine {
         this.mName = name;
     }
 
-    public int getLid() {
+    public byte getLid() {
         return mLid;
     }
 
-    public void setLid(int lid) {
+    public void setLid(byte lid) {
         this.mLid = lid;
     }
 
-    public int getMaxSpeed() {
+    public short getMaxSpeed() {
         return mMaxSpeed;
     }
 
-    public void setMaxSpeed(int maxSpeed) {
+    public void setMaxSpeed(short maxSpeed) {
         this.mMaxSpeed = maxSpeed;
     }
 
-    public int getAvgSpeed() {
+    public short getAvgSpeed() {
         return mAvgSpeed;
     }
 
-    public void setAvgSpeed(int avgSpeed) {
+    public void setAvgSpeed(short avgSpeed) {
         this.mAvgSpeed = avgSpeed;
     }
 
@@ -75,6 +80,29 @@ public class MetroLine {
         this.mStations = stations;
     }
 
+    private int getBytesSize() {
+        int stationSize = mStations == null ? 0 : mStations.size();
+        int size = 0;
+        for (int i = 0; i < stationSize; i++) {
+            size += mStations.get(i).getBytesSize();
+        }
+        return size + BYTES;
+    }
+
+    @Override
+    public byte[] toBytes() {
+        int stationSize = mStations == null ? 0 : mStations.size();
+        ByteBuffer buffer = ByteBuffer.allocate(getBytesSize());
+        buffer.order(ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(mAvgSpeed)
+                .putShort(mMaxSpeed)
+                .put((byte) stationSize);
+        for (int i = 0; i < stationSize; i++) {
+            buffer.put(mStations.get(i).toBytes());
+        }
+        return buffer.array();
+    }
+
     @Override
     public String toString() {
         return "MetroLine{" +
@@ -87,4 +115,5 @@ public class MetroLine {
                 ", mStations=" + mStations +
                 '}';
     }
+
 }
