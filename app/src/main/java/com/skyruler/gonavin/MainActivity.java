@@ -26,10 +26,8 @@ public class MainActivity extends AppCompatActivity {
                 .uuidNotify(BleConnectOption.UUID_NOTIFY)
                 .clientUUidConfig(BleConnectOption.CLIENT_CHARACTERISTIC_CONFIG)
                 .build();
-        SocketClient client = SocketClient.getInstance();
-        client.setup(getApplicationContext());
-        client.connect(option);
-
+        glonavinSdk.setup(getApplicationContext());
+        glonavinSdk.connect(option);
         glonavinSdk.chooseMode();
     }
 

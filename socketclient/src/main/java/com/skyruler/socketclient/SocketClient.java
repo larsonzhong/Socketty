@@ -17,17 +17,6 @@ import java.util.List;
 public class SocketClient implements ISocketClient {
     private IConnectionManager mConnMgr;
 
-    private SocketClient() {
-    }
-
-    private static class SingletonContainer {
-        private static SocketClient instance = new SocketClient();
-    }
-
-    public static SocketClient getInstance() {
-        return SingletonContainer.instance;
-    }
-
     public void setup(Context context) {
         mConnMgr = new ConnectionManager(context);
     }
