@@ -1,18 +1,18 @@
 package com.skyruler.socketclient.connection;
 
 import com.skyruler.socketclient.filter.MessageFilter;
-import com.skyruler.socketclient.message.Message;
+import com.skyruler.socketclient.message.IMessage;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 
-public class MessageCollector {
+class MessageCollector {
 
     private final PacketRouter packetRouter;
     private final MessageFilter filter;
-    private BlockingQueue<Message> mQueue;
+    private BlockingQueue<IMessage> mQueue;
 
     private boolean mCancelled = false;
 
@@ -29,7 +29,7 @@ public class MessageCollector {
      *
      * @param msg the message to process
      */
-    public void processMessage(Message msg) {
+    void processMessage(IMessage msg) {
         if (msg == null) {
             return;
         }
@@ -55,10 +55,11 @@ public class MessageCollector {
      * @param timeout the amount of time to wait for the next packet (in milliseconds)
      * @return the next available message
      */
-    public Message nextResult(long timeout) {
+    IMessage nextResult(long timeout) {
         try {
             return mQueue.poll(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
     }
@@ -70,7 +71,7 @@ public class MessageCollector {
      * collector has been cancelled, it cannot be re-enabled. Instead, a new message collector must be
      * created.
      */
-    public void cancel() {
+    void cancel() {
         // If the message collector has already been cancelled, do nothing
         if (!mCancelled) {
             mCancelled = true;

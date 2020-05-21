@@ -1,14 +1,15 @@
-package com.skyruler.socketclient.intf;
+package com.skyruler.socketclient.connection.intf;
 
-import com.skyruler.socketclient.connection.ConnectionOption;
+import com.skyruler.socketclient.connection.option.IConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
-import com.skyruler.socketclient.message.Message;
+import com.skyruler.socketclient.message.IMessage;
+import com.skyruler.socketclient.message.IMessageListener;
 
 public interface IConnectionManager {
 
     void scanDevice(boolean enable);
 
-    void connect(ConnectionOption bleConnectOption);
+    void connect(IConnectOption bleConnectOption);
 
     boolean isConnected();
 
@@ -16,9 +17,9 @@ public interface IConnectionManager {
 
     void onDestroy();
 
-    void sendMessage(Message msgDataBean);
+    void sendMessage(IMessage msgDataBean);
 
-    Message sendSyncMessage(Message msgDataBean, MessageFilter filter, long timeout) throws InterruptedException;
+    IMessage sendSyncMessage(IMessage msgDataBean, MessageFilter filter, long timeout) throws InterruptedException;
 
     void registerConnectListener(IBleStateListener listener);
 

@@ -3,20 +3,20 @@ package com.skyruler.socketclient;
 import android.content.Context;
 
 import com.skyruler.socketclient.connection.ConnectionManager;
-import com.skyruler.socketclient.connection.ConnectionOption;
+import com.skyruler.socketclient.connection.option.IConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
-import com.skyruler.socketclient.intf.IBleStateListener;
-import com.skyruler.socketclient.intf.IConnectionManager;
-import com.skyruler.socketclient.intf.IMessageListener;
-import com.skyruler.socketclient.intf.ISocketClient;
-import com.skyruler.socketclient.message.Message;
-import com.skyruler.socketclient.message.WrappedMessage;
+import com.skyruler.socketclient.connection.intf.IBleStateListener;
+import com.skyruler.socketclient.connection.intf.IConnectionManager;
+import com.skyruler.socketclient.message.IMessage;
+import com.skyruler.socketclient.message.IMessageListener;
+import com.skyruler.socketclient.message.IWrappedMessage;
 
 import java.util.List;
 
 public class SocketClient implements ISocketClient {
     private IConnectionManager mConnMgr;
 
+    @Override
     public void setup(Context context) {
         mConnMgr = new ConnectionManager(context);
     }
@@ -27,7 +27,7 @@ public class SocketClient implements ISocketClient {
     }
 
     @Override
-    public void connect(ConnectionOption option) {
+    public void connect(IConnectOption option) {
         mConnMgr.connect(option);
     }
 
@@ -47,23 +47,23 @@ public class SocketClient implements ISocketClient {
     }
 
     @Override
-    public void sendMessage(WrappedMessage msgDataBean) throws InterruptedException {
-        WrappedMessage.AckMode ackMode = msgDataBean.getAckMode();
+    public void sendMessage(IWrappedMessage msgDataBean) throws InterruptedException {
+        IWrappedMessage.AckMode ackMode = msgDataBean.getAckMode();
         MessageFilter filter = msgDataBean.getFilter();
         int timeout = msgDataBean.getTimeout();
 
         switch (ackMode) {
             case NON:
-                Message singleMsg = msgDataBean.getMessages().get(0);
+                IMessage singleMsg = msgDataBean.getMessages().get(0);
                 mConnMgr.sendMessage(singleMsg);
                 break;
             case MESSAGE:
-                Message syncMessage = msgDataBean.getMessages().get(0);
+                IMessage syncMessage = msgDataBean.getMessages().get(0);
                 mConnMgr.sendSyncMessage(syncMessage, filter, timeout);
                 break;
             case PACKET:
-                List<Message> messages = msgDataBean.getMessages();
-                for (Message msg : messages) {
+                List<IMessage> messages = msgDataBean.getMessages();
+                for (IMessage msg : messages) {
                     mConnMgr.sendSyncMessage(msg, filter, timeout);
                 }
                 break;

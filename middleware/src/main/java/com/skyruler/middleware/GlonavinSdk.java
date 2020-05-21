@@ -1,20 +1,23 @@
-package com.skyruler.gonavin;
+package com.skyruler.middleware;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.skyruler.middleware.connection.GlonavinConnectOption;
+import com.skyruler.middleware.message.WrappedMessage;
 import com.skyruler.socketclient.SocketClient;
-import com.skyruler.socketclient.connection.ConnectionOption;
 import com.skyruler.socketclient.filter.MessageIdFilter;
-import com.skyruler.socketclient.message.WrappedMessage;
+import com.skyruler.socketclient.message.IWrappedMessage.AckMode;
 
-class GlonavinSdk {
+public class GlonavinSdk {
+    private static final String TAG = "GlonavinSdk";
     private SocketClient socketClient;
 
-    void chooseMode() {
+    public void chooseMode() {
         WrappedMessage message = new WrappedMessage
                 .Builder((byte) 0x30)
                 .body(new byte[]{0x00})
-                .ackMode(WrappedMessage.AckMode.MESSAGE)
+                .ackMode(AckMode.MESSAGE)
                 .filter(new MessageIdFilter((byte) 0x31))
                 .limitBodyLength(14)
                 .timeout(5000)
@@ -26,7 +29,7 @@ class GlonavinSdk {
         WrappedMessage message = new WrappedMessage
                 .Builder((byte) 0x32)
                 .body(new byte[]{0x00})
-                .ackMode(WrappedMessage.AckMode.MESSAGE)
+                .ackMode(AckMode.MESSAGE)
                 .filter(new MessageIdFilter((byte) 0x33))
                 .limitBodyLength(14)
                 .timeout(5000)
@@ -38,7 +41,7 @@ class GlonavinSdk {
         WrappedMessage message = new WrappedMessage
                 .Builder((byte) 0x34)
                 .body(new byte[]{startIndex, endIndex})
-                .ackMode(WrappedMessage.AckMode.MESSAGE)
+                .ackMode(AckMode.MESSAGE)
                 .filter(new MessageIdFilter((byte) 0x35))
                 .limitBodyLength(14)
                 .timeout(5000)
@@ -46,20 +49,20 @@ class GlonavinSdk {
         sendMessage(message);
     }
 
-    void setup(Context context) {
+    public void setup(Context context) {
         socketClient = new SocketClient();
         socketClient.setup(context);
     }
 
-    void connect(ConnectionOption option) {
+    public void connect(GlonavinConnectOption option) {
         socketClient.connect(option);
     }
 
-    void onDestroy() {
+    public void onDestroy() {
         socketClient.onDestroy();
     }
 
-    void scanDevice(boolean isScan) {
+    public void scanDevice(boolean isScan) {
         socketClient.scanDevice(isScan);
     }
 
@@ -67,7 +70,8 @@ class GlonavinSdk {
         try {
             socketClient.sendMessage(message);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.e(TAG, "sendMessage failed :" + e.getMessage());
+            Thread.currentThread().interrupt();
         }
     }
 

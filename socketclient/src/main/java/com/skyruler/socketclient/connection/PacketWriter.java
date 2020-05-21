@@ -3,20 +3,22 @@ package com.skyruler.socketclient.connection;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.skyruler.socketclient.message.Message;
-import com.skyruler.socketclient.packet.Packet;
+import com.skyruler.socketclient.message.IMessage;
+import com.skyruler.socketclient.message.IPacket;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-class PacketWriter {
+public class PacketWriter {
+    private static final String TAG = "PacketWriter";
     private boolean mShutdown;
     private final Thread mWriteThread;
-    private final BlockingQueue<Packet> mQueue;
+    private final BlockingQueue<IPacket> mQueue;
     private final BluetoothGatt mBluetoothGatt;
     private BluetoothGattCharacteristic gattCharacteristic;
 
@@ -33,16 +35,17 @@ class PacketWriter {
         mWriteThread.start();
     }
 
-    void sendMessage(Message msg) {
+    void sendMessage(IMessage msg) {
         if (mShutdown) {
             return;
         }
         synchronized (this) {
-            for (Packet packet : msg.getPackets()) {
+            for (IPacket packet : msg.getPackets()) {
                 try {
                     mQueue.put(packet);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "send Message error:" + e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
             }
         }
@@ -73,7 +76,7 @@ class PacketWriter {
             super.run();
             try {
                 while (!mShutdown) {
-                    Packet packet = null;
+                    IPacket packet = null;
                     synchronized (mQueue) {
                         while (!mShutdown && (packet = mQueue.poll()) == null) {
                             mQueue.wait();
@@ -90,7 +93,8 @@ class PacketWriter {
                 mQueue.clear();
             } catch (InterruptedException e) {
                 //todo 异常断开，需要通知上层
-                e.printStackTrace();
+                Log.e(TAG, "write Message error:" + e.getMessage());
+                Thread.currentThread().interrupt();
             }
         }
     }

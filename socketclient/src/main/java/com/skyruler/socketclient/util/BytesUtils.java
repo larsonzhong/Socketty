@@ -14,6 +14,9 @@ import java.nio.ByteBuffer;
  * ..larsonzhong@163.com      created in 2018/7/27     @author : larsonzhong
  */
 public class BytesUtils {
+    private BytesUtils() {
+    }
+
     /**
      * 小字节序
      * <p>
@@ -189,10 +192,11 @@ public class BytesUtils {
 
     /**
      * 将int转为ip字符串
+     *
      * @param ip
      * @return
      */
-    public static String int2Ip(int ip){
+    public static String int2Ip(int ip) {
         StringBuilder builder = new StringBuilder(String.valueOf(ip >>> 24));
         builder.append(".");
         builder.append(String.valueOf((ip & 0X00FFFFFF) >>> 16));

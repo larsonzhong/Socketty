@@ -1,9 +1,11 @@
 package com.skyruler.socketclient.connection;
 
 import com.skyruler.socketclient.filter.MessageFilter;
-import com.skyruler.socketclient.intf.IMessageListener;
-import com.skyruler.socketclient.message.Message;
-import com.skyruler.socketclient.packet.Packet;
+import com.skyruler.socketclient.message.IMessage;
+import com.skyruler.socketclient.message.IMessageConstructor;
+import com.skyruler.socketclient.message.IMessageListener;
+import com.skyruler.socketclient.message.IPacket;
+import com.skyruler.socketclient.message.IPacketConstructor;
 
 import java.util.Collection;
 import java.util.Map;
@@ -13,11 +15,21 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 class PacketRouter {
     private final Collection<MessageCollector> mCollectors = new ConcurrentLinkedQueue<>();
     private final Map<MessageFilter, ListenerWrapper> mRcvListeners = new ConcurrentHashMap<>();
+    private IPacketConstructor packetConstructor;
+    private IMessageConstructor messageConstructor;
 
     MessageCollector createMessageCollector(MessageFilter filter) {
         MessageCollector collector = new MessageCollector(this, filter);
         mCollectors.add(collector);
         return collector;
+    }
+
+    void setPacketConstructor(IPacketConstructor packetConstructor) {
+        this.packetConstructor = packetConstructor;
+    }
+
+    void setMessageConstructor(IMessageConstructor messageConstructor) {
+        this.messageConstructor = messageConstructor;
     }
 
     void removeMessageCollector(MessageCollector collector) {
@@ -37,12 +49,12 @@ class PacketRouter {
     }
 
     void onDataReceive(byte[] data) {
-        Packet packet = new Packet(data);
-        Message message = new Message.Builder(packet).build();
+        IPacket packet = packetConstructor.parse(data);
+        IMessage message = messageConstructor.parse(packet);
         handlerMessage(message);
     }
 
-    private void handlerMessage(Message message) {
+    private void handlerMessage(IMessage message) {
         for (MessageCollector collector : mCollectors) {
             collector.processMessage(message);
         }
@@ -61,7 +73,7 @@ class PacketRouter {
             this.filter = filter;
         }
 
-        void notifyListener(Message msg) {
+        void notifyListener(IMessage msg) {
             if (this.filter == null || this.filter.accept(msg)) {
                 listener.processMessage(msg);
             }

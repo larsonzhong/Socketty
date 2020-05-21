@@ -1,6 +1,9 @@
-package com.skyruler.socketclient.message;
+package com.skyruler.middleware.message;
 
-import com.skyruler.socketclient.packet.Packet;
+import com.skyruler.middleware.packet.Packet;
+import com.skyruler.socketclient.message.IMessage;
+import com.skyruler.socketclient.message.IMessageConstructor;
+import com.skyruler.socketclient.message.IPacket;
 import com.skyruler.socketclient.util.ArrayUtils;
 
 public class Message implements IMessage {
@@ -49,8 +52,16 @@ public class Message implements IMessage {
             this.body = ArrayUtils.subBytes(packet.getData(), 1, packet.getData().length - 1);
         }
 
-        public Message build() {
+        public IMessage build() {
             return new Message(this);
+        }
+    }
+
+    public static class Constructor implements IMessageConstructor {
+
+        @Override
+        public IMessage parse(IPacket packet) {
+            return null;
         }
     }
 }

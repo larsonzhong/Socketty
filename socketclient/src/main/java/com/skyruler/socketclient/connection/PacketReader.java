@@ -2,21 +2,16 @@ package com.skyruler.socketclient.connection;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Build;
+import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 class PacketReader {
+    private static final String TAG = "PacketReader";
     private PacketRouter packetRouter;
     private BlockingQueue<byte[]> mQueue;
     private Thread mDataRunnable;
@@ -40,7 +35,8 @@ class PacketReader {
                 try {
                     bytes = mQueue.take();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "read data error:" + e.getMessage());
+                    Thread.currentThread().interrupt();
                 }
                 packetRouter.onDataReceive(bytes);
             }
@@ -62,23 +58,6 @@ class PacketReader {
     void onDataReceive(BluetoothGattCharacteristic characteristic) {
         byte[] received = characteristic.getValue();
         mQueue.add(received);
-    }
-
-    private ExecutorService newExecutor() {
-        int corePoolSize = 10;
-        int maxPoolSize = 500;
-        long keepActiveTime = 200;
-        TimeUnit timeUnit = TimeUnit.SECONDS;
-        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(1);
-        ThreadFactory factory = new ThreadFactory() {
-            private final AtomicInteger integer = new AtomicInteger();
-
-            @Override
-            public Thread newThread(@NonNull Runnable r) {
-                return new Thread(r, "ConnectionManager thread: " + integer.getAndIncrement());
-            }
-        };
-        return new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepActiveTime, timeUnit, workQueue, factory);
     }
 
 }

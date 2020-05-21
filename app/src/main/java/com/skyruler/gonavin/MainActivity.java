@@ -5,9 +5,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.skyruler.android.logger.Log;
-import com.skyruler.socketclient.SocketClient;
-import com.skyruler.socketclient.connection.BleConnectOption;
-import com.skyruler.socketclient.connection.ConnectionOption;
+import com.skyruler.middleware.GlonavinSdk;
+import com.skyruler.middleware.connection.GlonavinConnectOption;
 import com.skyruler.xml.model.City;
 import com.skyruler.xml.model.MetroData;
 import com.skyruler.xml.model.MetroLine;
@@ -18,7 +17,7 @@ import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    GlonavinSdk glonavinSdk = new GlonavinSdk();
+    private GlonavinSdk glonavinSdk = new GlonavinSdk();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +50,7 @@ public class MainActivity extends AppCompatActivity {
         glonavinSdk.setup(getApplicationContext());
         glonavinSdk.scanDevice(true);
 
-        ConnectionOption option = new BleConnectOption
-                .Builder(ConnectionOption.ConnectionType.BLE)
-                .uuidService(BleConnectOption.UUID_SERVICE)
-                .uuidWrite(BleConnectOption.UUID_WRITE)
-                .uuidNotify(BleConnectOption.UUID_NOTIFY)
-                .clientUUidConfig(BleConnectOption.CLIENT_CHARACTERISTIC_CONFIG)
-                .build();
+        GlonavinConnectOption option = new GlonavinConnectOption(null);
         glonavinSdk.setup(getApplicationContext());
         glonavinSdk.connect(option);
         glonavinSdk.chooseMode();

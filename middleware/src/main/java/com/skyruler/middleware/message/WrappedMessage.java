@@ -1,25 +1,22 @@
-package com.skyruler.socketclient.message;
+package com.skyruler.middleware.message;
 
 import com.skyruler.socketclient.filter.MessageFilter;
+import com.skyruler.socketclient.message.IMessage;
+import com.skyruler.socketclient.message.IWrappedMessage;
 import com.skyruler.socketclient.util.ArrayUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class WrappedMessage {
+public class WrappedMessage implements IWrappedMessage {
     private static final int DEFAULT_MESSAGE_BODY_LIMIT = 1024;
     private static final int DEFAULT_MESSAGE_TIMEOUT = 5000;
     private final byte messageID;
     private final MessageFilter filter;
-    private final List<Message> messages;
+    private final List<IMessage> messages;
     private final int timeout;
     private final AckMode ackMode;
 
-    public enum AckMode {
-        NON,
-        PACKET,
-        MESSAGE
-    }
 
     private WrappedMessage(Builder builder) {
         this.messageID = builder.msgId;
@@ -33,7 +30,7 @@ public class WrappedMessage {
         return messageID;
     }
 
-    public List<Message> getMessages() {
+    public List<IMessage> getMessages() {
         return messages;
     }
 
@@ -50,7 +47,7 @@ public class WrappedMessage {
     }
 
     public static class Builder {
-        List<Message> messages;
+        List<IMessage> messages;
         byte[] body;
         byte msgId;
         private int timeout;
@@ -94,17 +91,17 @@ public class WrappedMessage {
             return new WrappedMessage(this);
         }
 
-        private List<Message> buildMessageList() {
-            List<Message> messageList = new ArrayList<>();
+        private List<IMessage> buildMessageList() {
+            List<IMessage> messageList = new ArrayList<>();
             boolean needSplit = body.length > limitBodyLength;
             if (needSplit) {
                 List<byte[]> payloads = ArrayUtils.divide(body, limitBodyLength);
                 for (byte[] payload : payloads) {
-                    Message msg = new Message.Builder(msgId).body(payload).build();
+                    IMessage msg = new Message.Builder(msgId).body(payload).build();
                     messageList.add(msg);
                 }
             } else {
-                Message msg = new Message.Builder(msgId).body(body).build();
+                IMessage msg = new Message.Builder(msgId).body(body).build();
                 messageList.add(msg);
             }
             return messageList;

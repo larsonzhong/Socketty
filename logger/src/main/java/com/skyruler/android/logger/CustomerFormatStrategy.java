@@ -45,19 +45,19 @@ public class CustomerFormatStrategy implements FormatStrategy {
     @Override
     public void log(int priority, @Nullable String onceOnlyTag, @NonNull String message) {
         Utils.checkNotNull(message);
-        String tag = formatTag(onceOnlyTag);
+        String formatTag = formatTag(onceOnlyTag);
 
         //get bytes of message with system's default charset (which is UTF-8 for Android)
         byte[] bytes = message.getBytes();
         int length = bytes.length;
         if (length <= CHUNK_SIZE) {
-            logContent(priority, tag, message);
+            logContent(priority, formatTag, message);
             return;
         }
         for (int i = 0; i < length; i += CHUNK_SIZE) {
             int count = Math.min(length - i, CHUNK_SIZE);
             //create a new String with system's default charset (which is UTF-8 for Android)
-            logContent(priority, tag, new String(bytes, i, count));
+            logContent(priority, formatTag, new String(bytes, i, count));
         }
     }
 

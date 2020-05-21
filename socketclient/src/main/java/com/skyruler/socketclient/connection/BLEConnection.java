@@ -16,11 +16,13 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.skyruler.socketclient.connection.option.BLEConnectOption;
+import com.skyruler.socketclient.connection.option.IConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
-import com.skyruler.socketclient.intf.IBleStateListener;
-import com.skyruler.socketclient.intf.IConnection;
-import com.skyruler.socketclient.intf.IMessageListener;
-import com.skyruler.socketclient.message.Message;
+import com.skyruler.socketclient.connection.intf.IBleStateListener;
+import com.skyruler.socketclient.connection.intf.IConnection;
+import com.skyruler.socketclient.message.IMessage;
+import com.skyruler.socketclient.message.IMessageListener;
 
 import java.util.List;
 import java.util.UUID;
@@ -59,7 +61,11 @@ class BLEConnection implements IConnection {
     }
 
     @Override
-    public void connect(Context context, ConnectionOption option) {
+    public void connect(Context context, IConnectOption option) {
+        BLEConnectOption bleOption = (BLEConnectOption) option;
+        packetRouter.setPacketConstructor(bleOption.getPacketConstructor());
+        packetRouter.setMessageConstructor(bleOption.getMessageConstructor());
+
         if (mScanning) {
             mBluetoothAdapter.stopLeScan(mLeScanCallback);
             mScanning = false;
@@ -67,12 +73,11 @@ class BLEConnection implements IConnection {
 
         String address = null;
         BluetoothDevice device = null;
-        BleConnectOption bleConnectOption = (BleConnectOption) option;
         BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         if (bluetoothManager != null) {
             mBluetoothAdapter = bluetoothManager.getAdapter();
-            if (mBluetoothAdapter != null && bleConnectOption != null) {
-                address = bleConnectOption.getDevice().getAddress();
+            if (mBluetoothAdapter != null) {
+                address = bleOption.getDevice().getAddress();
                 device = mBluetoothAdapter.getRemoteDevice(address);
             }
         }
@@ -82,7 +87,7 @@ class BLEConnection implements IConnection {
         }
 
         if (this.mBluetoothGatt == null) {
-            BluetoothGattCallback gattCallback = new BleConnectionCallback(bleConnectOption);
+            BluetoothGattCallback gattCallback = new BleConnectionCallback(bleOption);
             this.mBluetoothGatt = device.connectGatt(context, false, gattCallback);
         } else if (address.equals(mLastBluetooth)) {
             this.mBluetoothGatt.connect();
@@ -150,7 +155,7 @@ class BLEConnection implements IConnection {
     }
 
     @Override
-    public void sendMessage(Message msgDataBean) {
+    public void sendMessage(IMessage msgDataBean) {
         if (!mConnected || msgDataBean == null) {
             return;
         }
@@ -158,13 +163,13 @@ class BLEConnection implements IConnection {
     }
 
     @Override
-    public Message sendSyncMessage(Message msgDataBean, MessageFilter filter, long timeout) {
+    public IMessage sendSyncMessage(IMessage msgDataBean, MessageFilter filter, long timeout) {
         if (!mConnected || msgDataBean == null) {
             return null;
         }
         mWriter.sendMessage(msgDataBean);
         MessageCollector collector = packetRouter.createMessageCollector(filter);
-        Message retMsg = collector.nextResult(timeout);
+        IMessage retMsg = collector.nextResult(timeout);
         collector.cancel();
         return retMsg;
     }
@@ -177,9 +182,9 @@ class BLEConnection implements IConnection {
     };
 
     class BleConnectionCallback extends BluetoothGattCallback {
-        private BleConnectOption bleConnectOption;
+        private BLEConnectOption bleConnectOption;
 
-        BleConnectionCallback(BleConnectOption bleConnectOption) {
+        BleConnectionCallback(BLEConnectOption bleConnectOption) {
             this.bleConnectOption = bleConnectOption;
         }
 
@@ -207,7 +212,7 @@ class BLEConnection implements IConnection {
     }
 
 
-    private void displayGattServices(BluetoothGatt gatt, final BleConnectOption bleConnectOption) {
+    private void displayGattServices(BluetoothGatt gatt, final BLEConnectOption bleConnectOption) {
         final BluetoothGattService gattService = gatt.getService(bleConnectOption.getUuidService());
         if (gattService != null) {
             BluetoothGattCharacteristic characteristic = gattService.getCharacteristic(bleConnectOption.getUuidNotify());

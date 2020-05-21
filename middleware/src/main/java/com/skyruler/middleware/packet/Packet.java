@@ -1,11 +1,13 @@
-package com.skyruler.socketclient.packet;
+package com.skyruler.middleware.packet;
 
+import com.skyruler.socketclient.message.IPacket;
+import com.skyruler.socketclient.message.IPacketConstructor;
 import com.skyruler.socketclient.util.BytesUtils;
 import com.skyruler.socketclient.util.CRCCheck;
 
 import java.nio.ByteBuffer;
 
-public class Packet {
+public class Packet implements IPacket {
     public static final short HEADER = 0x24D0;
     private final short length;
     private final byte[] data;
@@ -28,19 +30,6 @@ public class Packet {
     public byte getCrc() {
         return crc;
     }
-
-    public Packet(byte[] raw) {
-        //todo 解析packet，未做验证
-        int index = 0;
-        short header = BytesUtils.bytesToShort(raw, 0);
-        index += BytesUtils.shortToBytes(header).length;
-        this.length = BytesUtils.bytesToShort(raw, index);
-        index += BytesUtils.shortToBytes(length).length;
-        data = new byte[this.length];
-        System.arraycopy(raw, index, data, 0, this.length);
-        this.crc = raw[raw.length - 1];
-    }
-
 
     public byte[] getBytes() {
         int totalLen = 2 + length + 1;
@@ -65,6 +54,12 @@ public class Packet {
             this.length = (short) data.length;
         }
 
+        public Builder(short length, byte[] data, byte crc) {
+            this.length = length;
+            this.data = data;
+            this.crc = crc;
+        }
+
         private byte checkCRC(byte[] body) {
             int totalLen = 2 + length;
             byte[] bytes = new byte[totalLen];
@@ -73,11 +68,27 @@ public class Packet {
             byteBuffer.put(body);
             byteBuffer.flip();
             byteBuffer.get(bytes);
-            return CRCCheck.checkSum_crc8(bytes, bytes.length);
+            return CRCCheck.checkSumCrc8(bytes, bytes.length);
         }
 
         public Packet build() {
             return new Packet(this);
+        }
+    }
+
+    public static class Constructor implements IPacketConstructor {
+        @Override
+        public IPacket parse(byte[] raw) {
+            int index = 0;
+            short header = BytesUtils.bytesToShort(raw, 0);
+            index += BytesUtils.shortToBytes(header).length;
+            short length = BytesUtils.bytesToShort(raw, index);
+            index += BytesUtils.shortToBytes(length).length;
+            byte[] data = new byte[length];
+            System.arraycopy(raw, index, data, 0, length);
+            byte crc = raw[raw.length - 1];
+
+            return new Builder(length, data, crc).build();
         }
     }
 }

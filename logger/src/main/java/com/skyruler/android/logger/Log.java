@@ -19,6 +19,8 @@ import io.reactivex.annotations.Nullable;
  * @date: Created 2019/2/13 16:32
  */
 public final class Log {
+    private Log() {
+    }
 
     private static String mTag = "Logger";
     private static AtomicBoolean isInitialized = new AtomicBoolean(false);

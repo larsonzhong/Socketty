@@ -1,6 +1,6 @@
 package com.skyruler.socketclient.filter;
 
-import com.skyruler.socketclient.message.Message;
+import com.skyruler.socketclient.message.IMessage;
 
 public class MessageIdFilter implements MessageFilter {
     private byte mId;
@@ -10,7 +10,7 @@ public class MessageIdFilter implements MessageFilter {
     }
 
     @Override
-    public boolean accept(Message msg) {
+    public boolean accept(IMessage msg) {
         return mId == msg.getMsgId();
     }
 

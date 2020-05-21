@@ -1,11 +1,9 @@
-package com.skyruler.socketclient.intf;
+package com.skyruler.socketclient.connection.intf;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 
 public interface IBleStateListener {
-    int STATE_CONNECT_SUCCESSFUL = 1001;
-    int STATE_CONNECT_FAILED = 1002;
 
     void onServiceDiscover(BluetoothGatt gatt);
 

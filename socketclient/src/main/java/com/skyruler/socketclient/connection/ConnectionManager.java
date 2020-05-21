@@ -8,12 +8,13 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 
+import com.skyruler.socketclient.connection.option.IConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
-import com.skyruler.socketclient.intf.IBleStateListener;
-import com.skyruler.socketclient.intf.IConnection;
-import com.skyruler.socketclient.intf.IConnectionManager;
-import com.skyruler.socketclient.intf.IMessageListener;
-import com.skyruler.socketclient.message.Message;
+import com.skyruler.socketclient.connection.intf.IBleStateListener;
+import com.skyruler.socketclient.connection.intf.IConnection;
+import com.skyruler.socketclient.connection.intf.IConnectionManager;
+import com.skyruler.socketclient.message.IMessage;
+import com.skyruler.socketclient.message.IMessageListener;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -42,7 +43,7 @@ public class ConnectionManager implements IConnectionManager {
     }
 
     @Override
-    public void connect(ConnectionOption bleConnectOption) {
+    public void connect(IConnectOption bleConnectOption) {
         if (isConnected()) {
             return;
         }
@@ -53,9 +54,9 @@ public class ConnectionManager implements IConnectionManager {
     }
 
     private class ConnectTask implements Runnable {
-        private ConnectionOption bleConnectOption;
+        private IConnectOption bleConnectOption;
 
-        ConnectTask(ConnectionOption bleConnectOption) {
+        ConnectTask(IConnectOption bleConnectOption) {
             this.bleConnectOption = bleConnectOption;
         }
 
@@ -64,7 +65,7 @@ public class ConnectionManager implements IConnectionManager {
             if (isConnected()) {
                 return;
             }
-            if (bleConnectOption.getType() == ConnectionOption.ConnectionType.BLE) {
+            if (bleConnectOption.getType() == IConnectOption.ConnectionType.BLE) {
                 mConnection = new BLEConnection(connListener);
                 mConnection.connect(mContext, bleConnectOption);
             }
@@ -87,14 +88,14 @@ public class ConnectionManager implements IConnectionManager {
     }
 
     @Override
-    public void sendMessage(Message msgDataBean) {
+    public void sendMessage(IMessage msgDataBean) {
         mConnection.sendMessage(msgDataBean);
     }
 
     @Override
-    public Message sendSyncMessage(Message msgDataBean, MessageFilter filter, long timeout) {
+    public IMessage sendSyncMessage(IMessage msgDataBean, MessageFilter filter, long timeout) {
         if (filter == null || timeout < 0) {
-            throw new IllegalArgumentException("can not send sync message without filter or timeout");
+            throw new IllegalArgumentException("can not send sync IMessage without filter or timeout");
         }
         return mConnection.sendSyncMessage(msgDataBean, filter, timeout);
     }
