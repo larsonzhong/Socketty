@@ -7,8 +7,6 @@ import com.skyruler.socketclient.message.IMessageListener;
 
 public interface IConnectionManager {
 
-    void scanDevice(boolean enable);
-
     void connect(IConnectOption bleConnectOption);
 
     boolean isConnected();

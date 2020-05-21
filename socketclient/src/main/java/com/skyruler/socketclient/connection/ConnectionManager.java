@@ -1,18 +1,17 @@
 package com.skyruler.socketclient.connection;
 
 import android.annotation.TargetApi;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 
-import com.skyruler.socketclient.connection.option.IConnectOption;
-import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.connection.intf.IBleStateListener;
 import com.skyruler.socketclient.connection.intf.IConnection;
 import com.skyruler.socketclient.connection.intf.IConnectionManager;
+import com.skyruler.socketclient.connection.option.IConnectOption;
+import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
 
@@ -35,11 +34,6 @@ public class ConnectionManager implements IConnectionManager {
     public ConnectionManager(Context context) {
         this.mContext = context;
         this.mExecutor = newExecutor();
-    }
-
-    @Override
-    public void scanDevice(boolean enable) {
-        mConnection.scanLeDevice(mContext, enable);
     }
 
     @Override
@@ -154,13 +148,6 @@ public class ConnectionManager implements IConnectionManager {
         public void onServiceDiscover(BluetoothGatt gatt) {
             for (IBleStateListener listener : connListeners) {
                 listener.onServiceDiscover(gatt);
-            }
-        }
-
-        @Override
-        public void onScanResult(BluetoothDevice device, boolean isConnected) {
-            for (IBleStateListener listener : connListeners) {
-                listener.onScanResult(device, isConnected);
             }
         }
 

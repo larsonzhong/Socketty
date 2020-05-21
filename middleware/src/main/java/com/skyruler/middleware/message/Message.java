@@ -37,11 +37,11 @@ public class Message implements IMessage {
         byte messageID;
         byte[] body = EMPTY_BODY;
 
-        public Builder(byte msgId) {
+        Builder(byte msgId) {
             this.messageID = msgId;
         }
 
-        public Builder body(byte[] body) {
+        Builder body(byte[] body) {
             this.body = body;
             return this;
         }
@@ -52,7 +52,7 @@ public class Message implements IMessage {
             this.body = ArrayUtils.subBytes(packet.getData(), 1, packet.getData().length - 1);
         }
 
-        public IMessage build() {
+        IMessage build() {
             return new Message(this);
         }
     }

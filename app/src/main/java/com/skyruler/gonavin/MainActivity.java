@@ -1,5 +1,6 @@
 package com.skyruler.gonavin;
 
+import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.skyruler.android.logger.Log;
 import com.skyruler.middleware.GlonavinSdk;
 import com.skyruler.middleware.connection.GlonavinConnectOption;
+import com.skyruler.middleware.connection.IBleScanListener;
 import com.skyruler.xml.model.City;
 import com.skyruler.xml.model.MetroData;
 import com.skyruler.xml.model.MetroLine;
@@ -47,13 +49,18 @@ public class MainActivity extends AppCompatActivity {
             Log.e(TAG, e.getMessage());
         }
 
-        glonavinSdk.setup(getApplicationContext());
+        glonavinSdk.setup(getApplicationContext(),new IBleScanListener(){
+            @Override
+            public void onScanResult(BluetoothDevice bluetoothDevice, boolean isConnected) {
+                //
+            }
+        });
         glonavinSdk.scanDevice(true);
 
-        GlonavinConnectOption option = new GlonavinConnectOption(null);
-        glonavinSdk.setup(getApplicationContext());
-        glonavinSdk.connect(option);
-        glonavinSdk.chooseMode();
+//        GlonavinConnectOption option = new GlonavinConnectOption(null);
+//        glonavinSdk.setup(getApplicationContext());
+//        glonavinSdk.connect(option);
+//        glonavinSdk.chooseMode();
 
 
     }

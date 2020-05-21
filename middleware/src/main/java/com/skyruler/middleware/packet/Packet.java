@@ -8,7 +8,7 @@ import com.skyruler.socketclient.util.CRCCheck;
 import java.nio.ByteBuffer;
 
 public class Packet implements IPacket {
-    public static final short HEADER = 0x24D0;
+    private static final short HEADER = 0x24D0;
     private final short length;
     private final byte[] data;
     private final byte crc;
@@ -54,7 +54,7 @@ public class Packet implements IPacket {
             this.length = (short) data.length;
         }
 
-        public Builder(short length, byte[] data, byte crc) {
+        Builder(short length, byte[] data, byte crc) {
             this.length = length;
             this.data = data;
             this.crc = crc;

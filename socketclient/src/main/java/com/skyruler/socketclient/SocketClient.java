@@ -22,11 +22,6 @@ public class SocketClient implements ISocketClient {
     }
 
     @Override
-    public void scanDevice(boolean enable) {
-        mConnMgr.scanDevice(enable);
-    }
-
-    @Override
     public void connect(IConnectOption option) {
         mConnMgr.connect(option);
     }

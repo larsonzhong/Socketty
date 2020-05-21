@@ -8,7 +8,6 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
-import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
@@ -16,22 +15,19 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.skyruler.socketclient.connection.intf.IBleStateListener;
+import com.skyruler.socketclient.connection.intf.IConnection;
 import com.skyruler.socketclient.connection.option.BLEConnectOption;
 import com.skyruler.socketclient.connection.option.IConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
-import com.skyruler.socketclient.connection.intf.IBleStateListener;
-import com.skyruler.socketclient.connection.intf.IConnection;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
 
-import java.util.List;
 import java.util.UUID;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 class BLEConnection implements IConnection {
     private static final String TAG = "BLEConnection";
-    private static final long SCAN_PERIOD = 10000L;
-    private boolean mScanning = false;
     private boolean mConnected = false;
     private String mLastBluetooth;
     private PacketReader mReader;
@@ -66,25 +62,8 @@ class BLEConnection implements IConnection {
         packetRouter.setPacketConstructor(bleOption.getPacketConstructor());
         packetRouter.setMessageConstructor(bleOption.getMessageConstructor());
 
-        if (mScanning) {
-            mBluetoothAdapter.stopLeScan(mLeScanCallback);
-            mScanning = false;
-        }
-
-        String address = null;
-        BluetoothDevice device = null;
-        BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-        if (bluetoothManager != null) {
-            mBluetoothAdapter = bluetoothManager.getAdapter();
-            if (mBluetoothAdapter != null) {
-                address = bleOption.getDevice().getAddress();
-                device = mBluetoothAdapter.getRemoteDevice(address);
-            }
-        }
-        if (mBluetoothAdapter == null || device == null || address == null) {
-            setConnected(false);
-            throw new IllegalArgumentException("connect failed !!argument=null");
-        }
+        BluetoothDevice device = bleOption.getDevice();
+        String address = device.getAddress();
 
         if (this.mBluetoothGatt == null) {
             BluetoothGattCallback gattCallback = new BleConnectionCallback(bleOption);
@@ -103,39 +82,9 @@ class BLEConnection implements IConnection {
 
     @Override
     public void disconnect() {
-        if (mScanning) {
-            mBluetoothAdapter.stopLeScan(mLeScanCallback);
-            mScanning = false;
-        }
         if (this.mBluetoothGatt != null) {
             this.mBluetoothGatt.disconnect();
         }
-    }
-
-    @Override
-    public void scanLeDevice(Context mContext, boolean enable) {
-        BluetoothManager bluetoothManager = (BluetoothManager) mContext.getSystemService(Context.BLUETOOTH_SERVICE);
-        if (bluetoothManager != null) {
-            List<BluetoothDevice> connectedDevices = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
-            for (BluetoothDevice connectedDevice : connectedDevices) {
-                stateListener.onScanResult(connectedDevice, true);
-            }
-        }
-
-        if (!enable) {
-            mScanning = false;
-            mBluetoothAdapter.stopLeScan(mLeScanCallback);
-            return;
-        }
-
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                mScanning = false;
-                mBluetoothAdapter.stopLeScan(mLeScanCallback);
-            }
-        }, SCAN_PERIOD);
-        mScanning = true;
-        mBluetoothAdapter.startLeScan(mLeScanCallback);
     }
 
     @Override
@@ -174,12 +123,6 @@ class BLEConnection implements IConnection {
         return retMsg;
     }
 
-    private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
-        @Override
-        public void onLeScan(BluetoothDevice bluetoothDevice, int i, byte[] bytes) {
-            stateListener.onScanResult(bluetoothDevice, false);
-        }
-    };
 
     class BleConnectionCallback extends BluetoothGattCallback {
         private BLEConnectOption bleConnectOption;

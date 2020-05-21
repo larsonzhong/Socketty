@@ -8,7 +8,6 @@ import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
 
 public interface IConnection {
-    void scanLeDevice(Context mContext, boolean enable);
 
     void connect(Context mContext, IConnectOption bleConnectOption);
 

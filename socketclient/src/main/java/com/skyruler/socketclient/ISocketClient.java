@@ -11,8 +11,6 @@ import com.skyruler.socketclient.message.IWrappedMessage;
 public interface ISocketClient {
     void setup(Context context);
 
-    void scanDevice(boolean enable);
-
     void connect(IConnectOption option);
 
     void disConnect();
