@@ -3,10 +3,12 @@ package com.skyruler.gonavin;
 import android.content.Context;
 
 import com.skyruler.socketclient.SocketClient;
+import com.skyruler.socketclient.connection.ConnectionOption;
 import com.skyruler.socketclient.filter.MessageIdFilter;
 import com.skyruler.socketclient.message.WrappedMessage;
 
 class GlonavinSdk {
+    private SocketClient socketClient;
 
     void chooseMode() {
         WrappedMessage message = new WrappedMessage
@@ -45,20 +47,25 @@ class GlonavinSdk {
     }
 
     void setup(Context context) {
-        SocketClient.getInstance().setup(context);
+        socketClient = new SocketClient();
+        socketClient.setup(context);
+    }
+
+    void connect(ConnectionOption option) {
+        socketClient.connect(option);
     }
 
     void onDestroy() {
-        SocketClient.getInstance().onDestroy();
+        socketClient.onDestroy();
     }
 
     void scanDevice(boolean isScan) {
-        SocketClient.getInstance().scanDevice(isScan);
+        socketClient.scanDevice(isScan);
     }
 
     private void sendMessage(WrappedMessage message) {
         try {
-            SocketClient.getInstance().sendMessage(message);
+            socketClient.sendMessage(message);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
