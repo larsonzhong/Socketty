@@ -1,12 +1,12 @@
-package com.skyruler.xml.parser;
+package com.skyruler.middleware.xml.parser;
 
 import android.util.Xml;
 
-import com.skyruler.xml.model.City;
-import com.skyruler.xml.model.MetroData;
-import com.skyruler.xml.model.MetroLine;
-import com.skyruler.xml.model.Station;
-import com.skyruler.xml.model.SubItem;
+import com.skyruler.middleware.xml.model.City;
+import com.skyruler.middleware.xml.model.MetroData;
+import com.skyruler.middleware.xml.model.MetroLine;
+import com.skyruler.middleware.xml.model.Station;
+import com.skyruler.middleware.xml.model.SubItem;
 
 import org.xmlpull.v1.XmlPullParser;
 

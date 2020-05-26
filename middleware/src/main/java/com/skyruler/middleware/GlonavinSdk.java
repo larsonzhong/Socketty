@@ -1,25 +1,25 @@
 package com.skyruler.middleware;
 
-import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
-import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 
 import com.skyruler.middleware.connection.GlonavinConnectOption;
 import com.skyruler.middleware.connection.IBleScanListener;
 import com.skyruler.middleware.message.WrappedMessage;
+import com.skyruler.middleware.xml.model.MetroLine;
+import com.skyruler.middleware.xml.model.Station;
 import com.skyruler.socketclient.SocketClient;
 import com.skyruler.socketclient.filter.MessageIdFilter;
 import com.skyruler.socketclient.message.IWrappedMessage.AckMode;
 
+import java.util.Arrays;
 import java.util.List;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class GlonavinSdk {
     private static final String TAG = "GlonavinSdk";
     private static final long SCAN_PERIOD = 10000L;
@@ -65,15 +65,30 @@ public class GlonavinSdk {
         sendMessage(message);
     }
 
-    public void setup(Context context, IBleScanListener bleScanListener) {
+    public void setup(Context context) {
         this.mContext = context;
-        this.bleScanListener = bleScanListener;
         this.socketClient = new SocketClient();
         this.socketClient.setup(context);
     }
 
+    public void selectDeviceMode(String mDeviceMode) {
+        //todo 选择设备模式
+    }
+
+    public void setBleScanListener(IBleScanListener bleScanListener) {
+        this.bleScanListener = bleScanListener;
+    }
+
     public void connect(GlonavinConnectOption option) {
         socketClient.connect(option);
+    }
+
+    public boolean isConnected() {
+        return socketClient.isConnected();
+    }
+
+    public void disconnect() {
+        socketClient.disConnect();
     }
 
     public void onDestroy() {
@@ -128,4 +143,12 @@ public class GlonavinSdk {
         }
     };
 
+    public void sendMetroLine(MetroLine metroLine) {
+        byte[] bytes = metroLine.toBytes();
+        Log.d(TAG, "size: " + bytes.length + ", buf" + Arrays.toString(bytes));
+    }
+
+    public void sendStartEndStation(Station mStartStation, Station mEndStation) {
+
+    }
 }

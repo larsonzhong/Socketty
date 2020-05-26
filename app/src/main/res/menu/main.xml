@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.skyruler.indoorlocalization.client.IMUActivity">
+
+    <item
+        android:id="@+id/action_connect_device"
+        android:icon="@mipmap/bluetooth_disabled"
+        android:orderInCategory="100"
+        android:title="@string/action_bluetooth"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_start_test"
+        android:orderInCategory="100"
+        android:title="@string/action_start_test"
+        app:showAsAction="never" />
+
+
+    <item
+        android:id="@+id/action_start_review"
+        android:orderInCategory="100"
+        android:title="@string/action_review_record"
+        app:showAsAction="never" />
+</menu>
