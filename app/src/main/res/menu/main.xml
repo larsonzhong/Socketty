@@ -13,8 +13,9 @@
     <item
         android:id="@+id/action_start_test"
         android:orderInCategory="100"
+        android:icon="@mipmap/start"
         android:title="@string/action_start_test"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
 
 
     <item

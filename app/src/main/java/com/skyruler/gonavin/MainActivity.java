@@ -4,6 +4,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -21,7 +23,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private boolean isDataReviewing;
-    private boolean isTestStart;
     private GlonavinSdk glonavinSdk = new GlonavinSdk();
     private DynamicLineChartManager dynamicLineChartManager;
     private BluetoothDevicesDialog mDeviceDialog;
@@ -75,13 +76,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        int icon = R.mipmap.bluetooth_disabled;
-        if (glonavinSdk.isConnected()) {
-            icon = R.mipmap.bluetooth_connected;
-        }
+        int icon = glonavinSdk.isConnected() ? R.mipmap.bluetooth_connected : R.mipmap.bluetooth_disabled;
         menu.findItem(R.id.action_connect_device).setIcon(icon);
+
+        boolean isTestStart = glonavinSdk.isTestStart();
+        int state = isTestStart ? R.mipmap.stop : R.mipmap.start;
         String testState = isTestStart ? getString(R.string.action_stop_test) : getString(R.string.action_start_test);
-        menu.findItem(R.id.action_start_test).setTitle(testState);
+        menu.findItem(R.id.action_start_test).setIcon(state).setTitle(testState);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -111,10 +112,9 @@ public class MainActivity extends AppCompatActivity {
         mSetupDialog.show();
     }
 
-    private void startSubwayTest() {
+    private void onTestStateChange(boolean isTestStart) {
         //开启测试才记录数据
-        isTestStart = !isTestStart;
-        btnDtTest.setClickable(isTestStart);
+        btnDtTest.setClickable(!isTestStart);
         showToast(isTestStart ? getString(R.string.action_start_test) : getString(R.string.action_stop_test));
         invalidateOptionsMenu();
     }

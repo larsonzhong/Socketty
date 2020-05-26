@@ -41,7 +41,7 @@ public class GlonavinSdk {
         sendMessage(message);
     }
 
-    void startTest() {
+    public void startTest() {
         WrappedMessage message = new WrappedMessage
                 .Builder((byte) 0x32)
                 .body(new byte[]{0x00})
@@ -89,6 +89,10 @@ public class GlonavinSdk {
 
     public void disconnect() {
         socketClient.disConnect();
+    }
+
+    public boolean isTestStart() {
+        return false;
     }
 
     public void onDestroy() {

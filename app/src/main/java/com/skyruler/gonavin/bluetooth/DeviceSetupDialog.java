@@ -4,10 +4,13 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -23,6 +26,8 @@ import com.skyruler.middleware.xml.model.Station;
 import com.skyruler.middleware.xml.parser.MetroParser;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class DeviceSetupDialog extends AlertDialog implements View.OnClickListener, AdapterView.OnItemSelectedListener {
@@ -34,9 +39,9 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     private Station mStartStation;
     private Station mEndStation;
     private City city;
-    private ArrayAdapter<Station> selectStartAdapter;
-    private ArrayAdapter<Station> selectEndAdapter;
-    private ArrayAdapter<MetroLine> selectLineAdapter;
+    private NameAdapter<Station> selectStartAdapter;
+    private NameAdapter<Station> selectEndAdapter;
+    private NameAdapter<MetroLine> selectLineAdapter;
 
 
     public DeviceSetupDialog(Context context, GlonavinSdk glonavinSdk) {
@@ -60,20 +65,21 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
         deviceModeSpinner.setOnItemSelectedListener(this);
 
         Spinner selectStartSpinner = mView.findViewById(R.id.spinner_select_start);
-        selectStartAdapter = new NameAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+        selectStartAdapter = new NameAdapter<>();
         selectStartSpinner.setAdapter(selectStartAdapter);
         selectStartSpinner.setOnItemSelectedListener(this);
 
         Spinner selectEndSpinner = mView.findViewById(R.id.spinner_select_end);
-        selectEndAdapter = new NameAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+        selectEndAdapter = new NameAdapter<>();
         selectEndSpinner.setAdapter(selectEndAdapter);
         selectEndSpinner.setOnItemSelectedListener(this);
 
         Spinner selectLineSpinner = mView.findViewById(R.id.spinner_select_line);
-        selectLineAdapter = new NameAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+        selectLineAdapter = new NameAdapter<>();
         selectLineSpinner.setAdapter(selectLineAdapter);
         selectLineSpinner.setOnItemSelectedListener(this);
 
+        mView.findViewById(R.id.btn_exit_dialog).setOnClickListener(this);
         mView.findViewById(R.id.btn_select_xml).setOnClickListener(this);
         mView.findViewById(R.id.btn_send_mode).setOnClickListener(this);
         mView.findViewById(R.id.btn_send_start_end).setOnClickListener(this);
@@ -82,24 +88,22 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
-        switch (view.getId()) {
+        switch (adapterView.getId()) {
             case R.id.spinner_device_mode:
                 mDeviceMode = mModes[pos];
                 break;
             case R.id.spinner_select_line:
                 mMetroLine = city.getMetroLines().get(pos);
-                selectStartAdapter.clear();
-                selectStartAdapter.addAll(mMetroLine.getStations());
+                selectStartAdapter.setData(mMetroLine.getStations());
                 selectStartAdapter.notifyDataSetChanged();
-                selectEndAdapter.clear();
-                selectEndAdapter.addAll(mMetroLine.getStations());
+                selectEndAdapter.setData(mMetroLine.getStations());
                 selectEndAdapter.notifyDataSetChanged();
                 break;
             case R.id.spinner_select_start:
-                mStartStation = selectStartAdapter.getItem(pos);
+                mStartStation = (Station) selectStartAdapter.getItem(pos);
                 break;
             case R.id.spinner_select_end:
-                mEndStation = selectEndAdapter.getItem(pos);
+                mEndStation = (Station) selectEndAdapter.getItem(pos);
                 break;
             default:
         }
@@ -113,6 +117,9 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
+            case R.id.btn_exit_dialog:
+                dismiss();
+                break;
             case R.id.btn_send_mode:
                 sendTestMode();
                 break;
@@ -158,18 +165,27 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
         }
 
         // 为了方便只取第一个city
-        City city = metroData.getCities().get(0);
-        selectLineAdapter.clear();
-        selectLineAdapter.addAll(city.getMetroLines());
+        city = metroData.getCities().get(0);
+        selectLineAdapter.setData(city.getMetroLines());
         selectLineAdapter.notifyDataSetChanged();
     }
 
-    class NameAdapter<T> extends ArrayAdapter<T> {
-        private int mResourceId;
+    class NameAdapter<T> extends BaseAdapter {
+        private List<T> objectList = new ArrayList<>();
 
-        NameAdapter(Context context, int textViewResourceId) {
-            super(context, textViewResourceId);
-            this.mResourceId = textViewResourceId;
+        @Override
+        public int getCount() {
+            return objectList.size();
+        }
+
+        @Override
+        public Object getItem(int pos) {
+            return objectList.get(pos);
+        }
+
+        @Override
+        public long getItemId(int pos) {
+            return pos;
         }
 
         @NonNull
@@ -182,10 +198,15 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
             } else if (obj instanceof Station) {
                 name = ((Station) obj).getName();
             }
-            View view = getLayoutInflater().inflate(mResourceId, null);
+            View view = getLayoutInflater().inflate(android.R.layout.simple_spinner_item, null);
             TextView textView = view.findViewById(android.R.id.text1);
             textView.setText(name);
             return view;
+        }
+
+        void setData(List<T> stations) {
+            this.objectList.clear();
+            this.objectList.addAll(stations);
         }
     }
 

@@ -20,6 +20,7 @@
     <!-- setup devices -->
     <string name="select_mode">选择模式</string>
     <string name="send">发送</string>
+    <string name="send_start_end">发送起始点</string>
     <string name="senect_xml">选择XML</string>
     <string name="select_start">起点</string>
     <string name="select">请选择</string>
