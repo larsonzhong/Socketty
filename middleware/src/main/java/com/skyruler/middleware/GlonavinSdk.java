@@ -2,6 +2,7 @@ package com.skyruler.middleware;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
@@ -9,16 +10,18 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.skyruler.middleware.connection.GlonavinConnectOption;
-import com.skyruler.middleware.connection.IBleScanListener;
+import com.skyruler.middleware.connection.IBleStateListener;
 import com.skyruler.middleware.message.WrappedMessage;
 import com.skyruler.middleware.xml.model.MetroLine;
 import com.skyruler.middleware.xml.model.Station;
 import com.skyruler.socketclient.SocketClient;
+import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.filter.MessageIdFilter;
 import com.skyruler.socketclient.message.IWrappedMessage.AckMode;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GlonavinSdk {
     private static final String TAG = "GlonavinSdk";
@@ -26,8 +29,42 @@ public class GlonavinSdk {
     private boolean mScanning = false;
     private SocketClient socketClient;
     private Context mContext;
-    private IBleScanListener bleScanListener;
     private BluetoothAdapter mBluetoothAdapter;
+    private CopyOnWriteArrayList<IBleStateListener> connListeners;
+    private IStateListener connectListener = new IStateListener() {
+        @Override
+        public void onConnect(Object device) {
+            for (IBleStateListener listener : connListeners) {
+                if (device instanceof BluetoothGatt) {
+                    listener.onConnected(((BluetoothGatt) device).getDevice());
+                }
+            }
+        }
+
+        @Override
+        public void onDisconnect(Object device) {
+            for (IBleStateListener listener : connListeners) {
+                if (device instanceof BluetoothGatt) {
+                    listener.onDisconnect(((BluetoothGatt) device).getDevice());
+                }
+            }
+        }
+    };
+
+    public void addBleStateListener(IBleStateListener listener) {
+        if (connListeners == null) {
+            connListeners = new CopyOnWriteArrayList<>();
+        }
+        if (listener != null) {
+            connListeners.add(listener);
+        }
+    }
+
+    public void removeConnectListener(IBleStateListener listener) {
+        if (connListeners != null) {
+            connListeners.remove(listener);
+        }
+    }
 
     public void chooseMode() {
         WrappedMessage message = new WrappedMessage
@@ -68,15 +105,11 @@ public class GlonavinSdk {
     public void setup(Context context) {
         this.mContext = context;
         this.socketClient = new SocketClient();
-        this.socketClient.setup(context);
+        this.socketClient.setup(context, connectListener);
     }
 
     public void selectDeviceMode(String mDeviceMode) {
         //todo 选择设备模式
-    }
-
-    public void setBleScanListener(IBleScanListener bleScanListener) {
-        this.bleScanListener = bleScanListener;
     }
 
     public void connect(GlonavinConnectOption option) {
@@ -121,7 +154,7 @@ public class GlonavinSdk {
         mBluetoothAdapter = bluetoothManager.getAdapter();
         List<BluetoothDevice> connectedDevices = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
         for (BluetoothDevice connectedDevice : connectedDevices) {
-            bleScanListener.onScanResult(connectedDevice, true);
+            onScanResult(connectedDevice, true);
         }
 
         if (!enable) {
@@ -140,10 +173,16 @@ public class GlonavinSdk {
         mBluetoothAdapter.startLeScan(mLeScanCallback);
     }
 
+    private void onScanResult(BluetoothDevice connectedDevice, boolean isConnected) {
+        for (IBleStateListener listener : connListeners) {
+            listener.onScanResult(connectedDevice, isConnected);
+        }
+    }
+
     private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice bluetoothDevice, int i, byte[] bytes) {
-            bleScanListener.onScanResult(bluetoothDevice, false);
+            onScanResult(bluetoothDevice, false);
         }
     };
 

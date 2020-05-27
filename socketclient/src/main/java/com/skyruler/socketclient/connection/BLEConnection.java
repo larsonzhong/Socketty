@@ -7,7 +7,6 @@ import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
-import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
@@ -15,8 +14,8 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import com.skyruler.socketclient.connection.intf.IBleStateListener;
 import com.skyruler.socketclient.connection.intf.IConnection;
+import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.connection.option.BLEConnectOption;
 import com.skyruler.socketclient.connection.option.IConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
@@ -33,11 +32,10 @@ class BLEConnection implements IConnection {
     private PacketReader mReader;
     private PacketWriter mWriter;
     private BluetoothGatt mBluetoothGatt;
-    private IBleStateListener stateListener;
-    private BluetoothAdapter mBluetoothAdapter;
+    private IStateListener stateListener;
     private final PacketRouter packetRouter;
 
-    BLEConnection(IBleStateListener stateListener) {
+    BLEConnection(IStateListener stateListener) {
         this.stateListener = stateListener;
         this.packetRouter = new PacketRouter();
     }
@@ -85,6 +83,7 @@ class BLEConnection implements IConnection {
         if (this.mBluetoothGatt != null) {
             this.mBluetoothGatt.disconnect();
         }
+        setConnected(false);
     }
 
     @Override
@@ -143,9 +142,9 @@ class BLEConnection implements IConnection {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             displayGattServices(gatt, bleConnectOption);
-            if (status == 0) {
+           /* if (status == 0) {
                 stateListener.onServiceDiscover(gatt);
-            }
+            }*/
         }
 
         @Override

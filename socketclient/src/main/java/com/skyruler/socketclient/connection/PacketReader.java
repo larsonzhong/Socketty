@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.annotation.RequiresApi;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -19,8 +20,9 @@ class PacketReader {
 
     PacketReader(PacketRouter packetRouter) {
         this.packetRouter = packetRouter;
+        this.mShutdown = new AtomicBoolean(false);
         this.mDataRunnable = new DataRunnable();
-        mShutdown = new AtomicBoolean(false);
+        this.mQueue = new LinkedBlockingQueue<>();
     }
 
     synchronized void startup() {

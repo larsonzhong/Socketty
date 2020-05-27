@@ -4,12 +4,12 @@ import android.content.Context;
 
 import com.skyruler.socketclient.connection.option.IConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
-import com.skyruler.socketclient.connection.intf.IBleStateListener;
+import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.message.IMessageListener;
 import com.skyruler.socketclient.message.IWrappedMessage;
 
 public interface ISocketClient {
-    void setup(Context context);
+    void setup(Context context,IStateListener listener);
 
     void connect(IConnectOption option);
 
@@ -20,10 +20,6 @@ public interface ISocketClient {
     boolean isConnected();
 
     void sendMessage(IWrappedMessage msgDataBean) throws InterruptedException;
-
-    void addConnectionListener(IBleStateListener listener);
-
-    void removeConnectionListener(IBleStateListener listener);
 
     void addMessageListener(IMessageListener listener, MessageFilter filter);
 

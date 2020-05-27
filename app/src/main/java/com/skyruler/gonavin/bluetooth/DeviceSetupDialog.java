@@ -4,10 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
@@ -43,7 +41,6 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     private NameAdapter<Station> selectEndAdapter;
     private NameAdapter<MetroLine> selectLineAdapter;
 
-
     public DeviceSetupDialog(Context context, GlonavinSdk glonavinSdk) {
         super(context);
         this.glonavinSdk = glonavinSdk;
@@ -53,6 +50,7 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         @SuppressLint("InflateParams") View mView = getLayoutInflater().inflate(R.layout.device_setup, null);
         initView(mView);
+        // this.glonavinSdk.addBleStateListener(this);
         super.setView(mView);
         super.onCreate(savedInstanceState);
     }

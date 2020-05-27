@@ -1,15 +1,14 @@
 package com.skyruler.socketclient.connection;
 
 import android.annotation.TargetApi;
-import android.bluetooth.BluetoothGatt;
 import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 
-import com.skyruler.socketclient.connection.intf.IBleStateListener;
 import com.skyruler.socketclient.connection.intf.IConnection;
 import com.skyruler.socketclient.connection.intf.IConnectionManager;
+import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.connection.option.IConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.IMessage;
@@ -17,7 +16,6 @@ import com.skyruler.socketclient.message.IMessageListener;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -26,14 +24,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class ConnectionManager implements IConnectionManager {
-    private CopyOnWriteArrayList<IBleStateListener> connListeners;
+
     private IConnection mConnection;
     private ExecutorService mExecutor;
     private final Context mContext;
+    private IStateListener stateListener;
 
-    public ConnectionManager(Context context) {
+    public ConnectionManager(Context context, IStateListener listener) {
         this.mContext = context;
         this.mExecutor = newExecutor();
+        this.stateListener = listener;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class ConnectionManager implements IConnectionManager {
                 return;
             }
             if (bleConnectOption.getType() == IConnectOption.ConnectionType.BLE) {
-                mConnection = new BLEConnection(connListener);
+                mConnection = new BLEConnection(stateListener);
                 mConnection.connect(mContext, bleConnectOption);
             }
         }
@@ -95,24 +95,6 @@ public class ConnectionManager implements IConnectionManager {
     }
 
     @Override
-    public void registerConnectListener(IBleStateListener listener) {
-        if (connListeners == null) {
-            connListeners = new CopyOnWriteArrayList<>();
-        }
-        if (listener != null) {
-            connListeners.add(listener);
-        }
-    }
-
-    @Override
-    public void unRegisterConnectListener(IBleStateListener listener) {
-        if (connListeners != null) {
-            connListeners.remove(listener);
-        }
-    }
-
-
-    @Override
     public void addMessageListener(IMessageListener listener, MessageFilter filter) {
         if (mConnection != null) {
             mConnection.addMsgListener(listener, filter);
@@ -142,28 +124,5 @@ public class ConnectionManager implements IConnectionManager {
         };
         return new ThreadPoolExecutor(corePoolSize, maxPoolSize, keepActiveTime, timeUnit, workQueue, factory);
     }
-
-    private IBleStateListener connListener = new IBleStateListener() {
-        @Override
-        public void onServiceDiscover(BluetoothGatt gatt) {
-            for (IBleStateListener listener : connListeners) {
-                listener.onServiceDiscover(gatt);
-            }
-        }
-
-        @Override
-        public void onConnect(BluetoothGatt gatt) {
-            for (IBleStateListener listener : connListeners) {
-                listener.onConnect(gatt);
-            }
-        }
-
-        @Override
-        public void onDisconnect(BluetoothGatt gatt) {
-            for (IBleStateListener listener : connListeners) {
-                listener.onDisconnect(gatt);
-            }
-        }
-    };
 
 }

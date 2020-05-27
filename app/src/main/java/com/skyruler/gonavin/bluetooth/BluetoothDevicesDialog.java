@@ -19,7 +19,7 @@ import com.skyruler.gonavin.R;
 import com.skyruler.middleware.GlonavinSdk;
 import com.skyruler.middleware.connection.BluetoothAccess;
 import com.skyruler.middleware.connection.GlonavinConnectOption;
-import com.skyruler.middleware.connection.IBleScanListener;
+import com.skyruler.middleware.connection.IBleStateListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +48,53 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
     private BluetoothAccess mSelectedDevice;
     private ScanAdapter mScanAdapter;
     private GlonavinSdk glonavinSdk;
+    private IBleStateListener listener = new IBleStateListener() {
+        @Override
+        public void onScanResult(BluetoothDevice bluetoothDevice, boolean isConnected) {
+            for (BluetoothAccess listDevice : mListDevices) {
+                if (listDevice.getDeviceAddress().equals(bluetoothDevice.getAddress())) {
+                    listDevice.setConnected(isConnected);
+                    return;
+                }
+            }
+            if (TextUtils.isEmpty(bluetoothDevice.getName())) {
+                return;
+            }
+            BluetoothAccess bluetoothAccess = new BluetoothAccess(bluetoothDevice,isConnected);
+            mListDevices.add(bluetoothAccess);
+            mScanAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onConnected(BluetoothDevice bluetoothDevice) {
+            updateDeviceState(bluetoothDevice, true);
+        }
+
+        @Override
+        public void onDisconnect(BluetoothDevice bluetoothDevice) {
+            updateDeviceState(bluetoothDevice, false);
+        }
+    };
+
+    private void updateDeviceState(final BluetoothDevice bluetoothDevice, final boolean connected) {
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mSelectedDevice == null) {
+                    Log.e("无法更新连接状态，mSelectedDevice == null");
+                    return;
+                }
+                for (BluetoothAccess device : mListDevices) {
+                    if (device.getDeviceAddress().equals(bluetoothDevice.getAddress())) {
+                        device.setConnected(connected);
+                    }
+                }
+                mScanAdapter.notifyDataSetChanged();
+                showProgressBar(false);
+                //dismiss();
+            }
+        });
+    }
 
     private BluetoothDevicesDialog(Context mContext) {
         super(mContext);
@@ -57,22 +104,6 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
         this(mContext);
         this.glonavinSdk = glonavinSdk;
         this.mHandler = new Handler();
-        this.glonavinSdk.setBleScanListener(new IBleScanListener() {
-            @Override
-            public void onScanResult(BluetoothDevice bluetoothDevice, boolean isConnected) {
-                for (BluetoothAccess listDevice : mListDevices) {
-                    if (listDevice.getDeviceAddress().equals(bluetoothDevice.getAddress())) {
-                        return;
-                    }
-                }
-                if (TextUtils.isEmpty(bluetoothDevice.getName())) {
-                    return;
-                }
-                BluetoothAccess bluetoothAccess = new BluetoothAccess(bluetoothDevice);
-                mListDevices.add(bluetoothAccess);
-                mScanAdapter.notifyDataSetChanged();
-            }
-        });
     }
 
     @Override
@@ -101,7 +132,14 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
     @Override
     protected void onStart() {
         super.onStart();
+        glonavinSdk.addBleStateListener(listener);
         scanBleDevices();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        glonavinSdk.removeConnectListener(listener);
     }
 
     @Override
@@ -165,19 +203,5 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
         dismiss();
     }
 
-    public void updateConnectState(boolean isConnected) {
-        if (mSelectedDevice == null) {
-            Log.e("无法更新连接状态，mSelectedDevice == null");
-            return;
-        }
-        for (BluetoothAccess device : mListDevices) {
-            if (device.getDeviceAddress().equals(mSelectedDevice.getDeviceAddress())) {
-                device.setConnected(isConnected);
-            }
-        }
-        mScanAdapter.notifyDataSetChanged();
-        showProgressBar(false);
-        dismiss();
-    }
 
 }

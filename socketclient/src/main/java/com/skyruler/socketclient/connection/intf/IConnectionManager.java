@@ -19,10 +19,6 @@ public interface IConnectionManager {
 
     IMessage sendSyncMessage(IMessage msgDataBean, MessageFilter filter, long timeout) throws InterruptedException;
 
-    void registerConnectListener(IBleStateListener listener);
-
-    void unRegisterConnectListener(IBleStateListener listener);
-
     void addMessageListener(IMessageListener listener, MessageFilter filter);
 
     void removeMessageListener(MessageFilter filter);

@@ -5,7 +5,7 @@ import android.content.Context;
 import com.skyruler.socketclient.connection.ConnectionManager;
 import com.skyruler.socketclient.connection.option.IConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
-import com.skyruler.socketclient.connection.intf.IBleStateListener;
+import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.connection.intf.IConnectionManager;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
@@ -17,8 +17,8 @@ public class SocketClient implements ISocketClient {
     private IConnectionManager mConnMgr;
 
     @Override
-    public void setup(Context context) {
-        mConnMgr = new ConnectionManager(context);
+    public void setup(Context context,IStateListener listener) {
+        mConnMgr = new ConnectionManager(context,listener);
     }
 
     @Override
@@ -64,16 +64,6 @@ public class SocketClient implements ISocketClient {
                 break;
             default:
         }
-    }
-
-    @Override
-    public void addConnectionListener(IBleStateListener listener) {
-        mConnMgr.registerConnectListener(listener);
-    }
-
-    @Override
-    public void removeConnectionListener(IBleStateListener listener) {
-        mConnMgr.unRegisterConnectListener(listener);
     }
 
     @Override
