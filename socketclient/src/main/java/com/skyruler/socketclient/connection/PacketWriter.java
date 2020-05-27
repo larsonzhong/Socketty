@@ -9,6 +9,7 @@ import androidx.annotation.RequiresApi;
 
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IPacket;
+import com.skyruler.socketclient.util.ArrayUtils;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -87,6 +88,7 @@ public class PacketWriter {
                         if (packet != null) {
                             gattCharacteristic.setValue(packet.getBytes());
                             mBluetoothGatt.writeCharacteristic(gattCharacteristic);
+                            Log.d(TAG, gattCharacteristic.getProperties() + "write packet>>>" + ArrayUtils.bytesToBitString(packet.getBytes()));
                         }
                     }
                 }

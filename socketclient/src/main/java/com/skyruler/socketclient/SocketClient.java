@@ -3,10 +3,10 @@ package com.skyruler.socketclient;
 import android.content.Context;
 
 import com.skyruler.socketclient.connection.ConnectionManager;
+import com.skyruler.socketclient.connection.intf.IConnectionManager;
+import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.connection.option.IConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
-import com.skyruler.socketclient.connection.intf.IStateListener;
-import com.skyruler.socketclient.connection.intf.IConnectionManager;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
 import com.skyruler.socketclient.message.IWrappedMessage;
@@ -17,8 +17,8 @@ public class SocketClient implements ISocketClient {
     private IConnectionManager mConnMgr;
 
     @Override
-    public void setup(Context context,IStateListener listener) {
-        mConnMgr = new ConnectionManager(context,listener);
+    public void setup(Context context, IStateListener listener) {
+        mConnMgr = new ConnectionManager(context, listener);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class SocketClient implements ISocketClient {
     }
 
     @Override
-    public void sendMessage(IWrappedMessage msgDataBean) throws InterruptedException {
+    public boolean sendMessage(IWrappedMessage msgDataBean) throws InterruptedException {
         IWrappedMessage.AckMode ackMode = msgDataBean.getAckMode();
         MessageFilter filter = msgDataBean.getFilter();
         int timeout = msgDataBean.getTimeout();
@@ -54,16 +54,20 @@ public class SocketClient implements ISocketClient {
                 break;
             case MESSAGE:
                 IMessage syncMessage = msgDataBean.getMessages().get(0);
-                mConnMgr.sendSyncMessage(syncMessage, filter, timeout);
-                break;
+                IMessage retMsg = mConnMgr.sendSyncMessage(syncMessage, filter, timeout);
+                return retMsg != null;
             case PACKET:
                 List<IMessage> messages = msgDataBean.getMessages();
                 for (IMessage msg : messages) {
-                    mConnMgr.sendSyncMessage(msg, filter, timeout);
+                    IMessage iMessage = mConnMgr.sendSyncMessage(msg, filter, timeout);
+                    if (iMessage == null) {
+                        return false;
+                    }
                 }
                 break;
             default:
         }
+        return true;
     }
 
     @Override

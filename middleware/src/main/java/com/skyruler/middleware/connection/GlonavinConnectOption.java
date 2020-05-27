@@ -11,13 +11,19 @@ import com.skyruler.socketclient.message.IPacketConstructor;
 import java.util.UUID;
 
 public class GlonavinConnectOption extends BLEConnectOption {
-    private static final UUID UUID_NOTIFY = UUID.fromString("0000fff4-0000-1000-8000-00805f9b34fb");
-    private static final UUID UUID_WRITE = UUID.fromString("0000fff1-0000-1000-8000-00805f9b34fb");
+    //0000fff0-0000-1000-8000-00805f9b34fb  service
+    //0000fff1-0000-1000-8000-00805f9b34fb
+    //0000fff2-0000-1000-8000-00805f9b34fb
+    //0000fff3-0000-1000-8000-00805f9b34fb
+    //0000fff4-0000-1000-8000-00805f9b34fb
+    //0000fff5-0000-1000-8000-00805f9b34fb
     private static final UUID UUID_SERVICE = UUID.fromString("0000fff0-0000-1000-8000-00805f9b34fb");
-    private static final UUID CLIENT_CHARACTERISTIC_CONFIG = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+    private static final UUID UUID_WRITE = UUID.fromString("0000fff1-0000-1000-8000-00805f9b34fb");
+    private static final UUID UUID_NOTIFY = UUID.fromString("0000fff4-0000-1000-8000-00805f9b34fb");
+    private static final UUID UUID_CONFIG = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
     public GlonavinConnectOption(BluetoothDevice device) {
-        super(device, UUID_NOTIFY, UUID_WRITE, UUID_SERVICE, CLIENT_CHARACTERISTIC_CONFIG);
+        super(device, UUID_NOTIFY, UUID_WRITE, UUID_SERVICE, UUID_CONFIG);
     }
 
     @Override

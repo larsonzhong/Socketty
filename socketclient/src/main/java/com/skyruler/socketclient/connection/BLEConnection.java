@@ -1,6 +1,5 @@
 package com.skyruler.socketclient.connection;
 
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -9,7 +8,6 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
 import android.os.Build;
-import android.os.Handler;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
@@ -134,6 +132,13 @@ class BLEConnection implements IConnection {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             if (newState == 2) {
                 stateListener.onConnect(gatt);
+                try {
+                    Thread.sleep(500);
+                    mBluetoothGatt.discoverServices();
+                    Log.i(TAG, "Attempting to start service discovery");
+                } catch (InterruptedException e) {
+                    Log.e(TAG, e.toString());
+                }
             } else if (newState == 0) {
                 stateListener.onDisconnect(gatt);
             }
@@ -142,13 +147,15 @@ class BLEConnection implements IConnection {
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             displayGattServices(gatt, bleConnectOption);
-           /* if (status == 0) {
-                stateListener.onServiceDiscover(gatt);
-            }*/
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+            mReader.onDataReceive(characteristic);
+        }
+
+        @Override
+        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             mReader.onDataReceive(characteristic);
         }
     }
@@ -157,22 +164,19 @@ class BLEConnection implements IConnection {
     private void displayGattServices(BluetoothGatt gatt, final BLEConnectOption bleConnectOption) {
         final BluetoothGattService gattService = gatt.getService(bleConnectOption.getUuidService());
         if (gattService != null) {
-            BluetoothGattCharacteristic characteristic = gattService.getCharacteristic(bleConnectOption.getUuidNotify());
-            setCharacteristicNotification(characteristic, bleConnectOption.getClientUUidConfig());
-            new Handler().postDelayed(new Runnable() {
-                public void run() {
-                    BluetoothGattCharacteristic characteristic = gattService.getCharacteristic(bleConnectOption.getUuidWrite());
-                    if (characteristic != null) {
-                        readCharacteristic(characteristic);
-                    }
-                }
-            }, 500L);
-            BluetoothGattCharacteristic gattCharacteristic = gattService.getCharacteristic(bleConnectOption.getUuidWrite());
-            mWriter.setWriteCharacteristic(gattCharacteristic);
+            // notify
+            BluetoothGattCharacteristic notifyCharacter = gattService.getCharacteristic(bleConnectOption.getUuidNotify());
+            setNotification(notifyCharacter, bleConnectOption.getClientUUidConfig());
+            // write
+            BluetoothGattCharacteristic writeCharacter = gattService.getCharacteristic(bleConnectOption.getUuidWrite());
+            mWriter.setWriteCharacteristic(writeCharacter);
+            // read
+            BluetoothGattCharacteristic readCharacter = gattService.getCharacteristic(bleConnectOption.getUuidWrite());
+            setReadCharacteristic(readCharacter);
         }
     }
 
-    private void setCharacteristicNotification(BluetoothGattCharacteristic characteristic, UUID clientUUidConfig) {
+    private void setNotification(BluetoothGattCharacteristic characteristic, UUID clientUUidConfig) {
         if (this.mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;
@@ -189,7 +193,7 @@ class BLEConnection implements IConnection {
         }
     }
 
-    private void readCharacteristic(BluetoothGattCharacteristic characteristic) {
+    private void setReadCharacteristic(BluetoothGattCharacteristic characteristic) {
         if (this.mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
             return;

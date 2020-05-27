@@ -9,6 +9,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import com.skyruler.middleware.bean.DeviceMode;
 import com.skyruler.middleware.connection.GlonavinConnectOption;
 import com.skyruler.middleware.connection.IBleStateListener;
 import com.skyruler.middleware.message.WrappedMessage;
@@ -66,12 +67,12 @@ public class GlonavinSdk {
         }
     }
 
-    public void chooseMode() {
+    public void chooseMode(DeviceMode mode) {
         WrappedMessage message = new WrappedMessage
-                .Builder((byte) 0x30)
-                .body(new byte[]{0x00})
+                .Builder(mode.getMsgID())
+                .body(mode.getBody())
                 .ackMode(AckMode.MESSAGE)
-                .filter(new MessageIdFilter((byte) 0x31))
+                .filter(mode.getResponseFilter())
                 .limitBodyLength(14)
                 .timeout(5000)
                 .build();
@@ -108,10 +109,6 @@ public class GlonavinSdk {
         this.socketClient.setup(context, connectListener);
     }
 
-    public void selectDeviceMode(String mDeviceMode) {
-        //todo 选择设备模式
-    }
-
     public void connect(GlonavinConnectOption option) {
         socketClient.connect(option);
     }
@@ -138,7 +135,8 @@ public class GlonavinSdk {
 
     private void sendMessage(WrappedMessage message) {
         try {
-            socketClient.sendMessage(message);
+            boolean isSend = socketClient.sendMessage(message);
+            Log.d(TAG, "sendMessage state=" + isSend);
         } catch (InterruptedException e) {
             Log.e(TAG, "sendMessage failed :" + e.getMessage());
             Thread.currentThread().interrupt();

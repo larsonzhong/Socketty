@@ -19,7 +19,7 @@ public interface ISocketClient {
 
     boolean isConnected();
 
-    void sendMessage(IWrappedMessage msgDataBean) throws InterruptedException;
+    boolean sendMessage(IWrappedMessage msgDataBean) throws InterruptedException;
 
     void addMessageListener(IMessageListener listener, MessageFilter filter);
 
