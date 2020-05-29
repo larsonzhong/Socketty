@@ -10,7 +10,9 @@ import androidx.annotation.RequiresApi;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IPacket;
 import com.skyruler.socketclient.util.ArrayUtils;
+import com.skyruler.socketclient.util.CRCCheck;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -86,9 +88,15 @@ public class PacketWriter {
 
                     synchronized (mBluetoothGatt) {
                         if (packet != null) {
+                            //2430011b
+                           /* ByteBuffer buffer = ByteBuffer.allocate(4);
+                            byte[] byt = new byte[]{36, 48, 1};
+                            byte crc = CRCCheck.checkSumCrc8(byt, byt.length);
+                            buffer.put(byt).put(crc);
+                            gattCharacteristic.setValue(buffer.array());*/
                             gattCharacteristic.setValue(packet.getBytes());
                             mBluetoothGatt.writeCharacteristic(gattCharacteristic);
-                            Log.d(TAG, gattCharacteristic.getProperties() + "write packet>>>" + ArrayUtils.bytesToBitString(packet.getBytes()));
+                            Log.d(TAG, gattCharacteristic.getProperties() + "write packet>>>" + ArrayUtils.bytesToHex(packet.getBytes()));
                         }
                     }
                 }

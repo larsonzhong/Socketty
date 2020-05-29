@@ -146,18 +146,16 @@ class BLEConnection implements IConnection {
 
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+            // 发现GATT服务
             displayGattServices(gatt, bleConnectOption);
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+            // 收到数据
             mReader.onDataReceive(characteristic);
         }
 
-        @Override
-        public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            mReader.onDataReceive(characteristic);
-        }
     }
 
 
@@ -165,14 +163,14 @@ class BLEConnection implements IConnection {
         final BluetoothGattService gattService = gatt.getService(bleConnectOption.getUuidService());
         if (gattService != null) {
             // notify
-            BluetoothGattCharacteristic notifyCharacter = gattService.getCharacteristic(bleConnectOption.getUuidNotify());
-            setNotification(notifyCharacter, bleConnectOption.getClientUUidConfig());
+            BluetoothGattCharacteristic notifyCharacter = gattService.getCharacteristic(bleConnectOption.getUuidRead());
+            setNotification(notifyCharacter, bleConnectOption.getUuidDescriptor());
             // write
             BluetoothGattCharacteristic writeCharacter = gattService.getCharacteristic(bleConnectOption.getUuidWrite());
             mWriter.setWriteCharacteristic(writeCharacter);
             // read
-            BluetoothGattCharacteristic readCharacter = gattService.getCharacteristic(bleConnectOption.getUuidWrite());
-            setReadCharacteristic(readCharacter);
+            /*BluetoothGattCharacteristic readCharacter = gattService.getCharacteristic(bleConnectOption.getUuidWrite());
+            setReadCharacteristic(readCharacter);*/
         }
     }
 
@@ -183,12 +181,12 @@ class BLEConnection implements IConnection {
         }
         int charaProp = characteristic.getProperties();
         if ((charaProp & 16) > 0) {
-            this.mBluetoothGatt.setCharacteristicNotification(characteristic, true);
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(clientUUidConfig);
-            if (descriptor != null) {
-                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            }
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             boolean status = this.mBluetoothGatt.writeDescriptor(descriptor);
+            if (status) {
+                this.mBluetoothGatt.setCharacteristicNotification(characteristic, true);
+            }
             Log.d(TAG, "Characteristic set notification is " + status);
         }
     }

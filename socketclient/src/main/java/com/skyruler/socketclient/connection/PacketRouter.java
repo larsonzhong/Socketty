@@ -1,11 +1,14 @@
 package com.skyruler.socketclient.connection;
 
+import android.util.Log;
+
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.IMessage;
-import com.skyruler.socketclient.message.IMessageConstructor;
 import com.skyruler.socketclient.message.IMessageListener;
+import com.skyruler.socketclient.message.IMessageStrategy;
 import com.skyruler.socketclient.message.IPacket;
-import com.skyruler.socketclient.message.IPacketConstructor;
+import com.skyruler.socketclient.message.IPacketStrategy;
+import com.skyruler.socketclient.util.ArrayUtils;
 
 import java.util.Collection;
 import java.util.Map;
@@ -13,10 +16,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 class PacketRouter {
+    private static final String TAG = "PacketRouter";
     private final Collection<MessageCollector> mCollectors = new ConcurrentLinkedQueue<>();
     private final Map<MessageFilter, ListenerWrapper> mRcvListeners = new ConcurrentHashMap<>();
-    private IPacketConstructor packetConstructor;
-    private IMessageConstructor messageConstructor;
+    private IPacketStrategy packetConstructor;
+    private IMessageStrategy messageConstructor;
 
     MessageCollector createMessageCollector(MessageFilter filter) {
         MessageCollector collector = new MessageCollector(this, filter);
@@ -24,11 +28,11 @@ class PacketRouter {
         return collector;
     }
 
-    void setPacketConstructor(IPacketConstructor packetConstructor) {
+    void setPacketConstructor(IPacketStrategy packetConstructor) {
         this.packetConstructor = packetConstructor;
     }
 
-    void setMessageConstructor(IMessageConstructor messageConstructor) {
+    void setMessageConstructor(IMessageStrategy messageConstructor) {
         this.messageConstructor = messageConstructor;
     }
 
@@ -50,7 +54,15 @@ class PacketRouter {
 
     void onDataReceive(byte[] data) {
         IPacket packet = packetConstructor.parse(data);
+        if (packet == null) {
+            Log.e(TAG, "error,invalid packet :" + ArrayUtils.bytesToHex(data));
+            return;
+        }
         IMessage message = messageConstructor.parse(packet);
+        if (message == null) {
+            Log.e(TAG, "error,invalid message :" + ArrayUtils.bytesToHex(data));
+            return;
+        }
         handlerMessage(message);
     }
 

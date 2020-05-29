@@ -1,6 +1,6 @@
 package com.skyruler.socketclient.message;
 
-public interface IPacketConstructor {
+public interface IPacketStrategy {
 
     IPacket parse(byte[] data);
 }

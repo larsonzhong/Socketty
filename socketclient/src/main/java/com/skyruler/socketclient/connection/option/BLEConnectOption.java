@@ -7,18 +7,18 @@ import java.util.UUID;
 public abstract class BLEConnectOption implements IConnectOption {
     private final ConnectionType type;
     private BluetoothDevice device;
-    private UUID uuidNotify;
+    private UUID uuidRead;
     private UUID uuidWrite;
     private UUID uuidService;
-    private UUID clientUUidConfig;
+    private UUID uuidDescriptor;
 
-    public BLEConnectOption(BluetoothDevice device, UUID uuidNotify, UUID uuidWrite, UUID uuidService, UUID clientUUidConfig) {
+    public BLEConnectOption(BluetoothDevice device, UUID uuidRead, UUID uuidWrite, UUID uuidService, UUID uuidDescriptor) {
         this.type = ConnectionType.BLE;
         this.device = device;
-        this.uuidNotify = uuidNotify;
+        this.uuidRead = uuidRead;
         this.uuidWrite = uuidWrite;
         this.uuidService = uuidService;
-        this.clientUUidConfig = clientUUidConfig;
+        this.uuidDescriptor = uuidDescriptor;
     }
 
     @Override
@@ -30,8 +30,8 @@ public abstract class BLEConnectOption implements IConnectOption {
         return device;
     }
 
-    public UUID getUuidNotify() {
-        return uuidNotify;
+    public UUID getUuidRead() {
+        return uuidRead;
     }
 
     public UUID getUuidWrite() {
@@ -42,8 +42,8 @@ public abstract class BLEConnectOption implements IConnectOption {
         return uuidService;
     }
 
-    public UUID getClientUUidConfig() {
-        return clientUUidConfig;
+    public UUID getUuidDescriptor() {
+        return uuidDescriptor;
     }
 
 

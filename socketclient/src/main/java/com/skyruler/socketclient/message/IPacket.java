@@ -5,8 +5,6 @@ public interface IPacket {
 
     byte[] getData() ;
 
-    byte getCrc() ;
-
     byte[] getBytes() ;
 
 
