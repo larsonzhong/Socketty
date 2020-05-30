@@ -9,18 +9,17 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.skyruler.middleware.bean.DeviceMode;
+import com.skyruler.middleware.command.AbsCommand;
+import com.skyruler.middleware.command.DeviceModeCmd;
+import com.skyruler.middleware.command.MetroLineCmd;
+import com.skyruler.middleware.command.TestControlCmd;
+import com.skyruler.middleware.command.TestDirectionCmd;
 import com.skyruler.middleware.connection.GlonavinConnectOption;
 import com.skyruler.middleware.connection.IBleStateListener;
 import com.skyruler.middleware.message.WrappedMessage;
-import com.skyruler.middleware.xml.model.MetroLine;
-import com.skyruler.middleware.xml.model.Station;
 import com.skyruler.socketclient.SocketClient;
 import com.skyruler.socketclient.connection.intf.IStateListener;
-import com.skyruler.socketclient.filter.MessageIdFilter;
-import com.skyruler.socketclient.message.IWrappedMessage.AckMode;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -67,40 +66,28 @@ public class GlonavinSdk {
         }
     }
 
-    public void chooseMode(DeviceMode mode) {
-        WrappedMessage message = new WrappedMessage
-                .Builder(mode.getMsgID())
-                .body(mode.getBody())
-                .ackMode(AckMode.MESSAGE)
-                .filter(mode.getResponseFilter())
-                .limitBodyLength(14)
-                .timeout(5000)
-                .build();
-        sendMessage(message);
+    public boolean chooseMode(DeviceModeCmd cmd) {
+        boolean success = sendMessage(cmd);
+        Log.d(TAG, "choose mode :" + cmd.toString() + "," + success);
+        return success;
     }
 
-    public void startTest() {
-        WrappedMessage message = new WrappedMessage
-                .Builder((byte) 0x32)
-                .body(new byte[]{0x00})
-                .ackMode(AckMode.MESSAGE)
-                .filter(new MessageIdFilter((byte) 0x33))
-                .limitBodyLength(14)
-                .timeout(5000)
-                .build();
-        sendMessage(message);
+    public boolean sendMetroLine(MetroLineCmd cmd) {
+        boolean success = sendMessage(cmd);
+        Log.d(TAG, "send subway line :" + cmd.toString() + "," + success);
+        return success;
     }
 
-    void setTestDirection(byte startIndex, byte endIndex) {
-        WrappedMessage message = new WrappedMessage
-                .Builder((byte) 0x34)
-                .body(new byte[]{startIndex, endIndex})
-                .ackMode(AckMode.MESSAGE)
-                .filter(new MessageIdFilter((byte) 0x35))
-                .limitBodyLength(14)
-                .timeout(5000)
-                .build();
-        sendMessage(message);
+    public boolean startTest(TestControlCmd cmd) {
+        boolean success = sendMessage(cmd);
+        Log.d(TAG, "start subway test :" + cmd.toString() + "," + success);
+        return success;
+    }
+
+    public boolean setTestDirection(TestDirectionCmd cmd) {
+        boolean success = sendMessage(cmd);
+        Log.d(TAG, "set test direction :" + cmd.toString() + ", " + success);
+        return success;
     }
 
     public void setup(Context context) {
@@ -133,13 +120,24 @@ public class GlonavinSdk {
         }
     }
 
-    private void sendMessage(WrappedMessage message) {
+    private boolean sendMessage(AbsCommand cmd) {
         try {
+            WrappedMessage message = new WrappedMessage
+                    .Builder(cmd.getMsgID())
+                    .body(cmd.getBody())
+                    .ackMode(cmd.getAckMode())
+                    .msgFilter(cmd.getMsgFilter())
+                    .resultHandler(cmd.getResultHandler())
+                    .timeout(cmd.getTimeout())
+                    .limitBodyLength(cmd.getLimitBodyLength())
+                    .build();
             boolean isSend = socketClient.sendMessage(message);
             Log.d(TAG, "sendMessage state=" + isSend);
+            return isSend;
         } catch (InterruptedException e) {
             Log.e(TAG, "sendMessage failed :" + e.getMessage());
             Thread.currentThread().interrupt();
+            return false;
         }
     }
 
@@ -183,13 +181,4 @@ public class GlonavinSdk {
             onScanResult(bluetoothDevice, false);
         }
     };
-
-    public void sendMetroLine(MetroLine metroLine) {
-        byte[] bytes = metroLine.toBytes();
-        Log.d(TAG, "size: " + bytes.length + ", buf" + Arrays.toString(bytes));
-    }
-
-    public void sendStartEndStation(Station mStartStation, Station mEndStation) {
-
-    }
 }

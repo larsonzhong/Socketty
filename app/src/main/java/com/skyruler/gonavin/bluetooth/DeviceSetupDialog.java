@@ -11,13 +11,16 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.skyruler.android.logger.Log;
 import com.skyruler.gonavin.R;
 import com.skyruler.middleware.GlonavinSdk;
-import com.skyruler.middleware.bean.DeviceMode;
+import com.skyruler.middleware.command.DeviceModeCmd;
+import com.skyruler.middleware.command.MetroLineCmd;
+import com.skyruler.middleware.command.TestDirectionCmd;
 import com.skyruler.middleware.xml.model.City;
 import com.skyruler.middleware.xml.model.MetroData;
 import com.skyruler.middleware.xml.model.MetroLine;
@@ -35,8 +38,8 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     private String[] mModes;
     private String mDeviceMode;
     private MetroLine mMetroLine;
-    private Station mStartStation;
-    private Station mEndStation;
+    private byte mStartStationIndex;
+    private byte mEndStationIndex;
     private City city;
     private NameAdapter<Station> selectStartAdapter;
     private NameAdapter<Station> selectEndAdapter;
@@ -99,10 +102,10 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
                 selectEndAdapter.notifyDataSetChanged();
                 break;
             case R.id.spinner_select_start:
-                mStartStation = (Station) selectStartAdapter.getItem(pos);
+                mStartStationIndex = (byte) pos;
                 break;
             case R.id.spinner_select_end:
-                mEndStation = (Station) selectEndAdapter.getItem(pos);
+                mEndStationIndex = (byte) pos;
                 break;
             default:
         }
@@ -140,17 +143,24 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     }
 
     private void sendStartEndStation() {
-        glonavinSdk.sendStartEndStation(mStartStation, mEndStation);
+        boolean success = glonavinSdk.setTestDirection(new TestDirectionCmd(mStartStationIndex, mEndStationIndex));
+        showToast("发送起始点" + success);
     }
 
     private void sendTestMode() {
         findViewById(R.id.btn_send_mode).setEnabled(false);
-        glonavinSdk.chooseMode(DeviceMode.SUBWAY);
+        boolean success = glonavinSdk.chooseMode(new DeviceModeCmd(mDeviceMode));
         findViewById(R.id.btn_send_mode).setEnabled(true);
+        showToast("发送模式" + success);
+    }
+
+    private void showToast(String text) {
+        Toast.makeText(getContext(), text, Toast.LENGTH_SHORT).show();
     }
 
     private void sendMetroLine() {
-        glonavinSdk.sendMetroLine(mMetroLine);
+        boolean success = glonavinSdk.sendMetroLine(new MetroLineCmd(mMetroLine));
+        showToast("发送地铁路线" + success);
     }
 
     private void readSubwayXml() throws Exception {

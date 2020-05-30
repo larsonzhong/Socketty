@@ -2,7 +2,7 @@
 <resources>
     <string-array name="device_mode">
         <item>地铁模式</item>
-        <item>人员模式 </item>
-        <item>高铁模式 </item>
+        <item>人员模式</item>
+        <item>高铁模式</item>
     </string-array>
 </resources>

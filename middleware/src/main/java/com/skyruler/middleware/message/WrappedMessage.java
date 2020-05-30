@@ -22,19 +22,20 @@ public class WrappedMessage implements IWrappedMessage {
         this.messageID = builder.msgId;
         this.messages = builder.messages;
         this.timeout = builder.timeout;
-        this.filter = builder.filter;
+        this.filter = builder.msgFilter;
         this.ackMode = builder.ackMode;
-    }
-
-    public byte getMessageID() {
-        return messageID;
     }
 
     public List<IMessage> getMessages() {
         return messages;
     }
 
-    public MessageFilter getFilter() {
+    @Override
+    public MessageFilter getResultFilter() {
+        return null;
+    }
+
+    public MessageFilter getMsgFilter() {
         return filter;
     }
 
@@ -53,7 +54,8 @@ public class WrappedMessage implements IWrappedMessage {
         private int timeout;
         private AckMode ackMode;
         private int limitBodyLength;
-        private MessageFilter filter;
+        private MessageFilter msgFilter;
+        private MessageFilter resultHandler;
 
         public Builder(byte msgId) {
             this.msgId = msgId;
@@ -76,8 +78,13 @@ public class WrappedMessage implements IWrappedMessage {
             return this;
         }
 
-        public Builder filter(MessageFilter filter) {
-            this.filter = filter;
+        public Builder msgFilter(MessageFilter filter) {
+            this.msgFilter = filter;
+            return this;
+        }
+
+        public Builder resultHandler(MessageFilter filter) {
+            this.resultHandler = filter;
             return this;
         }
 

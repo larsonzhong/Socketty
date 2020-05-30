@@ -16,12 +16,12 @@ public class Message implements IMessage {
 
     @Override
     public short getMsgId() {
-        return 0;
+        return msgId;
     }
 
     @Override
     public byte[] getBody() {
-        return new byte[0];
+        return body;
     }
 
     @Override

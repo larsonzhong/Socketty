@@ -5,11 +5,11 @@ import com.skyruler.socketclient.filter.MessageFilter;
 import java.util.List;
 
 public interface IWrappedMessage {
-    byte getMessageID();
-
     List<IMessage> getMessages();
 
-    MessageFilter getFilter();
+    MessageFilter getMsgFilter();
+
+    MessageFilter getResultFilter();
 
     int getTimeout();
 

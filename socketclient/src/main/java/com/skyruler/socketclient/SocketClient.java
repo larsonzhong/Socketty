@@ -1,6 +1,7 @@
 package com.skyruler.socketclient;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.skyruler.socketclient.connection.ConnectionManager;
 import com.skyruler.socketclient.connection.intf.IConnectionManager;
@@ -14,6 +15,7 @@ import com.skyruler.socketclient.message.IWrappedMessage;
 import java.util.List;
 
 public class SocketClient implements ISocketClient {
+    private static final String TAG = "SocketClient";
     private IConnectionManager mConnMgr;
 
     @Override
@@ -44,7 +46,8 @@ public class SocketClient implements ISocketClient {
     @Override
     public boolean sendMessage(IWrappedMessage msgDataBean) throws InterruptedException {
         IWrappedMessage.AckMode ackMode = msgDataBean.getAckMode();
-        MessageFilter filter = msgDataBean.getFilter();
+        MessageFilter msgFilter = msgDataBean.getMsgFilter();
+        MessageFilter resultFilter = msgDataBean.getResultFilter();
         int timeout = msgDataBean.getTimeout();
 
         switch (ackMode) {
@@ -54,20 +57,32 @@ public class SocketClient implements ISocketClient {
                 break;
             case MESSAGE:
                 IMessage syncMessage = msgDataBean.getMessages().get(0);
-                IMessage retMsg = mConnMgr.sendSyncMessage(syncMessage, filter, timeout);
-                return retMsg != null;
+                IMessage retMsg = mConnMgr.sendSyncMessage(syncMessage, msgFilter, timeout);
+                return resultFilter.accept(retMsg);
             case PACKET:
                 List<IMessage> messages = msgDataBean.getMessages();
                 for (IMessage msg : messages) {
-                    IMessage iMessage = mConnMgr.sendSyncMessage(msg, filter, timeout);
-                    if (iMessage == null) {
-                        return false;
-                    }
+                    sendSyncMessage(msg, msgFilter, resultFilter, timeout, 0);
                 }
                 break;
             default:
         }
         return true;
+    }
+
+    /**
+     * 如果没发成功，就一直发，发到不能再发为止
+     */
+    private void sendSyncMessage(IMessage msg, MessageFilter msgFilter, MessageFilter resultFilter, int timeout, int retryTimes) throws InterruptedException {
+        IMessage iMessage = mConnMgr.sendSyncMessage(msg, msgFilter, timeout);
+        if (iMessage == null || !resultFilter.accept(iMessage)) {
+            retryTimes++;
+            sendSyncMessage(msg, msgFilter, resultFilter, timeout, retryTimes);
+            Log.e(TAG, "message send failed,retrying..." + retryTimes);
+            if (retryTimes > 5) {
+                throw new InterruptedException("停止重发，重发次数超过限制:5");
+            }
+        }
     }
 
     @Override
