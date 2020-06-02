@@ -57,10 +57,11 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
                     return;
                 }
             }
-            if (TextUtils.isEmpty(bluetoothDevice.getName())) {
+            if (TextUtils.isEmpty(bluetoothDevice.getName())
+                    || !GLONAVIN_DEVICE_NAME.equals(bluetoothDevice.getName())) {
                 return;
             }
-            BluetoothAccess bluetoothAccess = new BluetoothAccess(bluetoothDevice,isConnected);
+            BluetoothAccess bluetoothAccess = new BluetoothAccess(bluetoothDevice, isConnected);
             mListDevices.add(bluetoothAccess);
             mScanAdapter.notifyDataSetChanged();
         }

@@ -1,6 +1,7 @@
 package com.skyruler.socketclient;
 
 import android.content.Context;
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.skyruler.socketclient.connection.ConnectionManager;
@@ -75,13 +76,14 @@ public class SocketClient implements ISocketClient {
      */
     private void sendSyncMessage(IMessage msg, MessageFilter msgFilter, MessageFilter resultFilter, int timeout, int retryTimes) throws InterruptedException {
         IMessage iMessage = mConnMgr.sendSyncMessage(msg, msgFilter, timeout);
+        SystemClock.sleep(5);
         if (iMessage == null || !resultFilter.accept(iMessage)) {
             retryTimes++;
-            sendSyncMessage(msg, msgFilter, resultFilter, timeout, retryTimes);
-            Log.e(TAG, "message send failed,retrying..." + retryTimes);
             if (retryTimes > 5) {
                 throw new InterruptedException("停止重发，重发次数超过限制:5");
             }
+            Log.e(TAG, "message send failed,retrying..." + retryTimes);
+            sendSyncMessage(msg, msgFilter, resultFilter, timeout, retryTimes);
         }
     }
 

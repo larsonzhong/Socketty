@@ -5,17 +5,21 @@ import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IWrappedMessage;
 import com.skyruler.socketclient.util.ArrayUtils;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class WrappedMessage implements IWrappedMessage {
     private static final int DEFAULT_MESSAGE_BODY_LIMIT = 1024;
     private static final int DEFAULT_MESSAGE_TIMEOUT = 5000;
     private final byte messageID;
-    private final MessageFilter filter;
     private final List<IMessage> messages;
     private final int timeout;
     private final AckMode ackMode;
+    private final MessageFilter filter;
+    private final MessageFilter resultHandler;
 
 
     private WrappedMessage(Builder builder) {
@@ -23,6 +27,7 @@ public class WrappedMessage implements IWrappedMessage {
         this.messages = builder.messages;
         this.timeout = builder.timeout;
         this.filter = builder.msgFilter;
+        this.resultHandler = builder.resultHandler;
         this.ackMode = builder.ackMode;
     }
 
@@ -32,7 +37,7 @@ public class WrappedMessage implements IWrappedMessage {
 
     @Override
     public MessageFilter getResultFilter() {
-        return null;
+        return resultHandler;
     }
 
     public MessageFilter getMsgFilter() {
@@ -103,14 +108,24 @@ public class WrappedMessage implements IWrappedMessage {
             boolean needSplit = body.length > limitBodyLength;
             if (needSplit) {
                 List<byte[]> payloads = ArrayUtils.divide(body, limitBodyLength);
-                for (byte[] payload : payloads) {
-                    IMessage msg = new Message.Builder(msgId).body(payload).build();
+                for (short i = 0; i < payloads.size(); i++) {
+                    // 需要再每一个body前加上包序号
+                    short seqNum = (short) (i+1);
+                    byte[] data = ByteBuffer
+                            .allocate(limitBodyLength + 2)
+                            .order(ByteOrder.LITTLE_ENDIAN)
+                            .putShort(seqNum)
+                            .put(payloads.get(i))
+                            .array();
+                    IMessage msg = new Message.Builder(msgId).body(data).build();
                     messageList.add(msg);
                 }
             } else {
                 IMessage msg = new Message.Builder(msgId).body(body).build();
                 messageList.add(msg);
             }
+            // 协议上规定需要反转list中序号，最后发送seq=1的包
+            Collections.reverse(messageList);
             return messageList;
         }
     }

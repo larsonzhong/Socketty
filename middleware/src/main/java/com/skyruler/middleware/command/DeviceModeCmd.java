@@ -38,7 +38,7 @@ public class DeviceModeCmd extends AbsCommand {
 
     @Override
     public int getTimeout() {
-        return 2000;
+        return 5000;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class DeviceModeCmd extends AbsCommand {
         return new MessageFilter() {
             @Override
             public boolean accept(IMessage msg) {
-                return RESP_DATA_SUCCESS == msg.getBody()[0];
+                return msg != null && RESP_DATA_SUCCESS == msg.getBody()[0];
             }
         };
     }

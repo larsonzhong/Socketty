@@ -26,6 +26,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class GlonavinSdk {
     private static final String TAG = "GlonavinSdk";
     private static final long SCAN_PERIOD = 10000L;
+
+    private boolean isTestStart;
     private boolean mScanning = false;
     private SocketClient socketClient;
     private Context mContext;
@@ -78,15 +80,18 @@ public class GlonavinSdk {
         return success;
     }
 
-    public boolean startTest(TestControlCmd cmd) {
-        boolean success = sendMessage(cmd);
-        Log.d(TAG, "start subway test :" + cmd.toString() + "," + success);
-        return success;
-    }
-
     public boolean setTestDirection(TestDirectionCmd cmd) {
         boolean success = sendMessage(cmd);
         Log.d(TAG, "set test direction :" + cmd.toString() + ", " + success);
+        return success;
+    }
+
+    public boolean startTest(TestControlCmd cmd) {
+        boolean success = sendMessage(cmd);
+        if (success) {
+            this.isTestStart = cmd.isStartTest();
+        }
+        Log.d(TAG, "start subway test :" + cmd.toString() + "," + success);
         return success;
     }
 
@@ -109,7 +114,7 @@ public class GlonavinSdk {
     }
 
     public boolean isTestStart() {
-        return false;
+        return isTestStart;
     }
 
     public void onDestroy() {

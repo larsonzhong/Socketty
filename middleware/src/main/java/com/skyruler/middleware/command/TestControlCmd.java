@@ -10,7 +10,6 @@ public class TestControlCmd extends AbsCommand {
     private static final byte RESP_ID = 0x33;
     private static final byte MODE_START = 0x00;
     private static final byte MODE_STOP = 0x01;
-    private static final byte RESP_DATA_SUCCESS = 0x01;
 
     private byte startMode;
 
@@ -46,7 +45,7 @@ public class TestControlCmd extends AbsCommand {
         return new MessageFilter() {
             @Override
             public boolean accept(IMessage msg) {
-                return RESP_DATA_SUCCESS == msg.getBody()[0];
+                return msg != null && (MODE_START == msg.getBody()[0] || MODE_STOP == msg.getBody()[0]);
             }
         };
     }
@@ -56,5 +55,9 @@ public class TestControlCmd extends AbsCommand {
         return "TestControlCmd{" +
                 "startMode=" + startMode +
                 '}';
+    }
+
+    public boolean isStartTest() {
+        return startMode == MODE_START;
     }
 }

@@ -22,12 +22,12 @@ public class MetroLineCmd extends AbsCommand {
 
     @Override
     public int getTimeout() {
-        return 1000;
+        return 2000;
     }
 
     @Override
     public int getLimitBodyLength() {
-        return 14;
+        return 12;
     }
 
     @Override
@@ -40,13 +40,28 @@ public class MetroLineCmd extends AbsCommand {
         return new MessageFilter() {
             @Override
             public boolean accept(IMessage msg) {
-                return RESP_DATA_SUCCESS == msg.getBody()[0];
+                return msg != null && RESP_DATA_SUCCESS == msg.getBody()[2];
             }
         };
     }
 
     @Override
     public String toString() {
+        /*int count = body.length;
+        int index = 0;
+        while (count > 0) {
+            byte[] sub;
+            if (count > 170) {
+                sub = new byte[170];
+            } else {
+                sub = new byte[count];
+            }
+            System.arraycopy(body, index, sub, 0, sub.length);
+            String s = ArrayUtils.bytesToHex(sub);
+            Log.d("MetroLineCmd", s);
+            count -= sub.length;
+            index += sub.length;
+        }*/
         return "MetroLineCmd{" +
                 "lineName='" + lineName + '\'' +
                 '}';

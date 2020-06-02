@@ -13,18 +13,18 @@ public class TestDirectionCmd extends AbsCommand {
     private byte startIndex;
     private byte endIndex;
 
-    public TestDirectionCmd(byte startIndex, byte endIndex) {
+    public TestDirectionCmd(byte start, byte end) {
         super(ID);
         super.responseID = RESP_ID;
-        this.startIndex = startIndex;
-        this.endIndex = endIndex;
+        this.startIndex = (byte) (start + 1);
+        this.endIndex = (byte) (end + 1);
         super.body = new byte[]{startIndex, endIndex};
         super.ackMode = IWrappedMessage.AckMode.MESSAGE;
     }
 
     @Override
     public int getTimeout() {
-        return 2000;
+        return 5000;
     }
 
     @Override
@@ -42,6 +42,9 @@ public class TestDirectionCmd extends AbsCommand {
         return new MessageFilter() {
             @Override
             public boolean accept(IMessage msg) {
+                if (msg == null) {
+                    return false;
+                }
                 return RESP_DATA_SUCCESS == msg.getBody()[0];
             }
         };

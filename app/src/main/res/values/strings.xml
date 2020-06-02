@@ -3,6 +3,7 @@
     <string name="back">返回</string>
     <string name="cancel">取消</string>
     <string name="still">静止</string>
+    <string name="action_config_test">配置路线</string>
     <string name="action_start_test">开始测试</string>
     <string name="action_stop_test">"停止测试"</string>
     <string name="action_review_record">回放记录</string>

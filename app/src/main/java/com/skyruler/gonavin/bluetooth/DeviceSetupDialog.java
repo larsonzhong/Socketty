@@ -38,8 +38,8 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     private String[] mModes;
     private String mDeviceMode;
     private MetroLine mMetroLine;
-    private byte mStartStationIndex;
-    private byte mEndStationIndex;
+    private byte mStartSID;
+    private byte mEndSID;
     private City city;
     private NameAdapter<Station> selectStartAdapter;
     private NameAdapter<Station> selectEndAdapter;
@@ -54,7 +54,6 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         @SuppressLint("InflateParams") View mView = getLayoutInflater().inflate(R.layout.device_setup, null);
         initView(mView);
-        // this.glonavinSdk.addBleStateListener(this);
         super.setView(mView);
         super.onCreate(savedInstanceState);
     }
@@ -82,10 +81,10 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
         selectLineSpinner.setOnItemSelectedListener(this);
 
         mView.findViewById(R.id.btn_exit_dialog).setOnClickListener(this);
-        mView.findViewById(R.id.btn_select_xml).setOnClickListener(this);
         mView.findViewById(R.id.btn_send_mode).setOnClickListener(this);
+        mView.findViewById(R.id.btn_select_xml).setOnClickListener(this);
+        mView.findViewById(R.id.btn_send_xml).setOnClickListener(this);
         mView.findViewById(R.id.btn_send_start_end).setOnClickListener(this);
-        mView.findViewById(R.id.btn_start_test).setOnClickListener(this);
     }
 
     @Override
@@ -102,10 +101,10 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
                 selectEndAdapter.notifyDataSetChanged();
                 break;
             case R.id.spinner_select_start:
-                mStartStationIndex = (byte) pos;
+                mStartSID = mMetroLine.getStations().get(pos).getSid();
                 break;
             case R.id.spinner_select_end:
-                mEndStationIndex = (byte) pos;
+                mEndSID = mMetroLine.getStations().get(pos).getSid();
                 break;
             default:
         }
@@ -143,8 +142,9 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     }
 
     private void sendStartEndStation() {
-        boolean success = glonavinSdk.setTestDirection(new TestDirectionCmd(mStartStationIndex, mEndStationIndex));
+        boolean success = glonavinSdk.setTestDirection(new TestDirectionCmd(mStartSID, mEndSID));
         showToast("发送起始点" + success);
+        super.dismiss();
     }
 
     private void sendTestMode() {
