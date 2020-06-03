@@ -76,7 +76,7 @@ public class SocketClient implements ISocketClient {
      */
     private void sendSyncMessage(IMessage msg, MessageFilter msgFilter, MessageFilter resultFilter, int timeout, int retryTimes) throws InterruptedException {
         IMessage iMessage = mConnMgr.sendSyncMessage(msg, msgFilter, timeout);
-        SystemClock.sleep(5);
+        SystemClock.sleep(20);
         if (iMessage == null || !resultFilter.accept(iMessage)) {
             retryTimes++;
             if (retryTimes > 5) {

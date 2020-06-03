@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         boolean isStart = glonavinSdk.isTestStart();
         boolean success = glonavinSdk.startTest(new TestControlCmd(!isStart));
         //开启测试才记录数据
-        showToast(isStart ? getString(R.string.action_stop_test) : getString(R.string.action_start_test)+" 发送" + success);
+        showToast((isStart ? getString(R.string.action_stop_test) : getString(R.string.action_start_test)) + " 发送" + success);
         invalidateOptionsMenu();
     }
 

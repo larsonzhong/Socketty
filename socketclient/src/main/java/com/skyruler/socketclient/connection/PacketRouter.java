@@ -53,6 +53,7 @@ class PacketRouter {
     }
 
     void onDataReceive(byte[] data) {
+        Log.d(TAG,  "read packet>>>" + ArrayUtils.bytesToHex(data));
         IPacket packet = packetConstructor.parse(data);
         if (packet == null) {
             Log.e(TAG, "error,invalid packet :" + ArrayUtils.bytesToHex(data));

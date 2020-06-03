@@ -110,7 +110,7 @@ public class WrappedMessage implements IWrappedMessage {
                 List<byte[]> payloads = ArrayUtils.divide(body, limitBodyLength);
                 for (short i = 0; i < payloads.size(); i++) {
                     // 需要再每一个body前加上包序号
-                    short seqNum = (short) (i+1);
+                    short seqNum = (short) (payloads.size() - i);
                     byte[] data = ByteBuffer
                             .allocate(limitBodyLength + 2)
                             .order(ByteOrder.LITTLE_ENDIAN)
@@ -124,8 +124,6 @@ public class WrappedMessage implements IWrappedMessage {
                 IMessage msg = new Message.Builder(msgId).body(body).build();
                 messageList.add(msg);
             }
-            // 协议上规定需要反转list中序号，最后发送seq=1的包
-            Collections.reverse(messageList);
             return messageList;
         }
     }
