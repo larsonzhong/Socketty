@@ -12,7 +12,8 @@ public class PacketStrategy implements IPacketStrategy {
         ByteBuffer buffer = ByteBuffer.wrap(raw);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.rewind();
-        if (raw.length < 2) {
+        if (raw.length <= 2) {
+            // =2表示只发了头，目前不知道只发了头部用来干嘛，直接过滤
             return null;
         }
         byte header = buffer.get();

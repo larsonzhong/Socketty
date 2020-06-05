@@ -83,8 +83,8 @@ public class Station implements ByteSerializable {
         ByteBuffer buffer = ByteBuffer.allocate(size);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.put((byte) (mSid + 1))
-                .putFloat(mLatitude)
                 .putFloat(mLongitude)
+                .putFloat(mLatitude)
                 .put((byte) subSize);
         if (mSubItems != null) {
             for (int i = 0; i < mSubItems.size(); i++) {

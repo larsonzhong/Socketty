@@ -38,8 +38,8 @@ public class SubItem implements ByteSerializable {
     public byte[] toBytes() {
         ByteBuffer buffer = ByteBuffer.allocate(BYTES);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putFloat(mLatitude)
-                .putFloat(mLongitude);
+        buffer.putFloat(mLongitude)
+                .putFloat(mLatitude);
         return buffer.array();
     }
 

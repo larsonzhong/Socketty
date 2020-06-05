@@ -120,4 +120,20 @@ public class ArrayUtils {
         return sb.toString().trim();
     }
 
+    /**
+     * 小字节序
+     * <p>
+     * 将short数值转换为占两个字节的byte数组，本方法适用于(低位在前，高位在后)的顺序。 和bytesToShort（）配套使用
+     *
+     * @param value 要转换的short值
+     * @return byte数组
+     */
+    public static byte[] shortToBytes(short value) {
+        byte[] src = new byte[2];
+        src[1] = (byte) ((value >> 8) & 0xFF);
+        src[0] = (byte) (value & 0xFF);
+        return src;
+    }
+
+
 }

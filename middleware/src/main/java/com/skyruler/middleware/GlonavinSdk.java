@@ -11,14 +11,23 @@ import android.util.Log;
 
 import com.skyruler.middleware.command.AbsCommand;
 import com.skyruler.middleware.command.DeviceModeCmd;
+import com.skyruler.middleware.command.EditionCommand;
 import com.skyruler.middleware.command.MetroLineCmd;
+import com.skyruler.middleware.command.SkipStationCmd;
+import com.skyruler.middleware.command.TempStopStationCmd;
 import com.skyruler.middleware.command.TestControlCmd;
 import com.skyruler.middleware.command.TestDirectionCmd;
 import com.skyruler.middleware.connection.GlonavinConnectOption;
 import com.skyruler.middleware.connection.IBleStateListener;
 import com.skyruler.middleware.message.WrappedMessage;
+import com.skyruler.middleware.report.IDataReporter;
+import com.skyruler.middleware.report.ReportData;
+import com.skyruler.middleware.xml.model.MetroLine;
 import com.skyruler.socketclient.SocketClient;
 import com.skyruler.socketclient.connection.intf.IStateListener;
+import com.skyruler.socketclient.filter.MessageIdFilter;
+import com.skyruler.socketclient.message.IMessage;
+import com.skyruler.socketclient.message.IMessageListener;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -27,6 +36,7 @@ public class GlonavinSdk {
     private static final String TAG = "GlonavinSdk";
     private static final long SCAN_PERIOD = 10000L;
 
+    private MetroLine currentMetroLine;
     private boolean isTestStart;
     private boolean mScanning = false;
     private SocketClient socketClient;
@@ -68,6 +78,16 @@ public class GlonavinSdk {
         }
     }
 
+    public void listenerForReport(final IDataReporter reporter, byte reportID) {
+        this.socketClient.addMessageListener(new IMessageListener() {
+            @Override
+            public void processMessage(IMessage msg) {
+                ReportData reportData = new ReportData(msg);
+                reporter.report(reportData);
+            }
+        }, new MessageIdFilter(reportID));
+    }
+
     public boolean chooseMode(DeviceModeCmd cmd) {
         boolean success = sendMessage(cmd);
         Log.d(TAG, "choose mode :" + cmd.toString() + "," + success);
@@ -77,6 +97,9 @@ public class GlonavinSdk {
     public boolean sendMetroLine(MetroLineCmd cmd) {
         boolean success = sendMessage(cmd);
         Log.d(TAG, "send subway line :" + cmd.toString() + "," + success);
+        if (success) {
+            this.currentMetroLine = cmd.getMetroLine();
+        }
         return success;
     }
 
@@ -93,6 +116,26 @@ public class GlonavinSdk {
         }
         Log.d(TAG, "start subway test :" + cmd.toString() + "," + success);
         return success;
+    }
+
+    public boolean skipStation() {
+        SkipStationCmd cmd = new SkipStationCmd();
+        boolean success = sendMessage(cmd);
+        Log.d(TAG, "skip subway station :" + cmd.toString() + "," + success);
+        return success;
+    }
+
+    public boolean tempStopStation() {
+        TempStopStationCmd cmd = new TempStopStationCmd();
+        boolean success = sendMessage(cmd);
+        Log.d(TAG, "temp stop station :" + cmd.toString() + "," + success);
+        return success;
+    }
+
+    public void getEdition(EditionCommand.EditionCallBack callBack) {
+        EditionCommand cmd = new EditionCommand(callBack);
+        boolean success = sendMessage(cmd);
+        Log.d(TAG, "temp stop station :" + cmd.toString() + "," + success);
     }
 
     public void setup(Context context) {
@@ -115,6 +158,10 @@ public class GlonavinSdk {
 
     public boolean isTestStart() {
         return isTestStart;
+    }
+
+    public MetroLine getCurrentMetroLine() {
+        return currentMetroLine;
     }
 
     public void onDestroy() {

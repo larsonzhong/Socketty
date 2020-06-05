@@ -11,6 +11,7 @@ public class MetroLineCmd extends AbsCommand {
     private static final byte RESP_ID = 0x21;
     private static final byte RESP_DATA_SUCCESS = 0x01;
     private final String lineName;
+    private final MetroLine metroLine;
 
     public MetroLineCmd(MetroLine metroLine) {
         super(ID);
@@ -18,6 +19,11 @@ public class MetroLineCmd extends AbsCommand {
         super.body = metroLine.toBytes();
         super.ackMode = IWrappedMessage.AckMode.PACKET;
         this.lineName = metroLine.getName();
+        this.metroLine = metroLine;
+    }
+
+    public MetroLine getMetroLine() {
+        return metroLine;
     }
 
     @Override

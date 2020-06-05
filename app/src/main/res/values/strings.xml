@@ -26,4 +26,7 @@
     <string name="select_start">起点</string>
     <string name="select">请选择</string>
     <string name="select_end">终点</string>
+    <string name="loc_valid">定位有效:%s</string>
+    <string name="site_id">站点名称:%s</string>
+    <string name="battery">电池电量:%d</string>
 </resources>

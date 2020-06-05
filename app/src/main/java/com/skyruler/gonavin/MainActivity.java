@@ -1,59 +1,91 @@
 package com.skyruler.gonavin;
 
-import android.graphics.Color;
+import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.github.mikephil.charting.charts.LineChart;
+import com.skyruler.android.logger.Log;
 import com.skyruler.gonavin.bluetooth.BluetoothDevicesDialog;
 import com.skyruler.gonavin.bluetooth.DeviceSetupDialog;
-import com.skyruler.gonavin.chart.DynamicLineChartManager;
 import com.skyruler.middleware.GlonavinSdk;
+import com.skyruler.middleware.command.EditionCommand;
 import com.skyruler.middleware.command.TestControlCmd;
+import com.skyruler.middleware.connection.IBleStateListener;
+import com.skyruler.middleware.report.IDataReporter;
+import com.skyruler.middleware.report.ReportData;
+import com.skyruler.middleware.xml.model.Station;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IDataReporter, View.OnClickListener {
     private static final String TAG = "MainActivity";
-    private boolean isDataReviewing;
+    private static final byte locReportID = 0x40;
     private GlonavinSdk glonavinSdk = new GlonavinSdk();
-    private DynamicLineChartManager dynamicLineChartManager;
     private BluetoothDevicesDialog mDeviceDialog;
+
+    private TextView tvHardVersionName;
+    private TextView tvSoftVersionName;
+    private TextView tvProtocolVersionName;
+    private TextView tvDtState;
+    private TextView tvSeqNum;
+    private TextView tvLatitude;
+    private TextView tvLongitude;
+    private TextView tvValidLoc;
+    private TextView tvSiteID;
+    private TextView tvBattery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initView();
         initGlonavin();
-        //init();
+        initView();
+    }
+
+    private void initView() {
+        tvHardVersionName = findViewById(R.id.tvHardVersionName);
+        tvSoftVersionName = findViewById(R.id.tvSoftVersionName);
+        tvProtocolVersionName = findViewById(R.id.tvProtocolVersionName);
+
+        tvDtState = findViewById(R.id.tvDtState);
+        tvSeqNum = findViewById(R.id.tvSeqNum);
+        tvLatitude = findViewById(R.id.tvLatitude);
+        tvLongitude = findViewById(R.id.tvLongitude);
+
+        tvValidLoc = findViewById(R.id.tvValidLoc);
+        tvSiteID = findViewById(R.id.tvSiteID);
+        tvBattery = findViewById(R.id.tvBattery);
+
+        findViewById(R.id.btnSkipStation).setOnClickListener(this);
+        findViewById(R.id.btnTempStop).setOnClickListener(this);
+        findViewById(R.id.btnGetEdition).setOnClickListener(this);
     }
 
     private void initGlonavin() {
         glonavinSdk.setup(getApplicationContext());
-        /*GlonavinConnectOption option = new GlonavinConnectOption(null);
-        glonavinSdk.setup(getApplicationContext());
-        glonavinSdk.connect(option);
-        glonavinSdk.chooseMode();*/
-    }
+        glonavinSdk.addBleStateListener(new IBleStateListener() {
+            @Override
+            public void onScanResult(BluetoothDevice bluetoothDevice, boolean isConnected) {
 
-    private void initView() {
-        //init MpChart
-        LineChart mChart = findViewById(R.id.chart);
-        List<Integer> colour = new ArrayList<>();
-        colour.add(Color.BLACK);
-        colour.add(Color.CYAN);
-        List<String> names = new ArrayList<>();
-        names.add("地铁状态");
-        names.add("加速度X");
-        dynamicLineChartManager = new DynamicLineChartManager(mChart, names, colour);
-        dynamicLineChartManager.setYAxis((float) 0.4, (float) -0.4, 20);
+            }
+
+            @Override
+            public void onConnected(BluetoothDevice bluetoothDevice) {
+                glonavinSdk.listenerForReport(MainActivity.this, locReportID);
+            }
+
+            @Override
+            public void onDisconnect(BluetoothDevice bluetoothDevice) {
+
+            }
+        });
     }
 
     @Override
@@ -96,9 +128,6 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_start_test:
                 startOrStop();
                 break;
-            case R.id.action_start_review:
-                // startDataReview();
-                break;
             default:
                 break;
         }
@@ -122,5 +151,62 @@ public class MainActivity extends AppCompatActivity {
 
     private void showToast(String string) {
         Toast.makeText(this, string, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void report(final ReportData data) {
+        Log.d(TAG, "收到定位上报>>>" + data.toString());
+        showText(tvDtState, data.getGpsStateStr());
+        showText(tvSeqNum, data.getSeqNum() + "");
+        showText(tvLatitude, String.valueOf(data.getLatitude()));
+        showText(tvLongitude, String.valueOf(data.getLongitude()));
+
+        showText(tvValidLoc, getString(R.string.loc_valid, data.getIsValidLoc() + ""));
+        showText(tvSiteID, getString(R.string.site_id, parseSiteID(data.getSiteID())));
+        showText(tvBattery, getString(R.string.battery, data.getBattery()));
+    }
+
+    private String parseSiteID(byte siteID) {
+        List<Station> stations = glonavinSdk.getCurrentMetroLine().getStations();
+        for (Station station : stations) {
+            if (station.getSid() == siteID - 1) {
+                return siteID + station.getName();
+            }
+        }
+        return "解析异常";
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnSkipStation:
+                boolean success = glonavinSdk.skipStation();
+                showToast("跳过站点发送" + (success ? "成功" : "失败"));
+                break;
+            case R.id.btnTempStop:
+                boolean isSuccess = glonavinSdk.tempStopStation();
+                showToast("临时停车发送" + (isSuccess ? "成功" : "失败"));
+                break;
+            case R.id.btnGetEdition:
+                glonavinSdk.getEdition(new EditionCommand.EditionCallBack() {
+                    @Override
+                    public void handleEdition(EditionCommand.Edition edition) {
+                        showText(tvHardVersionName, edition.getHardVersionName());
+                        showText(tvSoftVersionName, edition.getSoftVersionName());
+                        showText(tvProtocolVersionName, edition.getPortoVersionName());
+                    }
+                });
+                break;
+            default:
+        }
+    }
+
+    private void showText(final TextView view, final String text) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                view.setText(text);
+            }
+        });
     }
 }

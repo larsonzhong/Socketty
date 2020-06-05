@@ -12,51 +12,104 @@
 
         <LinearLayout
             android:layout_width="0dp"
+            android:layout_height="match_parent"
             android:layout_weight="3"
             android:background="@android:color/holo_blue_bright"
-            android:layout_height="match_parent"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvValueX"
+                android:id="@+id/tvSeqNum"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/tvValueY"
+                android:id="@+id/tvLatitude"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/tvValueZ"
+                android:id="@+id/tvLongitude"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
                 android:textSize="20sp" />
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btn_dt_state"
+        <TextView
+            android:id="@+id/tvDtState"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="@string/still"
             android:background="@android:color/holo_orange_light"
             android:gravity="center"
-            android:textSize="32sp"
-            android:textColor="@android:color/holo_red_dark"/>
+            android:text="@string/still"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="32sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnSkipStation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="跳站" />
+
+        <Button
+            android:id="@+id/btnTempStop"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="临时停车" />
+
+        <Button
+            android:id="@+id/btnGetEdition"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="获取版本号" />
     </LinearLayout>
 
     <TextView
-        android:text="@string/test_hint"
+        android:id="@+id/tvHardVersionName"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="30dp"
+        android:textSize="20sp" />
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/chart"
+    <TextView
+        android:id="@+id/tvSoftVersionName"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="30dp"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tvProtocolVersionName"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tvValidLoc"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tvSiteID"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tvBattery"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:textSize="20sp" />
 
 </LinearLayout>
