@@ -10,22 +10,21 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-class PacketReader {
+public class PacketReader {
     private static final String TAG = "PacketReader";
     private PacketRouter packetRouter;
     private BlockingQueue<byte[]> mQueue;
     private Thread mDataRunnable;
     private AtomicBoolean mShutdown;
 
-    PacketReader(PacketRouter packetRouter) {
+    public PacketReader(PacketRouter packetRouter) {
         this.packetRouter = packetRouter;
         this.mShutdown = new AtomicBoolean(false);
         this.mDataRunnable = new DataRunnable();
         this.mQueue = new LinkedBlockingQueue<>();
     }
 
-    synchronized void startup() {
+    public synchronized void startup() {
         mDataRunnable.start();
     }
 
@@ -45,7 +44,7 @@ class PacketReader {
         }
     }
 
-    void shutdown() {
+    public void shutdown() {
         mShutdown.set(true);
         if (mQueue != null) {
             mQueue.clear();
@@ -57,7 +56,8 @@ class PacketReader {
     }
 
 
-    void onDataReceive(BluetoothGattCharacteristic characteristic) {
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
+    public void onDataReceive(BluetoothGattCharacteristic characteristic) {
         byte[] received = characteristic.getValue();
         mQueue.add(received);
     }

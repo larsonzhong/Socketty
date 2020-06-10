@@ -1,4 +1,4 @@
-package com.skyruler.socketclient.connection;
+package com.skyruler.socketclient.connection.ble;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -12,10 +12,12 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import com.skyruler.socketclient.connection.MessageCollector;
+import com.skyruler.socketclient.connection.PacketReader;
+import com.skyruler.socketclient.connection.PacketRouter;
+import com.skyruler.socketclient.connection.intf.IConnectOption;
 import com.skyruler.socketclient.connection.intf.IConnection;
 import com.skyruler.socketclient.connection.intf.IStateListener;
-import com.skyruler.socketclient.connection.option.BLEConnectOption;
-import com.skyruler.socketclient.connection.option.IConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
@@ -23,18 +25,19 @@ import com.skyruler.socketclient.message.IMessageListener;
 import java.util.UUID;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-class BLEConnection implements IConnection {
+public class BLEConnection implements IConnection {
     private static final String TAG = "BLEConnection";
+    private final BLEConnectOption bleOption;
     private boolean mConnected = false;
     private String mLastBluetooth;
     private PacketReader mReader;
-    private PacketWriter mWriter;
+    private BlePacketWriter mWriter;
     private BluetoothGatt mBluetoothGatt;
     private IStateListener stateListener;
     private final PacketRouter packetRouter;
 
-    BLEConnection(IStateListener stateListener) {
-        this.stateListener = stateListener;
+    public BLEConnection(IConnectOption option) {
+        this.bleOption = (BLEConnectOption) option;
         this.packetRouter = new PacketRouter();
     }
 
@@ -53,8 +56,9 @@ class BLEConnection implements IConnection {
     }
 
     @Override
-    public void connect(Context context, IConnectOption option) {
-        BLEConnectOption bleOption = (BLEConnectOption) option;
+    public void connect(Context context, IStateListener stateListener) {
+        this.stateListener = stateListener;
+
         packetRouter.setPacketConstructor(bleOption.getPacketConstructor());
         packetRouter.setMessageConstructor(bleOption.getMessageConstructor());
 
@@ -69,7 +73,7 @@ class BLEConnection implements IConnection {
         }
 
         mReader = new PacketReader(packetRouter);
-        mWriter = new PacketWriter(mBluetoothGatt);
+        mWriter = new BlePacketWriter(mBluetoothGatt);
         this.mLastBluetooth = address;
         mWriter.startup();
         mReader.startup();
@@ -85,7 +89,7 @@ class BLEConnection implements IConnection {
     }
 
     @Override
-    public void stopDevice() {
+    public void onDestroy() {
         if (this.mBluetoothGatt != null) {
             this.mBluetoothGatt.close();
             this.mBluetoothGatt = null;
@@ -106,6 +110,11 @@ class BLEConnection implements IConnection {
             return;
         }
         mWriter.sendMessage(msgDataBean);
+    }
+
+    @Override
+    public IMessage sendSyncMessage(IMessage msgDataBean, long timeout) throws IllegalAccessException {
+        throw new IllegalAccessException("不支持的操作");
     }
 
     @Override

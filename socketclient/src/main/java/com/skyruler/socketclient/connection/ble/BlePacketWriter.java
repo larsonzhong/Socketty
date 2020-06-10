@@ -1,4 +1,4 @@
-package com.skyruler.socketclient.connection;
+package com.skyruler.socketclient.connection.ble;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -17,7 +17,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class PacketWriter {
+public class BlePacketWriter {
     private static final String TAG = "PacketWriter";
     private boolean mShutdown;
     private final Thread mWriteThread;
@@ -25,7 +25,7 @@ public class PacketWriter {
     private final BluetoothGatt mBluetoothGatt;
     private BluetoothGattCharacteristic gattCharacteristic;
 
-    PacketWriter(BluetoothGatt mBluetoothGatt) {
+    BlePacketWriter(BluetoothGatt mBluetoothGatt) {
         this.mShutdown = false;
         this.mBluetoothGatt = mBluetoothGatt;
         this.mQueue = new LinkedBlockingQueue<>();

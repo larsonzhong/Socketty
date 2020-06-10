@@ -1,4 +1,4 @@
-package com.skyruler.socketclient.connection.option;
+package com.skyruler.socketclient.connection.intf;
 
 import com.skyruler.socketclient.message.IMessageStrategy;
 import com.skyruler.socketclient.message.IPacketStrategy;

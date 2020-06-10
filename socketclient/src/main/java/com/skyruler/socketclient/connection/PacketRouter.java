@@ -15,24 +15,24 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-class PacketRouter {
+public class PacketRouter {
     private static final String TAG = "PacketRouter";
     private final Collection<MessageCollector> mCollectors = new ConcurrentLinkedQueue<>();
     private final Map<MessageFilter, ListenerWrapper> mRcvListeners = new ConcurrentHashMap<>();
     private IPacketStrategy packetConstructor;
     private IMessageStrategy messageConstructor;
 
-    MessageCollector createMessageCollector(MessageFilter filter) {
+    public MessageCollector createMessageCollector(MessageFilter filter) {
         MessageCollector collector = new MessageCollector(this, filter);
         mCollectors.add(collector);
         return collector;
     }
 
-    void setPacketConstructor(IPacketStrategy packetConstructor) {
+    public void setPacketConstructor(IPacketStrategy packetConstructor) {
         this.packetConstructor = packetConstructor;
     }
 
-    void setMessageConstructor(IMessageStrategy messageConstructor) {
+    public void setMessageConstructor(IMessageStrategy messageConstructor) {
         this.messageConstructor = messageConstructor;
     }
 
@@ -40,7 +40,7 @@ class PacketRouter {
         mCollectors.remove(collector);
     }
 
-    void addRcvListener(MessageFilter filter, IMessageListener listener) {
+    public void addRcvListener(MessageFilter filter, IMessageListener listener) {
         if (listener == null) {
             throw new IllegalArgumentException("Message listener is null.");
         }
@@ -48,7 +48,7 @@ class PacketRouter {
         mRcvListeners.put(filter, wrapper);
     }
 
-    void removeRcvListener(MessageFilter filter) {
+    public void removeRcvListener(MessageFilter filter) {
         mRcvListeners.remove(filter);
     }
 
@@ -92,4 +92,19 @@ class PacketRouter {
             }
         }
     }
+
+    /**
+     * 清理资源
+     */
+    public void clear() {
+        mCollectors.clear();
+        mRcvListeners.clear();
+    }
+
+    /*this, new PacketReader.OnCallbackListener() {
+        @Override
+        public void onDataReceive(byte[] data, int len) {
+                .onDataReceive(data, len);
+        }
+    }*/
 }

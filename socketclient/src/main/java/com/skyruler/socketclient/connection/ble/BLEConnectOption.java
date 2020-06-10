@@ -1,6 +1,8 @@
-package com.skyruler.socketclient.connection.option;
+package com.skyruler.socketclient.connection.ble;
 
 import android.bluetooth.BluetoothDevice;
+
+import com.skyruler.socketclient.connection.intf.IConnectOption;
 
 import java.util.UUID;
 

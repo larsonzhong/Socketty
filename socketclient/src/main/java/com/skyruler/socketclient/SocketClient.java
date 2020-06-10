@@ -7,7 +7,7 @@ import android.util.Log;
 import com.skyruler.socketclient.connection.ConnectionManager;
 import com.skyruler.socketclient.connection.intf.IConnectionManager;
 import com.skyruler.socketclient.connection.intf.IStateListener;
-import com.skyruler.socketclient.connection.option.IConnectOption;
+import com.skyruler.socketclient.connection.intf.IConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;

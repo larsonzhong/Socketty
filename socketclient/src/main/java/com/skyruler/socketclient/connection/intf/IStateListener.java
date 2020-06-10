@@ -5,4 +5,6 @@ public interface IStateListener {
     void onConnect(Object device);
 
     void onDisconnect(Object device);
+
+    void onDisconnect(Exception e);
 }

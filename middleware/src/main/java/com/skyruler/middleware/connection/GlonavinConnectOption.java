@@ -4,7 +4,7 @@ import android.bluetooth.BluetoothDevice;
 
 import com.skyruler.middleware.message.MessageStrategy;
 import com.skyruler.middleware.packet.PacketStrategy;
-import com.skyruler.socketclient.connection.option.BLEConnectOption;
+import com.skyruler.socketclient.connection.ble.BLEConnectOption;
 import com.skyruler.socketclient.message.IMessageStrategy;
 import com.skyruler.socketclient.message.IPacketStrategy;
 

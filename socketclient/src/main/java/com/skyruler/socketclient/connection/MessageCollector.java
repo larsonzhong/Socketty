@@ -8,7 +8,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 
-class MessageCollector {
+public class MessageCollector {
 
     private final PacketRouter packetRouter;
     private final MessageFilter filter;
@@ -55,7 +55,7 @@ class MessageCollector {
      * @param timeout the amount of time to wait for the next packet (in milliseconds)
      * @return the next available message
      */
-    IMessage nextResult(long timeout) {
+    public IMessage nextResult(long timeout) {
         try {
             return mQueue.poll(timeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
@@ -71,7 +71,7 @@ class MessageCollector {
      * collector has been cancelled, it cannot be re-enabled. Instead, a new message collector must be
      * created.
      */
-    void cancel() {
+    public void cancel() {
         // If the message collector has already been cancelled, do nothing
         if (!mCancelled) {
             mCancelled = true;

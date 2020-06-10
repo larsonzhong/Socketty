@@ -2,7 +2,7 @@ package com.skyruler.socketclient;
 
 import android.content.Context;
 
-import com.skyruler.socketclient.connection.option.IConnectOption;
+import com.skyruler.socketclient.connection.intf.IConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.message.IMessageListener;

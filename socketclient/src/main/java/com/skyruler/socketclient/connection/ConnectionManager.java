@@ -6,10 +6,12 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 
+import com.skyruler.socketclient.connection.ble.BLEConnection;
+import com.skyruler.socketclient.connection.intf.IConnectOption;
 import com.skyruler.socketclient.connection.intf.IConnection;
 import com.skyruler.socketclient.connection.intf.IConnectionManager;
 import com.skyruler.socketclient.connection.intf.IStateListener;
-import com.skyruler.socketclient.connection.option.IConnectOption;
+import com.skyruler.socketclient.connection.socket.SocketConnection;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
@@ -42,16 +44,16 @@ public class ConnectionManager implements IConnectionManager {
             return;
         }
         if (bleConnectOption == null) {
-            throw new IllegalArgumentException("Connection parameter is empty, please check connection parameters !!");
+            throw new IllegalArgumentException("SocketConnection parameter is empty, please check connection parameters !!");
         }
         mExecutor.execute(new ConnectTask(bleConnectOption));
     }
 
     private class ConnectTask implements Runnable {
-        private IConnectOption bleConnectOption;
+        private IConnectOption connectOption;
 
         ConnectTask(IConnectOption bleConnectOption) {
-            this.bleConnectOption = bleConnectOption;
+            this.connectOption = bleConnectOption;
         }
 
         @Override
@@ -59,9 +61,12 @@ public class ConnectionManager implements IConnectionManager {
             if (isConnected()) {
                 return;
             }
-            if (bleConnectOption.getType() == IConnectOption.ConnectionType.BLE) {
-                mConnection = new BLEConnection(stateListener);
-                mConnection.connect(mContext, bleConnectOption);
+            if (connectOption.getType() == IConnectOption.ConnectionType.BLE) {
+                mConnection = new BLEConnection(connectOption);
+                mConnection.connect(mContext, stateListener);
+            } else if (connectOption.getType() == IConnectOption.ConnectionType.SOCKET) {
+                mConnection = new SocketConnection(connectOption);
+                mConnection.connect(mContext, stateListener);
             }
         }
     }
@@ -78,7 +83,7 @@ public class ConnectionManager implements IConnectionManager {
 
     @Override
     public void onDestroy() {
-        mConnection.stopDevice();
+        mConnection.onDestroy();
     }
 
     @Override
