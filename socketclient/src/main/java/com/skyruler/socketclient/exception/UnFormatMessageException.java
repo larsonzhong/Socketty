@@ -11,7 +11,7 @@ package com.skyruler.socketclient.exception;
  * ....'______________________________\|/______________________________`.
  * ..larsonzhong@163.com      created in 2018/8/16     @author : larsonzhong
  */
-public class UnFormatMessageException extends RuntimeException {
+public class UnFormatMessageException extends Exception {
     public UnFormatMessageException() {
         super();
     }

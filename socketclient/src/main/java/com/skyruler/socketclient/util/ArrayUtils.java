@@ -108,7 +108,7 @@ public class ArrayUtils {
     /**
      * byte数组转hex
      */
-    public static String bytesToHex(byte[] bytes){
+    public static String bytesToHex(byte[] bytes) {
         String strHex;
         StringBuilder sb = new StringBuilder();
         for (int n = 0; n < bytes.length; n++) {

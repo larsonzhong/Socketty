@@ -105,7 +105,7 @@ public class WrappedMessage implements IWrappedMessage {
 
         private List<IMessage> buildMessageList() {
             List<IMessage> messageList = new ArrayList<>();
-            boolean needSplit = body.length > limitBodyLength;
+            boolean needSplit = body != null && body.length > limitBodyLength;
             if (needSplit) {
                 List<byte[]> payloads = ArrayUtils.divide(body, limitBodyLength);
                 for (short i = 0; i < payloads.size(); i++) {

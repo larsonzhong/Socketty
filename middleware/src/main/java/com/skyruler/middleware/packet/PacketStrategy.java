@@ -22,7 +22,7 @@ public class PacketStrategy implements IPacketStrategy {
         }
         byte pkgType = buffer.get();
         short length = buffer.getShort();
-        if (length != raw.length - 5) {
+        if (length > raw.length - 5) {
             return null;
         }
         byte[] data = new byte[length];

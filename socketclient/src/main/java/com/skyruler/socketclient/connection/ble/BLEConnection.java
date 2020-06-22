@@ -7,10 +7,7 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import com.skyruler.socketclient.connection.MessageCollector;
 import com.skyruler.socketclient.connection.PacketReader;
@@ -24,7 +21,6 @@ import com.skyruler.socketclient.message.IMessageListener;
 
 import java.util.UUID;
 
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BLEConnection implements IConnection {
     private static final String TAG = "BLEConnection";
     private final BLEConnectOption bleOption;
@@ -41,9 +37,6 @@ public class BLEConnection implements IConnection {
         this.packetRouter = new PacketRouter();
     }
 
-    private void setConnected(boolean isConnect) {
-        this.mConnected = isConnect;
-    }
 
     @Override
     public void addMsgListener(IMessageListener listener, MessageFilter filter) {
@@ -86,6 +79,15 @@ public class BLEConnection implements IConnection {
             this.mBluetoothGatt.disconnect();
         }
         setConnected(false);
+    }
+
+    private void setConnected(boolean isConnect) {
+        this.mConnected = isConnect;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return mConnected;
     }
 
     @Override
@@ -150,6 +152,7 @@ public class BLEConnection implements IConnection {
                 }
             } else if (newState == 0) {
                 stateListener.onDisconnect(gatt);
+                setConnected(false);
             }
         }
 

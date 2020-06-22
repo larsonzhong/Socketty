@@ -14,7 +14,7 @@ public interface XmlParser<E> {
      * @return 解析集合
      * @throws Exception 异常
      */
-    public E parse(InputStream is) throws Exception;
+    E parse(InputStream is) throws Exception;
 
     /**
      * 序列化E对象集合 得到XML形式的字符串
@@ -22,5 +22,5 @@ public interface XmlParser<E> {
      * @return xml形式字符串
      * @throws Exception 异常
      */
-    public String serialize(E e) throws Exception;
+    String serialize(E e) throws Exception;
 }

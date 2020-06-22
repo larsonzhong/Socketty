@@ -199,11 +199,11 @@ public class BytesUtils {
     public static String int2Ip(int ip) {
         StringBuilder builder = new StringBuilder(String.valueOf(ip >>> 24));
         builder.append(".");
-        builder.append(String.valueOf((ip & 0X00FFFFFF) >>> 16));
+        builder.append(((ip & 0X00FFFFFF) >>> 16));
         builder.append(".");
-        builder.append(String.valueOf((ip & 0X0000FFFF) >>> 8));
+        builder.append(((ip & 0X0000FFFF) >>> 8));
         builder.append(".");
-        builder.append(String.valueOf(ip & 0X000000FF));
+        builder.append((ip & 0X000000FF));
         return builder.toString();
     }
 

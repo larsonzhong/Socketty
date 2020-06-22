@@ -11,7 +11,7 @@ public class Message implements IMessage {
 
     private Message(Builder builder) {
         this.msgId = builder.messageID;
-        this.body = builder.body;
+        this.body = builder.body == null ? EMPTY_BODY : builder.body;
     }
 
     @Override

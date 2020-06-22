@@ -1,10 +1,9 @@
 package com.skyruler.socketclient.connection;
 
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
+import com.skyruler.socketclient.util.ArrayUtils;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -56,10 +55,10 @@ public class PacketReader {
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public void onDataReceive(BluetoothGattCharacteristic characteristic) {
         byte[] received = characteristic.getValue();
         mQueue.add(received);
+        Log.d(TAG, "read packet>>>" + ArrayUtils.bytesToHex(received));
     }
 
 }

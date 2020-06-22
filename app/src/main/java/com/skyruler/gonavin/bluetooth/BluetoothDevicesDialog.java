@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -18,11 +17,15 @@ import com.skyruler.android.logger.Log;
 import com.skyruler.gonavin.R;
 import com.skyruler.middleware.GlonavinSdk;
 import com.skyruler.middleware.connection.BluetoothAccess;
-import com.skyruler.middleware.connection.GlonavinConnectOption;
 import com.skyruler.middleware.connection.IBleStateListener;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+
+import static com.skyruler.middleware.GlonavinSdk.BLUETOOTH_TYPE_RAILWAY;
 
 /**
  * ......................-~~~~~~~~~-._       _.-~~~~~~~~~-.
@@ -39,7 +42,6 @@ import java.util.List;
  */
 public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickListener,
         AdapterView.OnItemClickListener, DialogInterface.OnClickListener {
-    private static final String GLONAVIN_DEVICE_NAME = "FootSensor";
     private static final int SCAN_PERIOD = 10000;
     private Handler mHandler;
     private Button btSearch;
@@ -50,20 +52,22 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
     private GlonavinSdk glonavinSdk;
     private IBleStateListener listener = new IBleStateListener() {
         @Override
-        public void onScanResult(BluetoothDevice bluetoothDevice, boolean isConnected) {
-            for (BluetoothAccess listDevice : mListDevices) {
-                if (listDevice.getDeviceAddress().equals(bluetoothDevice.getAddress())) {
-                    listDevice.setConnected(isConnected);
-                    return;
+        public void onScanResult(BluetoothDevice device, boolean isConnected) {
+            Log.d(" device=" + device.getName() + " " + device.getAddress() + " " + device.getType());
+            boolean isNewDevice = true;
+            for (BluetoothAccess access : mListDevices) {
+                if (access.getDeviceAddress().equals(device.getAddress())) {
+                    access.setConnected(isConnected);
+                    isNewDevice = false;
+                    break;
                 }
             }
-            if (TextUtils.isEmpty(bluetoothDevice.getName())
-                    || !GLONAVIN_DEVICE_NAME.equals(bluetoothDevice.getName())) {
-                return;
+            boolean isGlonavinMode = glonavinSdk.isSubwayMode() || glonavinSdk.isIndoorMode();
+            boolean isSpacialDevice = device.getName() != null && device.getName().equals(GlonavinSdk.GLONAVIN_DEVICE_NAME);
+            if (isNewDevice && isGlonavinMode && isSpacialDevice) {
+                mListDevices.add(new BluetoothAccess(device, isConnected));
             }
-            BluetoothAccess bluetoothAccess = new BluetoothAccess(bluetoothDevice, isConnected);
-            mListDevices.add(bluetoothAccess);
-            mScanAdapter.notifyDataSetChanged();
+            refreshDeviceList();
         }
 
         @Override
@@ -78,23 +82,27 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
     };
 
     private void updateDeviceState(final BluetoothDevice bluetoothDevice, final boolean connected) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mSelectedDevice == null) {
-                    Log.e("无法更新连接状态，mSelectedDevice == null");
-                    return;
-                }
-                for (BluetoothAccess device : mListDevices) {
-                    if (device.getDeviceAddress().equals(bluetoothDevice.getAddress())) {
-                        device.setConnected(connected);
-                    }
-                }
-                mScanAdapter.notifyDataSetChanged();
-                showProgressBar(false);
-                //dismiss();
+        if (mSelectedDevice == null) {
+            Log.e("无法更新连接状态，mSelectedDevice == null");
+            return;
+        }
+        for (BluetoothAccess device : mListDevices) {
+            if (device.getDeviceAddress().equals(bluetoothDevice.getAddress())) {
+                device.setConnected(connected);
             }
-        });
+        }
+        refreshDeviceList();
+    }
+
+    private void refreshDeviceList() {
+        Observable.empty()
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnComplete(() -> {
+                            Log.d("mBleDevices.size=" + mListDevices.size());
+                            showProgressBar(false);
+                            mScanAdapter.notifyDataSetChanged();
+                        }
+                ).subscribe();
     }
 
     private BluetoothDevicesDialog(Context mContext) {
@@ -105,6 +113,7 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
         this(mContext);
         this.glonavinSdk = glonavinSdk;
         this.mHandler = new Handler();
+        this.glonavinSdk.setBluetoothMode(BLUETOOTH_TYPE_RAILWAY);
     }
 
     @Override
@@ -127,13 +136,13 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
         mLvDevices.setAdapter(mScanAdapter);
         mLvDevices.setOnItemClickListener(this);
 
-        setButton(Dialog.BUTTON_NEGATIVE, getContext().getString(R.string.cancel), this);
+        setButton(Dialog.BUTTON_NEGATIVE, getContext().getString(R.string.device_cancel), this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        glonavinSdk.addBleStateListener(listener);
+        glonavinSdk.addConnectStateListener(listener);
         scanBleDevices();
     }
 
@@ -176,13 +185,10 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
 
     private void stopScanDelay() {
         btSearch.setEnabled(false);
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                showProgressBar(false);
-                scanBluetooth(false);
-                btSearch.setEnabled(true);
-            }
+        mHandler.postDelayed(() -> {
+            showProgressBar(false);
+            scanBluetooth(false);
+            btSearch.setEnabled(true);
         }, SCAN_PERIOD);
     }
 
@@ -193,8 +199,7 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
             glonavinSdk.disconnect();
         } else {
             BluetoothDevice device = mSelectedDevice.getBluetoothDevice();
-            GlonavinConnectOption option = new GlonavinConnectOption(device);
-            glonavinSdk.connect(option);
+            glonavinSdk.connect(device);
         }
         showProgressBar(true);
     }

@@ -1,6 +1,6 @@
 package com.skyruler.socketclient.connection.socket;
 
-import com.skyruler.socketclient.exception.UnconnectedException;
+import com.skyruler.socketclient.exception.ConnectionException;
 import com.skyruler.socketclient.message.MessageSnBuilder;
 
 import java.nio.ByteOrder;
@@ -43,7 +43,7 @@ public class SocketConnectOption {
     /**
      * 脉搏丢失次数<br>
      * 大于或等于丢失次数时将断开该通道的连接<br>
-     * 抛出{@link UnconnectedException}
+     * 抛出{@link ConnectionException}
      */
     private int mReconnectMaxAttemptTimes;
     /**
@@ -121,7 +121,7 @@ public class SocketConnectOption {
         /**
          * 最大重连次数，当大于该次数则停止重连
          * 大于或等于丢失次数时将断开该通道的连接<br>
-         * 抛出{@link UnconnectedException}
+         * 抛出{@link ConnectionException}
          */
         private int mReconnectMaxAttemptTimes;
         /**
@@ -163,7 +163,7 @@ public class SocketConnectOption {
         /**
          * 脉搏丢失次数<br>
          * 大于或等于丢失次数时将断开该通道的连接<br>
-         * 抛出{@link UnconnectedException}<br>
+         * 抛出{@link ConnectionException}<br>
          * 默认是5次
          *
          * @param pulseFeedLoseTimes 丢失心跳ACK的次数,例如5,当丢失3次时,自动断开.

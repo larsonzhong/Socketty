@@ -18,7 +18,7 @@ public class TempStopStationCmd extends AbsCommand {
 
     @Override
     public int getTimeout() {
-        return 2000;
+        return SEND_TIMEOUT_LONG;
     }
 
     @Override

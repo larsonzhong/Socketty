@@ -12,6 +12,8 @@ public interface IConnection {
 
     void disconnect();
 
+    boolean isConnected();
+
     void onDestroy();
 
     void sendMessage(IMessage msgDataBean);
@@ -23,4 +25,5 @@ public interface IConnection {
     void addMsgListener(IMessageListener listener, MessageFilter filter);
 
     void removeMsgListener(MessageFilter filter);
+
 }

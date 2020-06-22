@@ -4,6 +4,8 @@ import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.IWrappedMessage;
 
 public abstract class AbsCommand {
+    protected static final int SEND_TIMEOUT_SHORT = 2000;
+    protected static final int SEND_TIMEOUT_LONG = 5000;
     private final byte msgID;
     byte[] body;
     IWrappedMessage.AckMode ackMode;

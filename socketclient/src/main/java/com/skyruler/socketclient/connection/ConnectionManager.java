@@ -4,14 +4,14 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 
-import androidx.annotation.NonNull;
-
 import com.skyruler.socketclient.connection.ble.BLEConnection;
 import com.skyruler.socketclient.connection.intf.IConnectOption;
 import com.skyruler.socketclient.connection.intf.IConnection;
 import com.skyruler.socketclient.connection.intf.IConnectionManager;
 import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.connection.socket.SocketConnection;
+import com.skyruler.socketclient.exception.UnFormatMessageException;
+import com.skyruler.socketclient.exception.ConnectionException;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
@@ -73,7 +73,7 @@ public class ConnectionManager implements IConnectionManager {
 
     @Override
     public boolean isConnected() {
-        return false;
+        return mConnection != null && mConnection.isConnected();
     }
 
     @Override
@@ -92,9 +92,12 @@ public class ConnectionManager implements IConnectionManager {
     }
 
     @Override
-    public IMessage sendSyncMessage(IMessage msgDataBean, MessageFilter filter, long timeout) {
+    public IMessage sendSyncMessage(IMessage msgDataBean, MessageFilter filter, long timeout) throws ConnectionException,UnFormatMessageException {
         if (filter == null || timeout < 0) {
-            throw new IllegalArgumentException("can not send sync IMessage without filter or timeout");
+            throw new UnFormatMessageException("can not send sync IMessage without filter or timeout");
+        }
+        if (mConnection == null) {
+            throw new ConnectionException("设备未连接，请连接设备");
         }
         return mConnection.sendSyncMessage(msgDataBean, filter, timeout);
     }
@@ -123,7 +126,7 @@ public class ConnectionManager implements IConnectionManager {
             private final AtomicInteger integer = new AtomicInteger();
 
             @Override
-            public Thread newThread(@NonNull Runnable r) {
+            public Thread newThread(Runnable r) {
                 return new Thread(r, "ConnectionManager thread: " + integer.getAndIncrement());
             }
         };

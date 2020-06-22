@@ -1,7 +1,10 @@
 <resources>
+    <string name="cancel">取消</string>
+    <string name="select">选择</string>
+
     <string name="app_name">惯性导航</string>
     <string name="back">返回</string>
-    <string name="cancel">取消</string>
+    <string name="device_cancel">取消</string>
     <string name="still">静止</string>
     <string name="action_config_test">配置路线</string>
     <string name="action_start_test">开始测试</string>
@@ -12,8 +15,8 @@
     <!-- bluetooth devices -->
     <string name="connecting">惯导设备正在连接...</string>
     <string name="disconnecting">惯导设备正在断开连接...</string>
-    <string name="connected">惯导设备连接成功！</string>
-    <string name="disconnected">惯导设备已断开连接！</string>
+    <string name="device_connected">惯导设备连接成功！</string>
+    <string name="device_disconnected">惯导设备已断开连接！</string>
     <string name="action_bluetooth">设备连接</string>
     <string name="scan_title">搜索蓝牙设备</string>
     <string name="available_devices_title">设备列表</string>
@@ -22,11 +25,13 @@
     <string name="select_mode">选择模式</string>
     <string name="send">发送</string>
     <string name="send_start_end">发送起始点</string>
-    <string name="senect_xml">选择XML</string>
+    <string name="select_xml">选择XML</string>
     <string name="select_start">起点</string>
-    <string name="select">请选择</string>
+    <string name="please_select">请选择</string>
     <string name="select_end">终点</string>
     <string name="loc_valid">定位有效:%s</string>
     <string name="site_id">站点名称:%s</string>
     <string name="battery">电池电量:%d</string>
+    <string name="select_xml_success">读取XML成功</string>
+    <string name="select_xml_failed">读取 XML 失败</string>
 </resources>

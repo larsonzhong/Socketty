@@ -15,7 +15,6 @@ import com.skyruler.android.logger.Log;
 import com.skyruler.gonavin.bluetooth.BluetoothDevicesDialog;
 import com.skyruler.gonavin.bluetooth.DeviceSetupDialog;
 import com.skyruler.middleware.GlonavinSdk;
-import com.skyruler.middleware.command.EditionCommand;
 import com.skyruler.middleware.command.TestControlCmd;
 import com.skyruler.middleware.connection.IBleStateListener;
 import com.skyruler.middleware.report.IDataReporter;
@@ -26,8 +25,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements IDataReporter, View.OnClickListener {
     private static final String TAG = "MainActivity";
-    private static final byte locReportID = 0x40;
-    private GlonavinSdk glonavinSdk = new GlonavinSdk();
+    private GlonavinSdk glonavinSdk = GlonavinSdk.getInstance();
     private BluetoothDevicesDialog mDeviceDialog;
 
     private TextView tvHardVersionName;
@@ -70,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
 
     private void initGlonavin() {
         glonavinSdk.setup(getApplicationContext());
-        glonavinSdk.addBleStateListener(new IBleStateListener() {
+        glonavinSdk.addConnectStateListener(new IBleStateListener() {
             @Override
             public void onScanResult(BluetoothDevice bluetoothDevice, boolean isConnected) {
 
@@ -78,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
 
             @Override
             public void onConnected(BluetoothDevice bluetoothDevice) {
-                glonavinSdk.listenerForReport(MainActivity.this, locReportID);
+                glonavinSdk.listenerForSubway(MainActivity.this);
             }
 
             @Override
@@ -123,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
                 showBleDeviceDialog();
                 break;
             case R.id.action_config_test:
-                new DeviceSetupDialog(this, glonavinSdk).show();
+                new DeviceSetupDialog(this).show();
                 break;
             case R.id.action_start_test:
                 startOrStop();
@@ -154,14 +152,14 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     }
 
     @Override
-    public void report(final ReportData data) {
-        Log.d(TAG, "收到定位上报>>>" + data.toString());
-        showText(tvDtState, data.getGpsStateStr());
+    public void report(final ReportData data, int index) {
+        Log.d(TAG, index + "收到定位上报>>>" + data.toString());
+        showText(tvDtState, data.getAccStateStr());
         showText(tvSeqNum, data.getSeqNum() + "");
         showText(tvLatitude, String.valueOf(data.getLatitude()));
         showText(tvLongitude, String.valueOf(data.getLongitude()));
 
-        showText(tvValidLoc, getString(R.string.loc_valid, data.getIsValidLoc() + ""));
+        showText(tvValidLoc, getString(R.string.loc_valid, data.isValidLoc() + ""));
         showText(tvSiteID, getString(R.string.site_id, parseSiteID(data.getSiteID())));
         showText(tvBattery, getString(R.string.battery, data.getBattery()));
     }
@@ -188,13 +186,10 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
                 showToast("临时停车发送" + (isSuccess ? "成功" : "失败"));
                 break;
             case R.id.btnGetEdition:
-                glonavinSdk.getEdition(new EditionCommand.EditionCallBack() {
-                    @Override
-                    public void handleEdition(EditionCommand.Edition edition) {
-                        showText(tvHardVersionName, edition.getHardVersionName());
-                        showText(tvSoftVersionName, edition.getSoftVersionName());
-                        showText(tvProtocolVersionName, edition.getPortoVersionName());
-                    }
+                glonavinSdk.getEdition(edition -> {
+                    showText(tvHardVersionName, edition.getHardVersionName());
+                    showText(tvSoftVersionName, edition.getSoftVersionName());
+                    showText(tvProtocolVersionName, edition.getPortoVersionName());
                 });
                 break;
             default:
@@ -202,11 +197,6 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     }
 
     private void showText(final TextView view, final String text) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                view.setText(text);
-            }
-        });
+        runOnUiThread(() -> view.setText(text));
     }
 }

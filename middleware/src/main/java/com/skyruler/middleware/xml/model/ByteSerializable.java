@@ -10,5 +10,5 @@ public interface ByteSerializable {
      * 对象转为Bytes
      * @return 返回序列化字节
      */
-    public byte[] toBytes();
+    byte[] toBytes();
 }

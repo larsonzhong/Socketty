@@ -38,7 +38,7 @@ public class DeviceModeCmd extends AbsCommand {
 
     @Override
     public int getTimeout() {
-        return 5000;
+        return SEND_TIMEOUT_LONG;
     }
 
     @Override

@@ -2,21 +2,15 @@ package com.skyruler.socketclient.connection.ble;
 
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.os.Build;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IPacket;
 import com.skyruler.socketclient.util.ArrayUtils;
-import com.skyruler.socketclient.util.CRCCheck;
 
-import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BlePacketWriter {
     private static final String TAG = "PacketWriter";
     private boolean mShutdown;
@@ -96,7 +90,7 @@ public class BlePacketWriter {
                             gattCharacteristic.setValue(buffer.array());*/
                             gattCharacteristic.setValue(packet.getBytes());
                             mBluetoothGatt.writeCharacteristic(gattCharacteristic);
-                            Log.d(TAG, gattCharacteristic.getProperties() + "write packet>>>" + ArrayUtils.bytesToHex(packet.getBytes()));
+                            Log.d(TAG, "write packet>>" + ArrayUtils.bytesToHex(packet.getBytes()));
                         }
                     }
                 }

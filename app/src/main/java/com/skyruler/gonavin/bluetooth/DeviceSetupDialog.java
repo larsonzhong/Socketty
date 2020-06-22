@@ -4,17 +4,22 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.github.angads25.filepicker.model.DialogConfigs;
+import com.github.angads25.filepicker.model.DialogProperties;
+import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.skyruler.android.logger.Log;
 import com.skyruler.gonavin.R;
 import com.skyruler.middleware.GlonavinSdk;
@@ -22,18 +27,20 @@ import com.skyruler.middleware.command.DeviceModeCmd;
 import com.skyruler.middleware.command.MetroLineCmd;
 import com.skyruler.middleware.command.TestDirectionCmd;
 import com.skyruler.middleware.xml.model.City;
-import com.skyruler.middleware.xml.model.MetroData;
 import com.skyruler.middleware.xml.model.MetroLine;
 import com.skyruler.middleware.xml.model.Station;
-import com.skyruler.middleware.xml.parser.MetroParser;
 
-import java.io.InputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+
 
 public class DeviceSetupDialog extends AlertDialog implements View.OnClickListener, AdapterView.OnItemSelectedListener {
-    private static final String TAG = "DeviceSetupDialog";
+    private String SD_ROOT_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
+
     private GlonavinSdk glonavinSdk;
     private String[] mModes;
     private String mDeviceMode;
@@ -44,21 +51,27 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     private NameAdapter<Station> selectStartAdapter;
     private NameAdapter<Station> selectEndAdapter;
     private NameAdapter<MetroLine> selectLineAdapter;
+    private TextView editionTv;
+    private Button btnSendDirection;
 
-    public DeviceSetupDialog(Context context, GlonavinSdk glonavinSdk) {
+    public DeviceSetupDialog(Context context) {
         super(context);
-        this.glonavinSdk = glonavinSdk;
+        this.glonavinSdk = GlonavinSdk.getInstance();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        @SuppressLint("InflateParams") View mView = getLayoutInflater().inflate(R.layout.device_setup, null);
+        @SuppressLint("InflateParams")
+        View mView = getLayoutInflater().inflate(R.layout.device_setup, null);
         initView(mView);
         super.setView(mView);
         super.onCreate(savedInstanceState);
     }
 
     private void initView(View mView) {
+        editionTv = mView.findViewById(R.id.editionTv);
+        btnSendDirection = mView.findViewById(R.id.btn_send_start_end);
+
         mModes = getContext().getResources().getStringArray(R.array.device_mode);
         Spinner deviceModeSpinner = mView.findViewById(R.id.spinner_device_mode);
         ArrayAdapter<String> selectModeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, mModes);
@@ -80,11 +93,23 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
         selectLineSpinner.setAdapter(selectLineAdapter);
         selectLineSpinner.setOnItemSelectedListener(this);
 
+        btnSendDirection.setOnClickListener(this);
         mView.findViewById(R.id.btn_exit_dialog).setOnClickListener(this);
         mView.findViewById(R.id.btn_send_mode).setOnClickListener(this);
         mView.findViewById(R.id.btn_select_xml).setOnClickListener(this);
         mView.findViewById(R.id.btn_send_xml).setOnClickListener(this);
-        mView.findViewById(R.id.btn_send_start_end).setOnClickListener(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        glonavinSdk.getEdition(edition -> {
+            String version = edition.getSoftVersionName();
+            Observable.empty()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnComplete(() -> editionTv.setText(version)).subscribe();
+        });
+
     }
 
     @Override
@@ -125,11 +150,7 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
                 sendTestMode();
                 break;
             case R.id.btn_select_xml:
-                try {
-                    readSubwayXml();
-                } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
-                }
+                selectSubwayXml();
                 break;
             case R.id.btn_send_xml:
                 sendMetroLine();
@@ -139,6 +160,32 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
                 break;
             default:
         }
+    }
+
+    private void selectSubwayXml() {
+        DialogProperties newTaskProperties = new DialogProperties();
+        newTaskProperties.selection_mode = DialogConfigs.SINGLE_MODE;
+        newTaskProperties.selection_type = DialogConfigs.FILE_SELECT;
+        newTaskProperties.root = new File(SD_ROOT_PATH);
+        newTaskProperties.error_dir = new File(SD_ROOT_PATH);
+
+        final FilePickerDialog newTaskDialog = new FilePickerDialog(getContext(), newTaskProperties);
+        newTaskDialog.setTitle(getContext().getString(R.string.select_xml));
+        newTaskDialog.setNegativeBtnName(getContext().getString(R.string.cancel));
+        newTaskDialog.setPositiveBtnName(getContext().getString(R.string.select));
+
+        newTaskDialog.setDialogSelectionListener(files -> Observable.empty()
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnComplete(() -> {
+                    try {
+                        readSubwayXml(files[0]);
+                        showToast(getContext().getString(R.string.select_xml_success));
+                    } catch (Exception e) {
+                        Log.e(e);
+                        showToast(getContext().getString(R.string.select_xml_failed));
+                    }
+                }).subscribe());
+        newTaskDialog.show();
     }
 
     private void sendStartEndStation() {
@@ -161,22 +208,13 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     private void sendMetroLine() {
         boolean success = glonavinSdk.sendMetroLine(new MetroLineCmd(mMetroLine));
         showToast("发送地铁路线" + success);
+        if (success) {
+            btnSendDirection.setEnabled(true);
+        }
     }
 
-    private void readSubwayXml() throws Exception {
-        InputStream is = getContext().getAssets().open("subway.xml");
-        MetroParser parser = new MetroParser();
-        MetroData metroData = parser.parse(is);
-        is.close();
-        if (metroData != null) {
-            Log.d(TAG, metroData.toString());
-        }
-        if (metroData == null || metroData.getCities() == null) {
-            return;
-        }
-
-        // 为了方便只取第一个city
-        city = metroData.getCities().get(0);
+    private void readSubwayXml(String path) throws Exception {
+        city = glonavinSdk.readSubwayLineFromXmlFile(path);
         selectLineAdapter.setData(city.getMetroLines());
         selectLineAdapter.notifyDataSetChanged();
     }
@@ -220,5 +258,6 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
             this.objectList.addAll(stations);
         }
     }
+
 
 }
