@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.skyruler.gonavin.R;
-import com.skyruler.middleware.connection.BluetoothAccess;
+import com.skyruler.glonavin.connection.BluetoothAccess;
 
 import java.util.List;
 

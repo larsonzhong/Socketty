@@ -14,10 +14,10 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.skyruler.android.logger.Log;
+import com.skyruler.glonavin.GlonavinSdk;
+import com.skyruler.glonavin.connection.BluetoothAccess;
+import com.skyruler.glonavin.connection.IBleStateListener;
 import com.skyruler.gonavin.R;
-import com.skyruler.middleware.GlonavinSdk;
-import com.skyruler.middleware.connection.BluetoothAccess;
-import com.skyruler.middleware.connection.IBleStateListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,8 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-import static com.skyruler.middleware.GlonavinSdk.BLUETOOTH_TYPE_RAILWAY;
+import static com.skyruler.glonavin.GlonavinSdk.BLUETOOTH_TYPE_SUBWAY;
+
 
 /**
  * ......................-~~~~~~~~~-._       _.-~~~~~~~~~-.
@@ -105,15 +106,11 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
                 ).subscribe();
     }
 
-    private BluetoothDevicesDialog(Context mContext) {
+    public BluetoothDevicesDialog(Context mContext) {
         super(mContext);
-    }
-
-    public BluetoothDevicesDialog(Context mContext, GlonavinSdk glonavinSdk) {
-        this(mContext);
-        this.glonavinSdk = glonavinSdk;
+        this.glonavinSdk = GlonavinSdk.getInstance();
         this.mHandler = new Handler();
-        this.glonavinSdk.setBluetoothMode(BLUETOOTH_TYPE_RAILWAY);
+        this.glonavinSdk.setBluetoothMode(BLUETOOTH_TYPE_SUBWAY);
     }
 
     @Override

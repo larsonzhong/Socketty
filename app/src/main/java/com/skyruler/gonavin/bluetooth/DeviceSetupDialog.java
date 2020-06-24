@@ -22,13 +22,14 @@ import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.skyruler.android.logger.Log;
 import com.skyruler.gonavin.R;
-import com.skyruler.middleware.GlonavinSdk;
-import com.skyruler.middleware.command.DeviceModeCmd;
-import com.skyruler.middleware.command.MetroLineCmd;
-import com.skyruler.middleware.command.TestDirectionCmd;
-import com.skyruler.middleware.xml.model.City;
-import com.skyruler.middleware.xml.model.MetroLine;
-import com.skyruler.middleware.xml.model.Station;
+import com.skyruler.glonavin.GlonavinSdk;
+import com.skyruler.glonavin.command.DeviceModeCmd;
+import com.skyruler.glonavin.command.MetroLineCmd;
+import com.skyruler.glonavin.command.TestDirectionCmd;
+import com.skyruler.glonavin.xml.model.City;
+import com.skyruler.glonavin.xml.model.MetroLine;
+import com.skyruler.glonavin.xml.model.Station;
+import com.skyruler.gonavin.SubwayDataHolder;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -209,6 +210,7 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
         boolean success = glonavinSdk.sendMetroLine(new MetroLineCmd(mMetroLine));
         showToast("发送地铁路线" + success);
         if (success) {
+            SubwayDataHolder.getInstance().setMetroLine(mMetroLine);
             btnSendDirection.setEnabled(true);
         }
     }

@@ -1,1 +1,1 @@
-include ':app', ':socketclient', ':logger', ':middleware'
+include ':app', ':socketclient', ':logger', ':glonavin'

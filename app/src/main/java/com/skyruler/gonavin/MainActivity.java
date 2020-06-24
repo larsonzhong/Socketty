@@ -12,14 +12,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.skyruler.android.logger.Log;
+import com.skyruler.glonavin.GlonavinSdk;
+import com.skyruler.glonavin.command.TestControlCmd;
+import com.skyruler.glonavin.connection.IBleStateListener;
+import com.skyruler.glonavin.report.IDataReporter;
+import com.skyruler.glonavin.report.SubwayReportData;
+import com.skyruler.glonavin.xml.model.Station;
 import com.skyruler.gonavin.bluetooth.BluetoothDevicesDialog;
 import com.skyruler.gonavin.bluetooth.DeviceSetupDialog;
-import com.skyruler.middleware.GlonavinSdk;
-import com.skyruler.middleware.command.TestControlCmd;
-import com.skyruler.middleware.connection.IBleStateListener;
-import com.skyruler.middleware.report.IDataReporter;
-import com.skyruler.middleware.report.ReportData;
-import com.skyruler.middleware.xml.model.Station;
 
 import java.util.List;
 
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
 
             @Override
             public void onConnected(BluetoothDevice bluetoothDevice) {
-                glonavinSdk.listenerForSubway(MainActivity.this);
+                glonavinSdk.listenerForReport(MainActivity.this);
             }
 
             @Override
@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        glonavinSdk.stopSubwayReport();
         glonavinSdk.scanDevice(false);
         glonavinSdk.onDestroy();
     }
@@ -142,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
 
     private void showBleDeviceDialog() {
         if (mDeviceDialog == null) {
-            mDeviceDialog = new BluetoothDevicesDialog(this, glonavinSdk);
+            mDeviceDialog = new BluetoothDevicesDialog(this);
         }
         mDeviceDialog.show();
     }
@@ -152,7 +153,9 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     }
 
     @Override
-    public void report(final ReportData data, int index) {
+    public void report(final SubwayReportData data) {
+        int index = getSubwayStationIndex(data);
+
         Log.d(TAG, index + "收到定位上报>>>" + data.toString());
         showText(tvDtState, data.getAccStateStr());
         showText(tvSeqNum, data.getSeqNum() + "");
@@ -165,13 +168,25 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     }
 
     private String parseSiteID(byte siteID) {
-        List<Station> stations = glonavinSdk.getCurrentMetroLine().getStations();
+        List<Station> stations = SubwayDataHolder.getInstance().getMetroLine().getStations();
         for (Station station : stations) {
             if (station.getSid() == siteID - 1) {
                 return siteID + station.getName();
             }
         }
         return "解析异常";
+    }
+
+    private int getSubwayStationIndex(SubwayReportData data) {
+        // 文档上说是Sid+1 = getSiteID();
+        int siteID = data.getSiteID() - 1;
+        List<Station> stations = SubwayDataHolder.getInstance().getMetroLine().getStations();
+        for (int index = 0; index < stations.size(); index++) {
+            if (stations.get(index).getSid() == siteID) {
+                return index;
+            }
+        }
+        return -1;
     }
 
     @Override
