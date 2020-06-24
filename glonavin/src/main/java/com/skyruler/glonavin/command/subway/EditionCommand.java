@@ -1,7 +1,8 @@
-package com.skyruler.glonavin.command;
+package com.skyruler.glonavin.command.subway;
 
+import com.skyruler.glonavin.command.AbsCommand;
 import com.skyruler.socketclient.filter.MessageFilter;
-import com.skyruler.socketclient.filter.MessageIdFilter;
+import com.skyruler.socketclient.message.AckMode;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IWrappedMessage;
 import com.skyruler.socketclient.util.ArrayUtils;
@@ -46,26 +47,9 @@ public class EditionCommand extends AbsCommand {
     }
 
     public EditionCommand(EditionCallBack callBack) {
-        super(ID);
+        super(ID, RESP_ID, AckMode.MESSAGE);
         this.callBack = callBack;
         super.body = new byte[2];
-        super.responseID = RESP_ID;
-        super.ackMode = IWrappedMessage.AckMode.MESSAGE;
-    }
-
-    @Override
-    public int getTimeout() {
-        return SEND_TIMEOUT_SHORT;
-    }
-
-    @Override
-    public int getLimitBodyLength() {
-        return 14;
-    }
-
-    @Override
-    public MessageFilter getMsgFilter() {
-        return new MessageIdFilter(responseID);
     }
 
     @Override

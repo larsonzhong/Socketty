@@ -1,19 +1,23 @@
 package com.skyruler.glonavin.command;
 
 import com.skyruler.socketclient.filter.MessageFilter;
-import com.skyruler.socketclient.message.IWrappedMessage;
+import com.skyruler.socketclient.filter.MessageIdFilter;
+import com.skyruler.socketclient.message.AckMode;
 
 public abstract class AbsCommand {
-    protected static final int SEND_TIMEOUT_SHORT = 2000;
-    protected static final int SEND_TIMEOUT_LONG = 5000;
+    private static final int LIMIT_MESSAGE_BODY_LENGTH = 14;
+    private static final int LIMIT_PACKET_BODY_LENGTH = 12;
+    private static final int SEND_TIMEOUT_SHORT = 2000;
+    private static final int SEND_TIMEOUT_LONG = 5000;
+    private final AckMode ackMode;
+    private final byte responseID;
     private final byte msgID;
-    byte[] body;
-    IWrappedMessage.AckMode ackMode;
-    byte responseID;
+    protected byte[] body;
 
-    AbsCommand(byte msgID) {
+    protected AbsCommand(byte msgID, byte responseID, AckMode ackMode) {
         this.msgID = msgID;
-        this.ackMode = IWrappedMessage.AckMode.NON;
+        this.ackMode = ackMode;
+        this.responseID = responseID;
     }
 
     public byte[] getBody() {
@@ -28,15 +32,27 @@ public abstract class AbsCommand {
         return responseID;
     }
 
-    public abstract int getTimeout();
+    public int getTimeout() {
+        if (this.ackMode == AckMode.PACKET) {
+            return SEND_TIMEOUT_SHORT;
+        }
+        return SEND_TIMEOUT_LONG;
+    }
 
-    public abstract int getLimitBodyLength();
+    public int getLimitBodyLength() {
+        if (this.ackMode == AckMode.PACKET) {
+            return LIMIT_PACKET_BODY_LENGTH;
+        }
+        return LIMIT_MESSAGE_BODY_LENGTH;
+    }
 
-    public IWrappedMessage.AckMode getAckMode() {
+    public AckMode getAckMode() {
         return ackMode;
     }
 
-    public abstract MessageFilter getMsgFilter();
+    public MessageFilter getResponseFilter() {
+        return new MessageIdFilter(responseID);
+    }
 
     public abstract MessageFilter getResultHandler();
 }

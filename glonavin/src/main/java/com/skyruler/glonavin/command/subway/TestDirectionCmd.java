@@ -1,9 +1,9 @@
-package com.skyruler.glonavin.command;
+package com.skyruler.glonavin.command.subway;
 
+import com.skyruler.glonavin.command.AbsCommand;
 import com.skyruler.socketclient.filter.MessageFilter;
-import com.skyruler.socketclient.filter.MessageIdFilter;
+import com.skyruler.socketclient.message.AckMode;
 import com.skyruler.socketclient.message.IMessage;
-import com.skyruler.socketclient.message.IWrappedMessage;
 
 public class TestDirectionCmd extends AbsCommand {
     private static final byte ID = 0x34;
@@ -14,27 +14,10 @@ public class TestDirectionCmd extends AbsCommand {
     private byte endIndex;
 
     public TestDirectionCmd(byte start, byte end) {
-        super(ID);
-        super.responseID = RESP_ID;
+        super(ID, RESP_ID, AckMode.MESSAGE);
         this.startIndex = (byte) (start + 1);
         this.endIndex = (byte) (end + 1);
         super.body = new byte[]{startIndex, endIndex};
-        super.ackMode = IWrappedMessage.AckMode.MESSAGE;
-    }
-
-    @Override
-    public int getTimeout() {
-        return SEND_TIMEOUT_LONG;
-    }
-
-    @Override
-    public int getLimitBodyLength() {
-        return 14;
-    }
-
-    @Override
-    public MessageFilter getMsgFilter() {
-        return new MessageIdFilter(responseID);
     }
 
     @Override

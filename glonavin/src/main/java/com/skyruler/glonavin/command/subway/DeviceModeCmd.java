@@ -1,7 +1,9 @@
-package com.skyruler.glonavin.command;
+package com.skyruler.glonavin.command.subway;
 
+import com.skyruler.glonavin.command.AbsCommand;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.filter.MessageIdFilter;
+import com.skyruler.socketclient.message.AckMode;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IWrappedMessage;
 
@@ -16,11 +18,9 @@ public class DeviceModeCmd extends AbsCommand {
     private byte modeCode;
 
     public DeviceModeCmd(String modeString) {
-        super(ID);
-        super.responseID = RESP_ID;
+        super(ID,RESP_ID, AckMode.MESSAGE);
         this.modeCode = parseModeCode(modeString);
         super.body = new byte[]{modeCode};
-        super.ackMode = IWrappedMessage.AckMode.MESSAGE;
     }
 
     private byte parseModeCode(String modeString) {
@@ -34,21 +34,6 @@ public class DeviceModeCmd extends AbsCommand {
             default:
                 return MODE_SUBWAY;
         }
-    }
-
-    @Override
-    public int getTimeout() {
-        return SEND_TIMEOUT_LONG;
-    }
-
-    @Override
-    public int getLimitBodyLength() {
-        return 14;
-    }
-
-    @Override
-    public MessageFilter getMsgFilter() {
-        return new MessageIdFilter(responseID);
     }
 
     @Override

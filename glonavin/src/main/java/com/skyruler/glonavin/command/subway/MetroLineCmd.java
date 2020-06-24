@@ -1,8 +1,10 @@
-package com.skyruler.glonavin.command;
+package com.skyruler.glonavin.command.subway;
 
+import com.skyruler.glonavin.command.AbsCommand;
 import com.skyruler.glonavin.xml.model.MetroLine;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.filter.MessageIdFilter;
+import com.skyruler.socketclient.message.AckMode;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IWrappedMessage;
 
@@ -14,31 +16,14 @@ public class MetroLineCmd extends AbsCommand {
     private final MetroLine metroLine;
 
     public MetroLineCmd(MetroLine metroLine) {
-        super(ID);
-        super.responseID = RESP_ID;
+        super(ID,RESP_ID, AckMode.PACKET);
         super.body = metroLine.toBytes();
-        super.ackMode = IWrappedMessage.AckMode.PACKET;
         this.lineName = metroLine.getName();
         this.metroLine = metroLine;
     }
 
     public MetroLine getMetroLine() {
         return metroLine;
-    }
-
-    @Override
-    public int getTimeout() {
-        return SEND_TIMEOUT_SHORT;
-    }
-
-    @Override
-    public int getLimitBodyLength() {
-        return 12;
-    }
-
-    @Override
-    public MessageFilter getMsgFilter() {
-        return new MessageIdFilter(responseID);
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.exception.ConnectionException;
 import com.skyruler.socketclient.exception.UnFormatMessageException;
 import com.skyruler.socketclient.filter.MessageFilter;
+import com.skyruler.socketclient.message.AckMode;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
 import com.skyruler.socketclient.message.IWrappedMessage;
@@ -48,7 +49,7 @@ public class SocketClient implements ISocketClient {
 
     @Override
     public boolean sendMessage(IWrappedMessage msgDataBean) throws ConnectionException, UnFormatMessageException {
-        IWrappedMessage.AckMode ackMode = msgDataBean.getAckMode();
+        AckMode ackMode = msgDataBean.getAckMode();
         MessageFilter msgFilter = msgDataBean.getMsgFilter();
         MessageFilter resultFilter = msgDataBean.getResultFilter();
         int timeout = msgDataBean.getTimeout();

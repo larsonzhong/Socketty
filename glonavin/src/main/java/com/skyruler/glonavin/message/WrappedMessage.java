@@ -1,6 +1,7 @@
 package com.skyruler.glonavin.message;
 
 import com.skyruler.socketclient.filter.MessageFilter;
+import com.skyruler.socketclient.message.AckMode;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IWrappedMessage;
 import com.skyruler.socketclient.util.ArrayUtils;
@@ -49,6 +50,10 @@ public class WrappedMessage implements IWrappedMessage {
 
     public AckMode getAckMode() {
         return ackMode;
+    }
+
+    public byte getMessageID() {
+        return messageID;
     }
 
     public static class Builder {
@@ -105,9 +110,15 @@ public class WrappedMessage implements IWrappedMessage {
         private List<IMessage> buildMessageList() {
             List<IMessage> messageList = new ArrayList<>();
             boolean needSplit = body != null && body.length > limitBodyLength;
-            if (needSplit) {
-                List<byte[]> payloads = ArrayUtils.divide(body, limitBodyLength);
-                for (short i = 0; i < payloads.size(); i++) {
+            if (!needSplit) {
+                IMessage msg = new Message.Builder(msgId).body(body).build();
+                messageList.add(msg);
+                return messageList;
+            }
+
+            List<byte[]> payloads = ArrayUtils.divide(body, limitBodyLength);
+            for (short i = 0; i < payloads.size(); i++) {
+                if (ackMode == AckMode.PACKET) {
                     // 需要再每一个body前加上包序号
                     short seqNum = (short) (payloads.size() - i);
                     byte[] data = ByteBuffer
@@ -118,10 +129,10 @@ public class WrappedMessage implements IWrappedMessage {
                             .array();
                     IMessage msg = new Message.Builder(msgId).body(data).build();
                     messageList.add(msg);
+                } else if (ackMode == AckMode.MESSAGE) {
+                    IMessage msg = new Message.Builder(msgId).body(payloads.get(i)).build();
+                    messageList.add(msg);
                 }
-            } else {
-                IMessage msg = new Message.Builder(msgId).body(body).build();
-                messageList.add(msg);
             }
             return messageList;
         }

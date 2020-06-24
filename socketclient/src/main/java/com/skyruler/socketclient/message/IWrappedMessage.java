@@ -15,9 +15,4 @@ public interface IWrappedMessage {
 
     AckMode getAckMode();
 
-    enum AckMode {
-        NON,
-        PACKET,
-        MESSAGE
-    }
 }

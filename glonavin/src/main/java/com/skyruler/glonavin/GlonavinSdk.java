@@ -10,13 +10,13 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.skyruler.glonavin.command.AbsCommand;
-import com.skyruler.glonavin.command.DeviceModeCmd;
-import com.skyruler.glonavin.command.EditionCommand;
-import com.skyruler.glonavin.command.MetroLineCmd;
-import com.skyruler.glonavin.command.SkipStationCmd;
-import com.skyruler.glonavin.command.TempStopStationCmd;
-import com.skyruler.glonavin.command.TestControlCmd;
-import com.skyruler.glonavin.command.TestDirectionCmd;
+import com.skyruler.glonavin.command.subway.DeviceModeCmd;
+import com.skyruler.glonavin.command.subway.EditionCommand;
+import com.skyruler.glonavin.command.subway.MetroLineCmd;
+import com.skyruler.glonavin.command.subway.SkipStationCmd;
+import com.skyruler.glonavin.command.subway.TempStopStationCmd;
+import com.skyruler.glonavin.command.subway.TestControlCmd;
+import com.skyruler.glonavin.command.subway.TestDirectionCmd;
 import com.skyruler.glonavin.connection.GlonavinConnectOption;
 import com.skyruler.glonavin.connection.IBleStateListener;
 import com.skyruler.glonavin.message.WrappedMessage;
@@ -217,7 +217,7 @@ public class GlonavinSdk {
                     .Builder(cmd.getMsgID())
                     .body(cmd.getBody())
                     .ackMode(cmd.getAckMode())
-                    .msgFilter(cmd.getMsgFilter())
+                    .msgFilter(cmd.getResponseFilter())
                     .resultHandler(cmd.getResultHandler())
                     .timeout(cmd.getTimeout())
                     .limitBodyLength(cmd.getLimitBodyLength())

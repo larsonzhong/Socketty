@@ -13,8 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.skyruler.android.logger.Log;
 import com.skyruler.glonavin.GlonavinSdk;
-import com.skyruler.glonavin.command.TestControlCmd;
+import com.skyruler.glonavin.command.subway.TestControlCmd;
 import com.skyruler.glonavin.connection.IBleStateListener;
+import com.skyruler.glonavin.report.BaseReportData;
 import com.skyruler.glonavin.report.IDataReporter;
 import com.skyruler.glonavin.report.SubwayReportData;
 import com.skyruler.glonavin.xml.model.Station;
@@ -153,18 +154,21 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     }
 
     @Override
-    public void report(final SubwayReportData data) {
-        int index = getSubwayStationIndex(data);
+    public void report(final BaseReportData baseReportData) {
+        if (baseReportData instanceof SubwayReportData) {
+            SubwayReportData data = (SubwayReportData) baseReportData;
+            int index = getSubwayStationIndex(data);
 
-        Log.d(TAG, index + "收到定位上报>>>" + data.toString());
-        showText(tvDtState, data.getAccStateStr());
-        showText(tvSeqNum, data.getSeqNum() + "");
-        showText(tvLatitude, String.valueOf(data.getLatitude()));
-        showText(tvLongitude, String.valueOf(data.getLongitude()));
+            Log.d(TAG, index + "收到定位上报>>>" + data.toString());
+            showText(tvDtState, data.getAccStateStr());
+            showText(tvSeqNum, data.getSeqNum() + "");
+            showText(tvLatitude, String.valueOf(data.getLatitude()));
+            showText(tvLongitude, String.valueOf(data.getLongitude()));
 
-        showText(tvValidLoc, getString(R.string.loc_valid, data.isValidLoc() + ""));
-        showText(tvSiteID, getString(R.string.site_id, parseSiteID(data.getSiteID())));
-        showText(tvBattery, getString(R.string.battery, data.getBattery()));
+            showText(tvValidLoc, getString(R.string.loc_valid, data.isValidLoc() + ""));
+            showText(tvSiteID, getString(R.string.site_id, parseSiteID(data.getSiteID())));
+            showText(tvBattery, getString(R.string.battery, data.getBattery()));
+        }
     }
 
     private String parseSiteID(byte siteID) {

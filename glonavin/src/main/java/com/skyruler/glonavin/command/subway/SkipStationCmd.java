@@ -1,7 +1,9 @@
-package com.skyruler.glonavin.command;
+package com.skyruler.glonavin.command.subway;
 
+import com.skyruler.glonavin.command.AbsCommand;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.filter.MessageIdFilter;
+import com.skyruler.socketclient.message.AckMode;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IWrappedMessage;
 
@@ -11,24 +13,7 @@ public class SkipStationCmd extends AbsCommand {
     private static final byte RESP_DATA_SUCCESS = 0x01;
 
     public SkipStationCmd() {
-        super(ID);
-        super.responseID = RESP_ID;
-        super.ackMode = IWrappedMessage.AckMode.MESSAGE;
-    }
-
-    @Override
-    public int getTimeout() {
-        return SEND_TIMEOUT_LONG;
-    }
-
-    @Override
-    public int getLimitBodyLength() {
-        return 14;
-    }
-
-    @Override
-    public MessageFilter getMsgFilter() {
-        return new MessageIdFilter(responseID);
+        super(ID,RESP_ID, AckMode.MESSAGE);
     }
 
     @Override
