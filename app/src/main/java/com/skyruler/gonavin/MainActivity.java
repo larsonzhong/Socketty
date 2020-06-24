@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.skyruler.android.logger.Log;
 import com.skyruler.glonavin.GlonavinSdk;
-import com.skyruler.glonavin.command.subway.TestControlCmd;
+import com.skyruler.glonavin.command.TestControlCmd;
 import com.skyruler.glonavin.connection.IBleStateListener;
 import com.skyruler.glonavin.report.BaseReportData;
 import com.skyruler.glonavin.report.IDataReporter;

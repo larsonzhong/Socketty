@@ -1,7 +1,5 @@
-package com.skyruler.glonavin.command.subway;
+package com.skyruler.glonavin.command;
 
-import com.skyruler.glonavin.command.AbsCommand;
-import com.skyruler.glonavin.message.WrappedMessage;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.AckMode;
 import com.skyruler.socketclient.message.IMessage;

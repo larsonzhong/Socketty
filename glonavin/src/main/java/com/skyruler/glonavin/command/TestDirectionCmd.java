@@ -1,4 +1,4 @@
-package com.skyruler.glonavin.command.subway;
+package com.skyruler.glonavin.command;
 
 import com.skyruler.glonavin.command.AbsCommand;
 import com.skyruler.socketclient.filter.MessageFilter;

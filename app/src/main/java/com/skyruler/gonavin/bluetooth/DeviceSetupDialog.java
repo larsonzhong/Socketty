@@ -25,7 +25,7 @@ import com.skyruler.gonavin.R;
 import com.skyruler.glonavin.GlonavinSdk;
 import com.skyruler.glonavin.command.subway.DeviceModeCmd;
 import com.skyruler.glonavin.command.subway.MetroLineCmd;
-import com.skyruler.glonavin.command.subway.TestDirectionCmd;
+import com.skyruler.glonavin.command.TestDirectionCmd;
 import com.skyruler.glonavin.xml.model.City;
 import com.skyruler.glonavin.xml.model.MetroLine;
 import com.skyruler.glonavin.xml.model.Station;
