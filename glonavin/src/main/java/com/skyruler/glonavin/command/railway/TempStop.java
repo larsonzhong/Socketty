@@ -5,13 +5,13 @@ import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.AckMode;
 import com.skyruler.socketclient.message.IMessage;
 
-public class SkipStation extends AbsCommand {
-    private static final byte ID = 0x36;
-    private static final byte RESP_ID = 0x37;
+public class TempStop extends AbsCommand {
+    private static final byte ID = 0x38;
+    private static final byte RESP_ID = 0x39;
     private static final byte RESP_DATA_FAILED= 0x00;
     private static final byte RESP_DATA_SUCCESS = 0x01;
 
-    public SkipStation(byte[] siteIds) {
+    public TempStop(byte[] siteIds) {
         super(ID, RESP_ID, AckMode.MESSAGE);
         super.body = siteIds;
     }

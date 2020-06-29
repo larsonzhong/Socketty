@@ -6,7 +6,7 @@
     <string name="back">返回</string>
     <string name="device_cancel">取消</string>
     <string name="still">静止</string>
-    <string name="action_config_test">配置路线</string>
+    <string name="action_config_test">惯导配置</string>
     <string name="action_start_test">开始测试</string>
     <string name="action_stop_test">"停止测试"</string>
     <string name="action_review_record">回放记录</string>
@@ -23,6 +23,7 @@
 
     <!-- setup devices -->
     <string name="select_mode">选择模式</string>
+    <string name="subway_mode">地铁模式</string>
     <string name="send">发送</string>
     <string name="send_start_end">发送起始点</string>
     <string name="select_xml">选择XML</string>

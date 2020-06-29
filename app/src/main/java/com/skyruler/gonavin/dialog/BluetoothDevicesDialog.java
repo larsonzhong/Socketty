@@ -1,4 +1,4 @@
-package com.skyruler.gonavin.bluetooth;
+package com.skyruler.gonavin.dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -7,16 +7,24 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.skyruler.android.logger.Log;
-import com.skyruler.glonavin.GlonavinSdk;
 import com.skyruler.glonavin.connection.BluetoothAccess;
 import com.skyruler.glonavin.connection.IBleStateListener;
+import com.skyruler.glonavin.core.GlonavinFactory;
+import com.skyruler.glonavin.core.RailManager;
+import com.skyruler.glonavin.core.SubwayManager;
 import com.skyruler.gonavin.R;
 
 import java.util.ArrayList;
@@ -25,22 +33,6 @@ import java.util.List;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-import static com.skyruler.glonavin.GlonavinSdk.BLUETOOTH_TYPE_SUBWAY;
-
-
-/**
- * ......................-~~~~~~~~~-._       _.-~~~~~~~~~-.
- * ............... _ _.'              ~.   .~              `.__
- * ..............'//     NO           \./      BUG         \\`.
- * ............'//                     |                     \\`.
- * ..........'// .-~"""""""~~~~-._     |     _,-~~~~"""""""~-. \\`.
- * ........'//.-"                 `-.  |  .-'                 "-.\\`.
- * ......'//______.============-..   \ | /   ..-============.______\\`.
- * ....'______________________________\|/______________________________`.
- * ..larsonzhong@163.com      created in 2018/7/6     @author : larsonzhong
- * <p>
- * * * * * * * * * 加速度惯导设备连接对话框* * * * * * * * * * * * * * * * *
- */
 public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickListener,
         AdapterView.OnItemClickListener, DialogInterface.OnClickListener {
     private static final int SCAN_PERIOD = 10000;
@@ -50,7 +42,7 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
     private List<BluetoothAccess> mListDevices;
     private BluetoothAccess mSelectedDevice;
     private ScanAdapter mScanAdapter;
-    private GlonavinSdk glonavinSdk;
+    private SubwayManager glonavinSdk;
     private IBleStateListener listener = new IBleStateListener() {
         @Override
         public void onScanResult(BluetoothDevice device, boolean isConnected) {
@@ -63,9 +55,10 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
                     break;
                 }
             }
-            boolean isGlonavinMode = glonavinSdk.isSubwayMode() || glonavinSdk.isIndoorMode();
-            boolean isSpacialDevice = device.getName() != null && device.getName().equals(GlonavinSdk.GLONAVIN_DEVICE_NAME);
-            if (isNewDevice && isGlonavinMode && isSpacialDevice) {
+            boolean isSpacialDevice = device.getName() != null && (
+                    device.getName().equals(SubwayManager.DEVICE_NAME)
+                            || device.getName().equals(RailManager.DEVICE_NAME));
+            if (isNewDevice && isSpacialDevice) {
                 mListDevices.add(new BluetoothAccess(device, isConnected));
             }
             refreshDeviceList();
@@ -108,9 +101,8 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
 
     public BluetoothDevicesDialog(Context mContext) {
         super(mContext);
-        this.glonavinSdk = GlonavinSdk.getInstance();
+        this.glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
         this.mHandler = new Handler();
-        this.glonavinSdk.setBluetoothMode(BLUETOOTH_TYPE_SUBWAY);
     }
 
     @Override
@@ -207,4 +199,64 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
     }
 
 
+    public class ScanAdapter extends BaseAdapter {
+        private final Context mContext;
+        private final List<BluetoothAccess> mLists;
+
+        ScanAdapter(Context context, List<BluetoothAccess> list) {
+            mContext = context;
+            mLists = list;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
+            if (convertView == null) {
+                viewHolder = new ViewHolder();
+                convertView = LayoutInflater.from(mContext).inflate(R.layout.devices_item, null);
+                viewHolder.image = convertView.findViewById(R.id.itemImage);
+                viewHolder.title = convertView.findViewById(R.id.itemTitle);
+                viewHolder.summary = convertView.findViewById(R.id.itemSummary);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+            BluetoothAccess bluetoothAccess = getItem(position);
+            if (bluetoothAccess.isConnected()) {
+                viewHolder.image.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.image.setVisibility(View.INVISIBLE);
+            }
+            if (TextUtils.isEmpty(bluetoothAccess.getDeviceName())) {
+                viewHolder.title.setText(bluetoothAccess.getDeviceAddress());
+                viewHolder.summary.setVisibility(View.GONE);
+            } else {
+                viewHolder.title.setText(bluetoothAccess.getDeviceName());
+                viewHolder.summary.setText(bluetoothAccess.getDeviceAddress());
+                viewHolder.summary.setVisibility(View.VISIBLE);
+            }
+            return convertView;
+        }
+
+        @Override
+        public int getCount() {
+            return mLists.size();
+        }
+
+        @Override
+        public BluetoothAccess getItem(int position) {
+            return mLists.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        class ViewHolder {
+            ImageView image;
+            TextView title;
+            TextView summary;
+        }
+    }
 }

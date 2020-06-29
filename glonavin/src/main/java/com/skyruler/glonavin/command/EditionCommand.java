@@ -1,10 +1,8 @@
-package com.skyruler.glonavin.command.subway;
+package com.skyruler.glonavin.command;
 
-import com.skyruler.glonavin.command.AbsCommand;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.AckMode;
 import com.skyruler.socketclient.message.IMessage;
-import com.skyruler.socketclient.message.IWrappedMessage;
 import com.skyruler.socketclient.util.ArrayUtils;
 
 import java.nio.ByteBuffer;
@@ -49,6 +47,7 @@ public class EditionCommand extends AbsCommand {
     public EditionCommand(EditionCallBack callBack) {
         super(ID, RESP_ID, AckMode.MESSAGE);
         this.callBack = callBack;
+        // 保留2位
         super.body = new byte[2];
     }
 
@@ -69,7 +68,7 @@ public class EditionCommand extends AbsCommand {
 
                 Edition edition = new Edition(softVersion, hardVersion, protocolVersion);
                 callBack.handleEdition(edition);
-                return id == RESP_ID;
+                return msg.getBody() != null && msg.getBody().length > 0;
             }
         };
     }

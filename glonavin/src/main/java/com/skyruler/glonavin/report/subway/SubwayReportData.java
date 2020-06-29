@@ -1,7 +1,8 @@
-package com.skyruler.glonavin.report;
+package com.skyruler.glonavin.report.subway;
 
 import android.location.Location;
 
+import com.skyruler.glonavin.report.BaseReportData;
 import com.skyruler.socketclient.message.IMessage;
 
 import java.nio.ByteBuffer;
@@ -17,7 +18,7 @@ public class SubwayReportData extends BaseReportData {
     private static final byte LOCATION_DATA_VALID = 0X01;
     private static final byte LOCATION_DATA_ERROR = 0x00;
 
-    private static final String LOC_PROVIDER_NAME = "Glonavin";
+    private static final String LOC_PROVIDER_NAME = "Glonavin_Subway";
 
     private final short seqNum;
     private final byte siteID;
@@ -108,4 +109,6 @@ public class SubwayReportData extends BaseReportData {
         loc.setLongitude(longitude);
         return loc;
     }
+
+
 }

@@ -1,4 +1,4 @@
-package com.skyruler.gonavin.bluetooth;
+package com.skyruler.gonavin.dialog;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -21,14 +21,12 @@ import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.skyruler.android.logger.Log;
-import com.skyruler.gonavin.R;
-import com.skyruler.glonavin.GlonavinSdk;
-import com.skyruler.glonavin.command.subway.DeviceModeCmd;
-import com.skyruler.glonavin.command.subway.MetroLineCmd;
-import com.skyruler.glonavin.command.TestDirectionCmd;
+import com.skyruler.glonavin.core.GlonavinFactory;
+import com.skyruler.glonavin.core.SubwayManager;
 import com.skyruler.glonavin.xml.model.City;
 import com.skyruler.glonavin.xml.model.MetroLine;
 import com.skyruler.glonavin.xml.model.Station;
+import com.skyruler.gonavin.R;
 import com.skyruler.gonavin.SubwayDataHolder;
 
 import java.io.File;
@@ -39,12 +37,10 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 
-public class DeviceSetupDialog extends AlertDialog implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class SubwaySetupDialog extends AlertDialog implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     private String SD_ROOT_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
 
-    private GlonavinSdk glonavinSdk;
-    private String[] mModes;
-    private String mDeviceMode;
+    private SubwayManager glonavinSdk;
     private MetroLine mMetroLine;
     private byte mStartSID;
     private byte mEndSID;
@@ -55,9 +51,9 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     private TextView editionTv;
     private Button btnSendDirection;
 
-    public DeviceSetupDialog(Context context) {
+    public SubwaySetupDialog(Context context) {
         super(context);
-        this.glonavinSdk = GlonavinSdk.getInstance();
+        this.glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
     }
 
     @Override
@@ -72,12 +68,6 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     private void initView(View mView) {
         editionTv = mView.findViewById(R.id.editionTv);
         btnSendDirection = mView.findViewById(R.id.btn_send_start_end);
-
-        mModes = getContext().getResources().getStringArray(R.array.device_mode);
-        Spinner deviceModeSpinner = mView.findViewById(R.id.spinner_device_mode);
-        ArrayAdapter<String> selectModeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, mModes);
-        deviceModeSpinner.setAdapter(selectModeAdapter);
-        deviceModeSpinner.setOnItemSelectedListener(this);
 
         Spinner selectStartSpinner = mView.findViewById(R.id.spinner_select_start);
         selectStartAdapter = new NameAdapter<>();
@@ -116,9 +106,6 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
         switch (adapterView.getId()) {
-            case R.id.spinner_device_mode:
-                mDeviceMode = mModes[pos];
-                break;
             case R.id.spinner_select_line:
                 mMetroLine = city.getMetroLines().get(pos);
                 selectStartAdapter.setData(mMetroLine.getStations());
@@ -190,14 +177,14 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     }
 
     private void sendStartEndStation() {
-        boolean success = glonavinSdk.setTestDirection(new TestDirectionCmd(mStartSID, mEndSID));
+        boolean success = glonavinSdk.setTestDirection(mStartSID, mEndSID);
         showToast("发送起始点" + success);
         super.dismiss();
     }
 
     private void sendTestMode() {
         findViewById(R.id.btn_send_mode).setEnabled(false);
-        boolean success = glonavinSdk.chooseMode(new DeviceModeCmd(mDeviceMode));
+        boolean success = glonavinSdk.chooseMode();
         findViewById(R.id.btn_send_mode).setEnabled(true);
         showToast("发送模式" + success);
     }
@@ -207,7 +194,7 @@ public class DeviceSetupDialog extends AlertDialog implements View.OnClickListen
     }
 
     private void sendMetroLine() {
-        boolean success = glonavinSdk.sendMetroLine(new MetroLineCmd(mMetroLine));
+        boolean success = glonavinSdk.sendMetroLine(mMetroLine);
         showToast("发送地铁路线" + success);
         if (success) {
             SubwayDataHolder.getInstance().setMetroLine(mMetroLine);

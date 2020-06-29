@@ -1,4 +1,4 @@
-package com.skyruler.glonavin;
+package com.skyruler.glonavin.core;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -10,46 +10,25 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.skyruler.glonavin.command.AbsCommand;
-import com.skyruler.glonavin.command.subway.DeviceModeCmd;
-import com.skyruler.glonavin.command.subway.EditionCommand;
-import com.skyruler.glonavin.command.subway.MetroLineCmd;
-import com.skyruler.glonavin.command.subway.SkipStationCmd;
-import com.skyruler.glonavin.command.subway.TempStopStationCmd;
+import com.skyruler.glonavin.command.EditionCommand;
 import com.skyruler.glonavin.command.TestControlCmd;
 import com.skyruler.glonavin.command.TestDirectionCmd;
 import com.skyruler.glonavin.connection.GlonavinConnectOption;
 import com.skyruler.glonavin.connection.IBleStateListener;
 import com.skyruler.glonavin.message.WrappedMessage;
-import com.skyruler.glonavin.report.IDataReporter;
-import com.skyruler.glonavin.report.SubwayReportData;
-import com.skyruler.glonavin.xml.model.City;
-import com.skyruler.glonavin.xml.model.MetroData;
-import com.skyruler.glonavin.xml.parser.MetroParser;
 import com.skyruler.socketclient.SocketClient;
 import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.exception.ConnectionException;
 import com.skyruler.socketclient.exception.UnFormatMessageException;
 import com.skyruler.socketclient.filter.MessageIdFilter;
-import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class GlonavinSdk {
-    private static final String TAG = "GlonavinSdk";
-    public static final String GLONAVIN_DEVICE_NAME = "FootSensor";
-    public static final int BLUETOOTH_TYPE_ALL = 3;
-    public static final int BLUETOOTH_TYPE_SUBWAY = 4;
-    public static final int BLUETOOTH_TYPE_INDOOR = 5;
-    private static final byte REPORT_ID_SUBWAY = 0x40;
-
-    private int mBluetoothType = BLUETOOTH_TYPE_ALL;
+class ManagerCore {
+    private static final String TAG = "ManagerCore";
     private static final long SCAN_PERIOD = 10000L;
-    private static GlonavinSdk INSTANCE = new GlonavinSdk();
     private BluetoothManager bluetoothManager;
     private SocketClient socketClient;
 
@@ -58,14 +37,8 @@ public class GlonavinSdk {
 
     private CopyOnWriteArrayList<IBleStateListener> connListeners;
 
-    private GlonavinSdk() {
-    }
 
-    public static GlonavinSdk getInstance() {
-        return INSTANCE;
-    }
-
-    public void setup(Context context) {
+    void setup(Context context) {
         bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         this.socketClient = new SocketClient();
         this.socketClient.setup(context, new IStateListener() {
@@ -89,19 +62,8 @@ public class GlonavinSdk {
         });
     }
 
-    public void setBluetoothMode(int bluetoothType) {
-        this.mBluetoothType = bluetoothType;
-    }
 
-    public boolean isSubwayMode() {
-        return mBluetoothType == BLUETOOTH_TYPE_SUBWAY;
-    }
-
-    public boolean isIndoorMode() {
-        return mBluetoothType == BLUETOOTH_TYPE_INDOOR;
-    }
-
-    public void addConnectStateListener(IBleStateListener listener) {
+    void addConnectStateListener(IBleStateListener listener) {
         if (connListeners == null) {
             connListeners = new CopyOnWriteArrayList<>();
         }
@@ -110,100 +72,63 @@ public class GlonavinSdk {
         }
     }
 
-    public void removeConnectListener(IBleStateListener listener) {
+    void removeConnectListener(IBleStateListener listener) {
         if (connListeners != null) {
             connListeners.remove(listener);
         }
     }
 
-    public void listenerForReport(final IDataReporter reporter) {
-        this.socketClient.addMessageListener(new IMessageListener() {
-            @Override
-            public void processMessage(IMessage msg) {
-                SubwayReportData subwayReportData = new SubwayReportData(msg);
-                reporter.report(subwayReportData);
-            }
-        }, new MessageIdFilter(REPORT_ID_SUBWAY));
+    void listenerForReport(IMessageListener listener, byte reportID) {
+        this.socketClient.addMessageListener(listener, new MessageIdFilter(reportID));
     }
 
-    public void stopSubwayReport() {
-        this.socketClient.removeMessageListener(new MessageIdFilter(REPORT_ID_SUBWAY));
+    void removeMsgListener(byte msgID) {
+        this.socketClient.removeMessageListener(new MessageIdFilter(msgID));
     }
 
-    public boolean chooseMode(DeviceModeCmd cmd) {
-        boolean success = sendMessage(cmd);
-        Log.d(TAG, "choose mode :" + cmd.toString() + "," + success);
-        return success;
-    }
-
-    public boolean sendMetroLine(MetroLineCmd cmd) {
-        boolean success = sendMessage(cmd);
-        Log.d(TAG, "send subway line :" + cmd.toString() + "," + success);
-        return success;
-    }
-
-    public boolean setTestDirection(TestDirectionCmd cmd) {
+    boolean setTestDirection(byte startSid, byte endSid) {
+        TestDirectionCmd cmd = new TestDirectionCmd(startSid, endSid);
         boolean success = sendMessage(cmd);
         Log.d(TAG, "set test direction :" + cmd.toString() + ", " + success);
         return success;
     }
 
-    public boolean startTest(TestControlCmd cmd) {
+    boolean startTest(boolean start) {
+        TestControlCmd cmd = new TestControlCmd(start);
         boolean success = sendMessage(cmd);
         if (success) {
             this.isTestStart = cmd.isStartTest();
         }
-        Log.d(TAG, "start subway test :" + cmd.toString() + "," + success);
+        Log.d(TAG, "send start test :" + cmd.toString() + "," + success);
         return success;
     }
 
-    public boolean skipStation() {
-        if (!isTestStart) {
-            Log.d(TAG, "test did not start yet!!");
-            return false;
-        }
-        SkipStationCmd cmd = new SkipStationCmd();
-        boolean success = sendMessage(cmd);
-        Log.d(TAG, "skip subway station :" + cmd.toString() + "," + success);
-        return success;
-    }
-
-    public boolean tempStopStation() {
-        if (!isTestStart) {
-            Log.d(TAG, "test did not start yet!!");
-            return false;
-        }
-        TempStopStationCmd cmd = new TempStopStationCmd();
-        boolean success = sendMessage(cmd);
-        Log.d(TAG, "temp stop station :" + cmd.toString() + "," + success);
-        return success;
-    }
-
-    public void getEdition(EditionCommand.EditionCallBack callBack) {
+    void getEdition(EditionCommand.EditionCallBack callBack) {
         EditionCommand cmd = new EditionCommand(callBack);
         boolean success = sendMessage(cmd);
-        Log.d(TAG, "temp stop station :" + cmd.toString() + "," + success);
+        Log.d(TAG, "get edition  :" + cmd.toString() + "," + success);
     }
 
-    public void connect(BluetoothDevice bluetoothDevice) {
+    void connect(BluetoothDevice bluetoothDevice) {
         GlonavinConnectOption option = new GlonavinConnectOption(bluetoothDevice);
         socketClient.connect(option);
     }
 
-    public boolean isConnected() {
+    boolean isConnected() {
         return socketClient.isConnected();
     }
 
-    public void disconnect() {
+    void disconnect() {
         socketClient.disConnect();
     }
 
-    public boolean isTestStart() {
+    boolean isTestStart() {
         return isTestStart;
     }
 
     public void onDestroy() {
         socketClient.onDestroy();
+        socketClient = null;
         BluetoothAdapter bluetoothAdapter = getBluetoothAdapter();
         if (mScanning && bluetoothAdapter != null) {
             bluetoothAdapter.stopLeScan(mLeScanCallback);
@@ -211,7 +136,7 @@ public class GlonavinSdk {
         }
     }
 
-    private boolean sendMessage(AbsCommand cmd) {
+    boolean sendMessage(AbsCommand cmd) {
         try {
             WrappedMessage message = new WrappedMessage
                     .Builder(cmd.getMsgID())
@@ -234,7 +159,7 @@ public class GlonavinSdk {
         }
     }
 
-    public void scanDevice(boolean enable) {
+    void scanDevice(boolean enable) {
         if (enable) {
             List<BluetoothDevice> connectedDevices = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
             for (BluetoothDevice connectedDevice : connectedDevices) {
@@ -292,22 +217,6 @@ public class GlonavinSdk {
     public boolean isBluetoothEnable() {
         BluetoothAdapter bluetoothAdapter = getBluetoothAdapter();
         return bluetoothAdapter.isEnabled();
-    }
-
-
-    public City readSubwayLineFromXmlFile(String path) throws Exception {
-        InputStream is = new FileInputStream(new File(path));
-        MetroParser parser = new MetroParser();
-        MetroData metroData = parser.parse(is);
-        is.close();
-        if (metroData != null) {
-            Log.d(TAG, metroData.toString());
-        }
-        if (metroData == null || metroData.getCities() == null) {
-            throw new IllegalStateException("xml file parse failed,metroData is null");
-        }
-        // 为了方便只取第一个city
-        return metroData.getCities().get(0);
     }
 
 }

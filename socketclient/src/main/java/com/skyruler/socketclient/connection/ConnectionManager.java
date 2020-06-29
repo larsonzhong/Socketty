@@ -10,8 +10,8 @@ import com.skyruler.socketclient.connection.intf.IConnection;
 import com.skyruler.socketclient.connection.intf.IConnectionManager;
 import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.connection.socket.SocketConnection;
-import com.skyruler.socketclient.exception.UnFormatMessageException;
 import com.skyruler.socketclient.exception.ConnectionException;
+import com.skyruler.socketclient.exception.UnFormatMessageException;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
@@ -83,7 +83,9 @@ public class ConnectionManager implements IConnectionManager {
 
     @Override
     public void onDestroy() {
+        mConnection.disconnect();
         mConnection.onDestroy();
+        mConnection = null;
     }
 
     @Override
@@ -92,7 +94,7 @@ public class ConnectionManager implements IConnectionManager {
     }
 
     @Override
-    public IMessage sendSyncMessage(IMessage msgDataBean, MessageFilter filter, long timeout) throws ConnectionException,UnFormatMessageException {
+    public IMessage sendSyncMessage(IMessage msgDataBean, MessageFilter filter, long timeout) throws ConnectionException, UnFormatMessageException {
         if (filter == null || timeout < 0) {
             throw new UnFormatMessageException("can not send sync IMessage without filter or timeout");
         }

@@ -9,25 +9,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.skyruler.android.logger.Log;
-import com.skyruler.glonavin.GlonavinSdk;
-import com.skyruler.glonavin.command.TestControlCmd;
 import com.skyruler.glonavin.connection.IBleStateListener;
+import com.skyruler.glonavin.core.GlonavinFactory;
+import com.skyruler.glonavin.core.SubwayManager;
 import com.skyruler.glonavin.report.BaseReportData;
 import com.skyruler.glonavin.report.IDataReporter;
-import com.skyruler.glonavin.report.SubwayReportData;
+import com.skyruler.glonavin.report.subway.SubwayReportData;
 import com.skyruler.glonavin.xml.model.Station;
-import com.skyruler.gonavin.bluetooth.BluetoothDevicesDialog;
-import com.skyruler.gonavin.bluetooth.DeviceSetupDialog;
+import com.skyruler.gonavin.dialog.BluetoothDevicesDialog;
+import com.skyruler.gonavin.dialog.SubwaySetupDialog;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements IDataReporter, View.OnClickListener {
     private static final String TAG = "MainActivity";
-    private GlonavinSdk glonavinSdk = GlonavinSdk.getInstance();
     private BluetoothDevicesDialog mDeviceDialog;
+    private SubwayManager glonavinSdk;
 
     private TextView tvHardVersionName;
     private TextView tvSoftVersionName;
@@ -44,7 +45,6 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initGlonavin();
         initView();
     }
 
@@ -67,7 +67,73 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
         findViewById(R.id.btnGetEdition).setOnClickListener(this);
     }
 
-    private void initGlonavin() {
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        glonavinSdk.stopSubwayReport();
+        glonavinSdk.scanDevice(false);
+        glonavinSdk.onDestroy();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (glonavinSdk != null) {
+            int icon = glonavinSdk.isConnected() ? R.mipmap.bluetooth_connected : R.mipmap.bluetooth_disabled;
+            menu.findItem(R.id.action_connect_device).setEnabled(true).setIcon(icon);
+
+            int iconConfig = glonavinSdk.isConnected() ? R.mipmap.config_enable : R.mipmap.config_disable;
+            menu.findItem(R.id.action_config_test).setIcon(iconConfig).setEnabled(glonavinSdk.isConnected());
+
+            String testState = glonavinSdk.isTestStart() ? getString(R.string.action_stop_test) : getString(R.string.action_start_test);
+            menu.findItem(R.id.action_start_test).setTitle(testState);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_select_mode:
+                showSelectModeDialog();
+                break;
+            case R.id.action_connect_device:
+                showBleDeviceDialog();
+                break;
+            case R.id.action_config_test:
+                new SubwaySetupDialog(this).show();
+                break;
+            case R.id.action_start_test:
+                startOrStop();
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showSelectModeDialog() {
+        int modeCode = GlonavinFactory.getMode();
+        String[] items = new String[]{"室内模式", "地铁模式", "高铁模式"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("选择设备模式")
+                .setSingleChoiceItems(items, modeCode, (dialog, which) -> {
+                    initGlonavin(which);
+                    Toast.makeText(MainActivity.this, "选择了" + items[which], Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                    invalidateOptionsMenu();
+                }).show();
+    }
+
+    private void initGlonavin(int mode) {
+        GlonavinFactory.setupMode(mode);
+        glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
         glonavinSdk.setup(getApplicationContext());
         glonavinSdk.addConnectStateListener(new IBleStateListener() {
             @Override
@@ -87,56 +153,12 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        glonavinSdk.stopSubwayReport();
-        glonavinSdk.scanDevice(false);
-        glonavinSdk.onDestroy();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        int icon = glonavinSdk.isConnected() ? R.mipmap.bluetooth_connected : R.mipmap.bluetooth_disabled;
-        menu.findItem(R.id.action_connect_device).setIcon(icon);
-
-        int iconConfig = glonavinSdk.isConnected() ? R.mipmap.config_enable : R.mipmap.config_disable;
-        menu.findItem(R.id.action_config_test).setIcon(iconConfig);
-        menu.findItem(R.id.action_config_test).setCheckable(glonavinSdk.isConnected());
-
-        String testState = glonavinSdk.isTestStart() ? getString(R.string.action_stop_test) : getString(R.string.action_start_test);
-        menu.findItem(R.id.action_start_test).setTitle(testState);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_connect_device:
-                showBleDeviceDialog();
-                break;
-            case R.id.action_config_test:
-                new DeviceSetupDialog(this).show();
-                break;
-            case R.id.action_start_test:
-                startOrStop();
-                break;
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     private void startOrStop() {
+        if (glonavinSdk == null) {
+            return;
+        }
         boolean isStart = glonavinSdk.isTestStart();
-        boolean success = glonavinSdk.startTest(new TestControlCmd(!isStart));
+        boolean success = glonavinSdk.startTest(!isStart);
         //开启测试才记录数据
         showToast((isStart ? getString(R.string.action_stop_test) : getString(R.string.action_start_test)) + " 发送" + success);
         invalidateOptionsMenu();

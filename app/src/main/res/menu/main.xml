@@ -4,24 +4,32 @@
     tools:context="com.skyruler.indoorlocalization.client.IMUActivity">
 
     <item
+        android:id="@+id/action_select_mode"
+        android:icon="@mipmap/mode_disable"
+        android:orderInCategory="100"
+        android:title="@string/select_mode"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_connect_device"
+        android:enabled="false"
         android:icon="@mipmap/bluetooth_disabled"
         android:orderInCategory="100"
         android:title="@string/action_bluetooth"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_config_test"
         android:icon="@mipmap/config_disable"
         android:orderInCategory="100"
         android:title="@string/action_config_test"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_start_test"
         android:orderInCategory="100"
         android:title="@string/action_start_test"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
 
 </menu>
