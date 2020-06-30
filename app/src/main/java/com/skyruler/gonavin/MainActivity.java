@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
 
     private void showSelectModeDialog() {
         int modeCode = GlonavinFactory.getMode();
-        String[] items = new String[]{"室内模式", "地铁模式", "高铁模式"};
+        String[] items = GlonavinFactory.getModeStrings();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("选择设备模式")
                 .setSingleChoiceItems(items, modeCode, (dialog, which) -> {
