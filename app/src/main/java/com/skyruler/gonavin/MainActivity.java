@@ -13,13 +13,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.skyruler.android.logger.Log;
-import com.skyruler.glonavin.connection.IBleStateListener;
-import com.skyruler.glonavin.core.GlonavinFactory;
-import com.skyruler.glonavin.core.SubwayManager;
-import com.skyruler.glonavin.report.BaseReportData;
-import com.skyruler.glonavin.report.IDataReporter;
-import com.skyruler.glonavin.report.subway.SubwayReportData;
-import com.skyruler.glonavin.xml.model.Station;
+import com.skyruler.middleware.connection.IBleStateListener;
+import com.skyruler.middleware.core.GlonavinFactory;
+import com.skyruler.middleware.core.SubwayManager;
+import com.skyruler.middleware.report.BaseReportData;
+import com.skyruler.middleware.report.IDataReporter;
+import com.skyruler.middleware.report.subway.SubwayReportData;
+import com.skyruler.middleware.xml.model.Station;
 import com.skyruler.gonavin.dialog.BluetoothDevicesDialog;
 import com.skyruler.gonavin.dialog.SubwaySetupDialog;
 

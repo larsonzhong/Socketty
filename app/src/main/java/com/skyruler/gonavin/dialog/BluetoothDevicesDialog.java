@@ -20,11 +20,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.skyruler.android.logger.Log;
-import com.skyruler.glonavin.connection.BluetoothAccess;
-import com.skyruler.glonavin.connection.IBleStateListener;
-import com.skyruler.glonavin.core.GlonavinFactory;
-import com.skyruler.glonavin.core.RailManager;
-import com.skyruler.glonavin.core.SubwayManager;
+import com.skyruler.middleware.connection.BluetoothAccess;
+import com.skyruler.middleware.connection.IBleStateListener;
+import com.skyruler.middleware.core.GlonavinFactory;
+import com.skyruler.middleware.core.RailManager;
+import com.skyruler.middleware.core.SubwayManager;
 import com.skyruler.gonavin.R;
 
 import java.util.ArrayList;
