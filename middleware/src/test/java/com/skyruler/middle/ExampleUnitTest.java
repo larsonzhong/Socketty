@@ -1,4 +1,4 @@
-package com.skyruler.glonavin;
+package com.skyruler.middle;
 
 import org.junit.Test;
 
