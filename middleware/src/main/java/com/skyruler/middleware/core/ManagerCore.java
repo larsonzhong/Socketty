@@ -202,7 +202,7 @@ class ManagerCore {
     };
 
 
-    public void enableBluetooth(boolean checked) {
+    void enableBluetooth(boolean checked) {
         BluetoothAdapter bluetoothAdapter = getBluetoothAdapter();
         if (bluetoothAdapter == null) {
             return;
@@ -214,7 +214,7 @@ class ManagerCore {
         }
     }
 
-    public boolean isBluetoothEnable() {
+    boolean isBluetoothEnable() {
         BluetoothAdapter bluetoothAdapter = getBluetoothAdapter();
         return bluetoothAdapter.isEnabled();
     }

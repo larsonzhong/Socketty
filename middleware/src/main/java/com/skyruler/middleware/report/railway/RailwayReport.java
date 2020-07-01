@@ -10,11 +10,11 @@ import java.nio.ByteOrder;
 
 public class RailwayReport extends BaseReportData {
     private static final String LOC_PROVIDER_NAME = "Glonavin_Railway";
-    private static final byte ID = 0x40;
+    public static final byte REPORT_ID = 0x40;
 
     private final short seqNum;
     private final byte siteID;
-    private final byte saliteliteNum;
+    private final byte satelliteNam;
     private final float longitude;
     private final float latitude;
     private final byte battery;
@@ -29,7 +29,7 @@ public class RailwayReport extends BaseReportData {
         this.seqNum = buffer.getShort();
         this.siteID = buffer.get();
         this.state = parseStateInfo(buffer.get());
-        this.saliteliteNum = buffer.get();
+        this.satelliteNam = buffer.get();
         this.longitude = buffer.getFloat();
         this.latitude = buffer.getFloat();
         this.battery = buffer.get();
@@ -70,8 +70,8 @@ public class RailwayReport extends BaseReportData {
         return siteID;
     }
 
-    public byte getSaliteliteNum() {
-        return saliteliteNum;
+    public byte getSatelliteNam() {
+        return satelliteNam;
     }
 
     public byte getBattery() {

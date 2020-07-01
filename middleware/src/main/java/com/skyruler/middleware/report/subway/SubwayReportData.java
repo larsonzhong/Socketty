@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class SubwayReportData extends BaseReportData {
+    public static final byte REPORT_ID = 0x40;
+
     public static final byte STATE_SPEED_STILL = 0x00;
     private static final byte STATE_SPEED_DOWN = 0x01;
     private static final byte STATE_SPEED_AVG = 0x02;

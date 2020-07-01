@@ -14,7 +14,7 @@ public class GetLineName extends AbsCommand {
     private LineNameCallBack callBack;
 
     public interface LineNameCallBack {
-        void handleLineName(String edition);
+        void handleLineName(String lineName);
     }
 
     public GetLineName(LineNameCallBack callBack) {

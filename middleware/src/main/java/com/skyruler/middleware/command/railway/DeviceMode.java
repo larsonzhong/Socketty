@@ -11,7 +11,7 @@ public class DeviceMode extends AbsCommand {
     private static final byte RESP_FILE_READ_SUCCESS = 0x01;
     private static final byte RESP_FILE_NOT_EXIST = 0x02;
 
-    enum Mode {
+    public enum Mode {
         SelfCheck("自检模式", (byte) 0x03),
         Railway("高铁模式", (byte) 0x04),
         Road("公路模式", (byte) 0x05);

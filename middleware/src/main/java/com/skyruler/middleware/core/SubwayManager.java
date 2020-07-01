@@ -1,5 +1,6 @@
 package com.skyruler.middleware.core;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.skyruler.middleware.command.subway.DeviceModeCmd;
@@ -11,6 +12,7 @@ import com.skyruler.middleware.report.subway.SubwayReportData;
 import com.skyruler.middleware.xml.model.City;
 import com.skyruler.middleware.xml.model.MetroData;
 import com.skyruler.middleware.xml.model.MetroLine;
+import com.skyruler.middleware.xml.model.Station;
 import com.skyruler.middleware.xml.parser.MetroParser;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
@@ -18,13 +20,28 @@ import com.skyruler.socketclient.message.IMessageListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.List;
 
 import static com.skyruler.middleware.command.subway.DeviceModeCmd.MODE_SUBWAY;
 
 public class SubwayManager extends AbsManager {
     private static final String TAG = "SubwayManager";
     public static final String DEVICE_NAME = "FootSensor";
-    private static final byte REPORT_ID_SUBWAY = 0x40;
+    private MetroLine currentMetroLine;
+
+    SubwayManager(Context context) {
+        super(context);
+    }
+
+    @Override
+    public int getMode() {
+        return GlonavinFactory.BLUETOOTH_TYPE_SUBWAY;
+    }
+
+    @Override
+    public String getDeviceName() {
+        return DEVICE_NAME;
+    }
 
     public void listenerForReport(final IDataReporter reporter) {
         super.addMessageListener(new IMessageListener() {
@@ -33,11 +50,11 @@ public class SubwayManager extends AbsManager {
                 SubwayReportData subwayReportData = new SubwayReportData(msg);
                 reporter.report(subwayReportData);
             }
-        }, REPORT_ID_SUBWAY);
+        }, SubwayReportData.REPORT_ID);
     }
 
-    public void stopSubwayReport() {
-        super.removeMsgListener(REPORT_ID_SUBWAY);
+    public void stopReport() {
+        super.removeMsgListener(SubwayReportData.REPORT_ID);
     }
 
     public boolean chooseMode() {
@@ -50,6 +67,9 @@ public class SubwayManager extends AbsManager {
     public boolean sendMetroLine(MetroLine mMetroLine) {
         MetroLineCmd cmd = new MetroLineCmd(mMetroLine);
         boolean success = super.sendMessage(cmd);
+        if (success) {
+            currentMetroLine = mMetroLine;
+        }
         Log.d(TAG, "send subway line :" + cmd.toString() + "," + success);
         return success;
     }
@@ -91,5 +111,13 @@ public class SubwayManager extends AbsManager {
         return metroData.getCities().get(0);
     }
 
-
+    public int getSubwayStationIndex(int siteID) {
+        List<Station> stations = this.currentMetroLine.getStations();
+        for (int index = 0; index < stations.size(); index++) {
+            if (stations.get(index).getSid() == siteID) {
+                return index;
+            }
+        }
+        return -1;
+    }
 }

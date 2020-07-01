@@ -7,8 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class LineFileErrorReport extends BaseReportData {
-    private static final String LOC_PROVIDER_NAME = "Glonavin_Railway";
-    private static final byte ID = (byte) 0x90;
+    public static final byte REPORT_ID = (byte) 0x90;
 
     private final byte optState;
     private final byte readState;

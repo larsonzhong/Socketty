@@ -1,0 +1,26 @@
+// 1.maven-插件
+apply plugin: 'maven'
+// 2.maven-信息
+ext {// ext is a gradle closure allowing the declaration of global properties
+    PUBLISH_GROUP_ID = 'cn.skyruler'
+    PUBLISH_ARTIFACT_ID = 'socketclient'
+    PUBLISH_VERSION = android.defaultConfig.versionName
+}
+// 3.maven-路径
+uploadArchives {
+    repositories.mavenDeployer {
+        //Maven仓库本地路径（可以自己新建文件夹，复制链接过来）
+        //注意”file://“ + 路径，有三个斜杠，别漏了
+//        repository(url: "file://G://maven/")
+
+        repository(url: "http://10.168.1.5:8081/repository/skyruler/") {
+            authentication(userName: "skyruler", password: "sk.2020")
+        }
+
+        pom.project {
+            groupId project.PUBLISH_GROUP_ID
+            artifactId project.PUBLISH_ARTIFACT_ID
+            version project.PUBLISH_VERSION
+        }
+    }
+}

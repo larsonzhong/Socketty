@@ -13,6 +13,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.skyruler.android.logger.Log;
+import com.skyruler.gonavin.dialog.BluetoothDevicesDialog;
+import com.skyruler.gonavin.dialog.SubwaySetupDialog;
 import com.skyruler.middleware.connection.IBleStateListener;
 import com.skyruler.middleware.core.GlonavinFactory;
 import com.skyruler.middleware.core.SubwayManager;
@@ -20,15 +22,12 @@ import com.skyruler.middleware.report.BaseReportData;
 import com.skyruler.middleware.report.IDataReporter;
 import com.skyruler.middleware.report.subway.SubwayReportData;
 import com.skyruler.middleware.xml.model.Station;
-import com.skyruler.gonavin.dialog.BluetoothDevicesDialog;
-import com.skyruler.gonavin.dialog.SubwaySetupDialog;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements IDataReporter, View.OnClickListener {
     private static final String TAG = "MainActivity";
     private BluetoothDevicesDialog mDeviceDialog;
-    private SubwayManager glonavinSdk;
 
     private TextView tvHardVersionName;
     private TextView tvSoftVersionName;
@@ -68,11 +67,20 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        initGlonavin();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        glonavinSdk.stopSubwayReport();
-        glonavinSdk.scanDevice(false);
-        glonavinSdk.onDestroy();
+        SubwayManager glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
+        if (glonavinSdk != null) {
+            glonavinSdk.stopReport();
+            glonavinSdk.scanDevice(false);
+            glonavinSdk.onDestroy();
+        }
     }
 
     @Override
@@ -83,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        SubwayManager glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
         if (glonavinSdk != null) {
             int icon = glonavinSdk.isConnected() ? R.mipmap.bluetooth_connected : R.mipmap.bluetooth_disabled;
             menu.findItem(R.id.action_connect_device).setEnabled(true).setIcon(icon);
@@ -119,22 +128,22 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     }
 
     private void showSelectModeDialog() {
-        int modeCode = GlonavinFactory.getMode();
+        int modeCode = GlonavinFactory.getManagerInstance() == null
+                ? GlonavinFactory.MODE_NULL : GlonavinFactory.getManagerInstance().getMode();
         String[] items = GlonavinFactory.getModeStrings();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("选择设备模式")
+        builder.setTitle(getString(R.string.select_mode))
                 .setSingleChoiceItems(items, modeCode, (dialog, which) -> {
-                    initGlonavin(which);
-                    Toast.makeText(MainActivity.this, "选择了" + items[which], Toast.LENGTH_SHORT).show();
+                    GlonavinFactory.setupMode(getApplicationContext(), which);
                     dialog.dismiss();
-                    invalidateOptionsMenu();
                 }).show();
     }
 
-    private void initGlonavin(int mode) {
-        GlonavinFactory.setupMode(mode);
-        glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
-        glonavinSdk.setup(getApplicationContext());
+    private void initGlonavin() {
+        SubwayManager glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
+        if (glonavinSdk == null) {
+            return;
+        }
         glonavinSdk.addConnectStateListener(new IBleStateListener() {
             @Override
             public void onScanResult(BluetoothDevice bluetoothDevice, boolean isConnected) {
@@ -154,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     }
 
     private void startOrStop() {
+        SubwayManager glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
         if (glonavinSdk == null) {
             return;
         }
@@ -217,24 +227,28 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btnSkipStation:
-                boolean success = glonavinSdk.skipStation();
-                showToast("跳过站点发送" + (success ? "成功" : "失败"));
-                break;
-            case R.id.btnTempStop:
-                boolean isSuccess = glonavinSdk.tempStopStation();
-                showToast("临时停车发送" + (isSuccess ? "成功" : "失败"));
-                break;
-            case R.id.btnGetEdition:
-                glonavinSdk.getEdition(edition -> {
-                    showText(tvHardVersionName, edition.getHardVersionName());
-                    showText(tvSoftVersionName, edition.getSoftVersionName());
-                    showText(tvProtocolVersionName, edition.getPortoVersionName());
-                });
-                break;
-            default:
+        SubwayManager glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
+        if (glonavinSdk != null) {
+            switch (v.getId()) {
+                case R.id.btnSkipStation:
+                    boolean success = glonavinSdk.skipStation();
+                    showToast("跳过站点发送" + (success ? "成功" : "失败"));
+                    break;
+                case R.id.btnTempStop:
+                    boolean isSuccess = glonavinSdk.tempStopStation();
+                    showToast("临时停车发送" + (isSuccess ? "成功" : "失败"));
+                    break;
+                case R.id.btnGetEdition:
+                    glonavinSdk.getEdition(edition -> {
+                        showText(tvHardVersionName, edition.getHardVersionName());
+                        showText(tvSoftVersionName, edition.getSoftVersionName());
+                        showText(tvProtocolVersionName, edition.getPortoVersionName());
+                    });
+                    break;
+                default:
+            }
         }
+
     }
 
     private void showText(final TextView view, final String text) {

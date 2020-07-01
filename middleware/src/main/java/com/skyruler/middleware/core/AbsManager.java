@@ -8,13 +8,17 @@ import com.skyruler.middleware.command.EditionCommand;
 import com.skyruler.middleware.connection.IBleStateListener;
 import com.skyruler.socketclient.message.IMessageListener;
 
-public class AbsManager {
+public abstract class AbsManager {
     private ManagerCore managerCore;
 
-    public void setup(Context context) {
+    AbsManager(Context context) {
         managerCore = new ManagerCore();
         managerCore.setup(context);
     }
+
+    public abstract int getMode();
+
+    public abstract String getDeviceName();
 
     public boolean isTestStart() {
         return managerCore.isTestStart();
@@ -71,5 +75,13 @@ public class AbsManager {
 
     boolean sendMessage(AbsCommand cmd) {
         return this.managerCore.sendMessage(cmd);
+    }
+
+    public boolean isBluetoothEnable() {
+        return managerCore.isBluetoothEnable();
+    }
+
+    public void enableBluetooth(boolean checked) {
+        managerCore.enableBluetooth(checked);
     }
 }
