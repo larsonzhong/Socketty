@@ -1,12 +1,12 @@
-package com.skyruler.middleware.xml.parser;
+package com.skyruler.middleware.parser.xml;
 
 import android.util.Xml;
 
-import com.skyruler.middleware.xml.model.City;
-import com.skyruler.middleware.xml.model.MetroData;
-import com.skyruler.middleware.xml.model.MetroLine;
-import com.skyruler.middleware.xml.model.Station;
-import com.skyruler.middleware.xml.model.SubItem;
+import com.skyruler.middleware.parser.xml.model.City;
+import com.skyruler.middleware.parser.xml.model.MetroData;
+import com.skyruler.middleware.parser.xml.model.MetroLine;
+import com.skyruler.middleware.parser.xml.model.MetroStation;
+import com.skyruler.middleware.parser.xml.model.SubItem;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -30,7 +30,7 @@ public class MetroParser implements XmlParser<MetroData> {
             case "MetroLine":
                 parseMetroLine(parser, metroData);
                 break;
-            case "Station":
+            case "MetroStation":
                 parseStation(parser, metroData);
                 break;
             case "SubItems":
@@ -111,13 +111,13 @@ public class MetroParser implements XmlParser<MetroData> {
             return;
         }
         MetroLine metroLine = metroLines.get(metroLines.size() - 1);
-        List<Station> stations = metroLine.getStations();
+        List<MetroStation> stations = metroLine.getStations();
         if (stations == null) {
             stations = new ArrayList<>();
             metroLine.setStations(stations);
         }
         int count = parser.getAttributeCount();
-        Station station = new Station();
+        MetroStation station = new MetroStation();
         for (int i = 0; i < count; i++) {
             switch (parser.getAttributeName(i)) {
                 case "Name":
@@ -153,11 +153,11 @@ public class MetroParser implements XmlParser<MetroData> {
             return;
         }
         MetroLine metroLine = metroLines.get(metroLines.size() - 1);
-        List<Station> stations = metroLine.getStations();
+        List<MetroStation> stations = metroLine.getStations();
         if (stations == null || stations.isEmpty()) {
             return;
         }
-        Station station = stations.get(stations.size() - 1);
+        MetroStation station = stations.get(stations.size() - 1);
         List<SubItem> subItems = station.getSubItems();
         if (subItems == null) {
             subItems = new ArrayList<>();
@@ -176,11 +176,11 @@ public class MetroParser implements XmlParser<MetroData> {
             return;
         }
         MetroLine metroLine = metroLines.get(metroLines.size() - 1);
-        List<Station> stations = metroLine.getStations();
+        List<MetroStation> stations = metroLine.getStations();
         if (stations == null || stations.isEmpty()) {
             return;
         }
-        Station station = stations.get(stations.size() - 1);
+        MetroStation station = stations.get(stations.size() - 1);
         List<SubItem> subItems = station.getSubItems();
         if (subItems == null) {
             return;

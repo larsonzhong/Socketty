@@ -7,13 +7,13 @@ import com.skyruler.middleware.command.subway.DeviceModeCmd;
 import com.skyruler.middleware.command.subway.MetroLineCmd;
 import com.skyruler.middleware.command.subway.SkipStationCmd;
 import com.skyruler.middleware.command.subway.TempStopStationCmd;
+import com.skyruler.middleware.parser.xml.model.MetroStation;
 import com.skyruler.middleware.report.IDataReporter;
 import com.skyruler.middleware.report.subway.SubwayReportData;
-import com.skyruler.middleware.xml.model.City;
-import com.skyruler.middleware.xml.model.MetroData;
-import com.skyruler.middleware.xml.model.MetroLine;
-import com.skyruler.middleware.xml.model.Station;
-import com.skyruler.middleware.xml.parser.MetroParser;
+import com.skyruler.middleware.parser.xml.model.City;
+import com.skyruler.middleware.parser.xml.model.MetroData;
+import com.skyruler.middleware.parser.xml.model.MetroLine;
+import com.skyruler.middleware.parser.xml.MetroParser;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
 
@@ -24,7 +24,7 @@ import java.util.List;
 
 import static com.skyruler.middleware.command.subway.DeviceModeCmd.MODE_SUBWAY;
 
-public class SubwayManager extends AbsManager {
+public class SubwayManager extends BaseManager {
     private static final String TAG = "SubwayManager";
     public static final String DEVICE_NAME = "FootSensor";
     private MetroLine currentMetroLine;
@@ -105,14 +105,14 @@ public class SubwayManager extends AbsManager {
             Log.d(TAG, metroData.toString());
         }
         if (metroData == null || metroData.getCities() == null) {
-            throw new IllegalStateException("xml file parse failed,metroData is null");
+            throw new IllegalStateException("xml file parseLine failed,metroData is null");
         }
         // 为了方便只取第一个city
         return metroData.getCities().get(0);
     }
 
     public int getSubwayStationIndex(int siteID) {
-        List<Station> stations = this.currentMetroLine.getStations();
+        List<MetroStation> stations = this.currentMetroLine.getStations();
         for (int index = 0; index < stations.size(); index++) {
             if (stations.get(index).getSid() == siteID) {
                 return index;

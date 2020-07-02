@@ -1,7 +1,7 @@
 package com.skyruler.middleware.command.subway;
 
 import com.skyruler.middleware.command.AbsCommand;
-import com.skyruler.middleware.xml.model.MetroLine;
+import com.skyruler.middleware.parser.xml.model.MetroLine;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.AckMode;
 import com.skyruler.socketclient.message.IMessage;

@@ -1,8 +1,8 @@
 package com.skyruler.gonavin;
 
-import com.skyruler.middleware.xml.model.MetroLine;
+import com.skyruler.middleware.parser.xml.model.MetroLine;
 
-public class SubwayDataHolder {
+class SubwayDataHolder {
     private static SubwayDataHolder instance = new SubwayDataHolder();
     private MetroLine metroLine;
 

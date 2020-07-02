@@ -8,10 +8,10 @@ import com.skyruler.middleware.command.EditionCommand;
 import com.skyruler.middleware.connection.IBleStateListener;
 import com.skyruler.socketclient.message.IMessageListener;
 
-public abstract class AbsManager {
+public abstract class BaseManager {
     private ManagerCore managerCore;
 
-    AbsManager(Context context) {
+    BaseManager(Context context) {
         managerCore = new ManagerCore();
         managerCore.setup(context);
     }

@@ -1,4 +1,4 @@
-package com.skyruler.middleware.xml.model;
+package com.skyruler.middleware.parser.xml.model;
 
 import java.util.ArrayList;
 import java.util.List;

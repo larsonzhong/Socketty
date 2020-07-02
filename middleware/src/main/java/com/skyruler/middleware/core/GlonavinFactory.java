@@ -10,7 +10,7 @@ public class GlonavinFactory {
     public static final int BLUETOOTH_TYPE_RAILWAY = 2;
     private static final String[] MODES = new String[]{"室内模式", "地铁模式", "高铁模式"};
 
-    private static AbsManager INSTANCE;
+    private static BaseManager INSTANCE;
 
     private GlonavinFactory() {
     }
@@ -35,7 +35,7 @@ public class GlonavinFactory {
         }
     }
 
-    public static AbsManager getManagerInstance() {
+    public static BaseManager getManagerInstance() {
         return INSTANCE;
     }
 

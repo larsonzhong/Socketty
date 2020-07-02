@@ -1,4 +1,4 @@
-package com.skyruler.middleware.xml.parser;
+package com.skyruler.middleware.parser.xml;
 
 import java.io.InputStream;
 

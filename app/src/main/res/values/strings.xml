@@ -24,15 +24,18 @@
     <!-- setup devices -->
     <string name="select_mode">选择模式</string>
     <string name="subway_mode">地铁模式</string>
+    <string name="railway_mode">高铁模式</string>
     <string name="send">发送</string>
     <string name="send_start_end">发送起始点</string>
-    <string name="select_xml">选择XML</string>
-    <string name="select_start">起点</string>
+    <string name="select_line">选择路线</string>
+    <string name="select_skip">发送跳站</string>
+    <string name="select_stop_temp">发送临停</string>
+    <string name="select_start">选择起点</string>
     <string name="please_select">请选择</string>
-    <string name="select_end">终点</string>
+    <string name="select_end">选择终点</string>
     <string name="loc_valid">定位有效:%s</string>
     <string name="site_id">站点名称:%s</string>
     <string name="battery">电池电量:%d</string>
-    <string name="select_xml_success">读取XML成功</string>
-    <string name="select_xml_failed">读取 XML 失败</string>
+    <string name="select_line_success">读取路线文件成功</string>
+    <string name="select_line_failed">读取路线文件失败</string>
 </resources>

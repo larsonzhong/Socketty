@@ -8,16 +8,20 @@ import com.skyruler.middleware.command.railway.DeviceMode;
 import com.skyruler.middleware.command.railway.GetLineName;
 import com.skyruler.middleware.command.railway.SkipStation;
 import com.skyruler.middleware.command.railway.TempStop;
+import com.skyruler.middleware.parser.csv.RailwayParser;
+import com.skyruler.middleware.parser.csv.model.RailwayLine;
 import com.skyruler.middleware.report.IDataReporter;
 import com.skyruler.middleware.report.railway.LineFileErrorReport;
 import com.skyruler.middleware.report.railway.RailwayReport;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
 
-public class RailManager extends AbsManager {
+import java.io.IOException;
+
+public class RailManager extends BaseManager {
     private static final String TAG = "RailManager";
     public static final String DEVICE_NAME = "FootSensor";
-    private String lineName;
+    private RailwayLine railwayLine;
 
     RailManager(Context context) {
         super(context);
@@ -37,13 +41,13 @@ public class RailManager extends AbsManager {
         ChooseLine cmd = new ChooseLine(lineName);
         boolean success = super.sendMessage(cmd);
         if (success) {
-            this.lineName = lineName;
+            //this.lineName = lineName;
         }
         Log.d(TAG, "send railway line :" + cmd.toString() + "," + success);
         return success;
     }
 
-    public boolean chooseDeviceMode(DeviceMode.Mode mode) {
+    public boolean chooseMode(DeviceMode.Mode mode) {
         DeviceMode cmd = new DeviceMode(mode);
         boolean success = super.sendMessage(cmd);
         Log.d(TAG, "choose railway mode :" + cmd.toString() + "," + success);
@@ -105,5 +109,14 @@ public class RailManager extends AbsManager {
         GetLineName cmd = new GetLineName(callBack);
         boolean success = sendMessage(cmd);
         Log.d(TAG, "get line name  :" + cmd.toString() + "," + success);
+    }
+
+    public RailwayLine readStationLineFile(String path) throws IOException {
+        railwayLine = new RailwayParser().parseLine(path);
+        return railwayLine;
+    }
+
+    public RailwayLine getRailwayLine() {
+        return railwayLine;
     }
 }

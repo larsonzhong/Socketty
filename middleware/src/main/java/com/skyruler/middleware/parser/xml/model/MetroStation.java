@@ -1,4 +1,6 @@
-package com.skyruler.middleware.xml.model;
+package com.skyruler.middleware.parser.xml.model;
+
+import com.skyruler.middleware.parser.BaseStation;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -10,26 +12,11 @@ import java.util.List;
  * @email: luojun@skyruler.cn
  * @date: Created 2020/5/19 14:54
  */
-public class Station implements ByteSerializable {
-    public static final int BYTES = 10;
-    private String mName;
+public class MetroStation  extends BaseStation implements ByteSerializable {
+    private static final int BYTES = 10;
     private float mLatitude;
     private float mLongitude;
-    private byte mSid;
     private String mStationTime;
-    private List<SubItem> mSubItems;
-
-    public Station() {
-        mSubItems = new ArrayList<>();
-    }
-
-    public String getName() {
-        return mName;
-    }
-
-    public void setName(String name) {
-        this.mName = name;
-    }
 
     public float getLatitude() {
         return mLatitude;
@@ -47,14 +34,6 @@ public class Station implements ByteSerializable {
         this.mLongitude = longitude;
     }
 
-    public byte getSid() {
-        return mSid;
-    }
-
-    public void setSid(byte sid) {
-        this.mSid = sid;
-    }
-
     public String getStationTime() {
         return mStationTime;
     }
@@ -63,15 +42,7 @@ public class Station implements ByteSerializable {
         this.mStationTime = stationTime;
     }
 
-    public List<SubItem> getSubItems() {
-        return mSubItems;
-    }
-
-    public void setSubItems(List<SubItem> subItems) {
-        this.mSubItems = subItems;
-    }
-
-    public int getBytesSize() {
+    int getBytesSize() {
         int subSize = mSubItems == null ? 0 : mSubItems.size();
         return (SubItem.BYTES + 1) * subSize + BYTES;
     }
@@ -98,7 +69,7 @@ public class Station implements ByteSerializable {
 
     @Override
     public String toString() {
-        return "Station{" +
+        return "MetroStation{" +
                 "mName='" + mName + '\'' +
                 ", mLatitude=" + mLatitude +
                 ", mLongitude=" + mLongitude +

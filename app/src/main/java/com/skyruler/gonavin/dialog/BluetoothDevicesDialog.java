@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.skyruler.android.logger.Log;
 import com.skyruler.middleware.connection.BluetoothAccess;
 import com.skyruler.middleware.connection.IBleStateListener;
+import com.skyruler.middleware.core.BaseManager;
 import com.skyruler.middleware.core.GlonavinFactory;
 import com.skyruler.middleware.core.RailManager;
 import com.skyruler.middleware.core.SubwayManager;
@@ -42,7 +43,7 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
     private List<BluetoothAccess> mListDevices;
     private BluetoothAccess mSelectedDevice;
     private ScanAdapter mScanAdapter;
-    private SubwayManager glonavinSdk;
+    private BaseManager baseManager;
     private IBleStateListener listener = new IBleStateListener() {
         @Override
         public void onScanResult(BluetoothDevice device, boolean isConnected) {
@@ -101,7 +102,7 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
 
     public BluetoothDevicesDialog(Context mContext) {
         super(mContext);
-        this.glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
+        this.baseManager = GlonavinFactory.getManagerInstance();
         this.mHandler = new Handler();
     }
 
@@ -131,14 +132,14 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
     @Override
     protected void onStart() {
         super.onStart();
-        glonavinSdk.addConnectStateListener(listener);
+        baseManager.addConnectStateListener(listener);
         scanBleDevices();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        glonavinSdk.removeConnectListener(listener);
+        baseManager.removeConnectListener(listener);
     }
 
     @Override
@@ -166,8 +167,8 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
             mListDevices.clear();
             mScanAdapter.notifyDataSetChanged();
         }
-        if (glonavinSdk != null) {
-            glonavinSdk.scanDevice(enable);
+        if (baseManager != null) {
+            baseManager.scanDevice(enable);
             btSearch.setEnabled(false);
         }
     }
@@ -185,10 +186,10 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
         mSelectedDevice = mListDevices.get(position);
         if (mSelectedDevice.isConnected()) {
-            glonavinSdk.disconnect();
+            baseManager.disconnect();
         } else {
             BluetoothDevice device = mSelectedDevice.getBluetoothDevice();
-            glonavinSdk.connect(device);
+            baseManager.connect(device);
         }
         showProgressBar(true);
     }

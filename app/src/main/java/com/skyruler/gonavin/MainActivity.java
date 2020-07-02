@@ -14,14 +14,17 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.skyruler.android.logger.Log;
 import com.skyruler.gonavin.dialog.BluetoothDevicesDialog;
+import com.skyruler.gonavin.dialog.RailwaySetupDialog;
 import com.skyruler.gonavin.dialog.SubwaySetupDialog;
 import com.skyruler.middleware.connection.IBleStateListener;
+import com.skyruler.middleware.core.BaseManager;
 import com.skyruler.middleware.core.GlonavinFactory;
+import com.skyruler.middleware.core.RailManager;
 import com.skyruler.middleware.core.SubwayManager;
+import com.skyruler.middleware.parser.xml.model.MetroStation;
 import com.skyruler.middleware.report.BaseReportData;
 import com.skyruler.middleware.report.IDataReporter;
 import com.skyruler.middleware.report.subway.SubwayReportData;
-import com.skyruler.middleware.xml.model.Station;
 
 import java.util.List;
 
@@ -75,11 +78,11 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        SubwayManager glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
-        if (glonavinSdk != null) {
-            glonavinSdk.stopReport();
-            glonavinSdk.scanDevice(false);
-            glonavinSdk.onDestroy();
+        BaseManager baseManager = GlonavinFactory.getManagerInstance();
+        if (baseManager != null) {
+            baseManager.startTest(false);
+            baseManager.scanDevice(false);
+            baseManager.onDestroy();
         }
     }
 
@@ -91,15 +94,15 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        SubwayManager glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
-        if (glonavinSdk != null) {
-            int icon = glonavinSdk.isConnected() ? R.mipmap.bluetooth_connected : R.mipmap.bluetooth_disabled;
+        BaseManager baseManager = GlonavinFactory.getManagerInstance();
+        if (baseManager != null) {
+            int icon = baseManager.isConnected() ? R.mipmap.bluetooth_connected : R.mipmap.bluetooth_disabled;
             menu.findItem(R.id.action_connect_device).setEnabled(true).setIcon(icon);
 
-            int iconConfig = glonavinSdk.isConnected() ? R.mipmap.config_enable : R.mipmap.config_disable;
-            menu.findItem(R.id.action_config_test).setIcon(iconConfig).setEnabled(glonavinSdk.isConnected());
+            int iconConfig = baseManager.isConnected() ? R.mipmap.config_enable : R.mipmap.config_disable;
+            menu.findItem(R.id.action_config_test).setIcon(iconConfig).setEnabled(baseManager.isConnected());
 
-            String testState = glonavinSdk.isTestStart() ? getString(R.string.action_stop_test) : getString(R.string.action_start_test);
+            String testState = baseManager.isTestStart() ? getString(R.string.action_stop_test) : getString(R.string.action_start_test);
             menu.findItem(R.id.action_start_test).setTitle(testState);
         }
         return super.onPrepareOptionsMenu(menu);
@@ -116,7 +119,12 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
                 showBleDeviceDialog();
                 break;
             case R.id.action_config_test:
-                new SubwaySetupDialog(this).show();
+                BaseManager manager = GlonavinFactory.getManagerInstance();
+                if (manager instanceof SubwayManager) {
+                    new SubwaySetupDialog(this).show();
+                } else if (manager instanceof RailManager) {
+                    new RailwaySetupDialog(this).show();
+                }
                 break;
             case R.id.action_start_test:
                 startOrStop();
@@ -204,8 +212,8 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     }
 
     private String parseSiteID(byte siteID) {
-        List<Station> stations = SubwayDataHolder.getInstance().getMetroLine().getStations();
-        for (Station station : stations) {
+        List<MetroStation> stations = SubwayDataHolder.getInstance().getMetroLine().getStations();
+        for (MetroStation station : stations) {
             if (station.getSid() == siteID - 1) {
                 return siteID + station.getName();
             }
@@ -216,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     private int getSubwayStationIndex(SubwayReportData data) {
         // 文档上说是Sid+1 = getSiteID();
         int siteID = data.getSiteID() - 1;
-        List<Station> stations = SubwayDataHolder.getInstance().getMetroLine().getStations();
+        List<MetroStation> stations = SubwayDataHolder.getInstance().getMetroLine().getStations();
         for (int index = 0; index < stations.size(); index++) {
             if (stations.get(index).getSid() == siteID) {
                 return index;

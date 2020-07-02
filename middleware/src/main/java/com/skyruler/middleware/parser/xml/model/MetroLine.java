@@ -1,4 +1,4 @@
-package com.skyruler.middleware.xml.model;
+package com.skyruler.middleware.parser.xml.model;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -11,14 +11,14 @@ import java.util.List;
  * @date: Created 2020/5/19 14:59
  */
 public class MetroLine implements ByteSerializable {
-    public static final int BYTES = 5;
+    private static final int BYTES = 5;
     private String mName;
     private byte mLid;
     private short mAvgSpeed;
     private short mMaxSpeed;
     private String mStartTime;
     private String mEndTime;
-    private List<Station> mStations;
+    private List<MetroStation> mStations;
 
     public MetroLine() {
         mStations = new ArrayList<>();
@@ -72,11 +72,11 @@ public class MetroLine implements ByteSerializable {
         this.mEndTime = endTime;
     }
 
-    public List<Station> getStations() {
+    public List<MetroStation> getStations() {
         return mStations;
     }
 
-    public void setStations(List<Station> stations) {
+    public void setStations(List<MetroStation> stations) {
         this.mStations = stations;
     }
 

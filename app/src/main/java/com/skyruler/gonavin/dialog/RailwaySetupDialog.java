@@ -17,40 +17,42 @@ import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.skyruler.android.logger.Log;
 import com.skyruler.gonavin.R;
+import com.skyruler.middleware.command.railway.DeviceMode;
 import com.skyruler.middleware.core.GlonavinFactory;
-import com.skyruler.middleware.core.SubwayManager;
-import com.skyruler.middleware.parser.xml.model.City;
-import com.skyruler.middleware.parser.xml.model.MetroLine;
+import com.skyruler.middleware.core.RailManager;
+import com.skyruler.middleware.parser.csv.model.RailwayLine;
 
 import java.io.File;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-
-public class SubwaySetupDialog extends AlertDialog implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class RailwaySetupDialog extends AlertDialog implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     private String SD_ROOT_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
 
-    private SubwayManager glonavinSdk;
-    private MetroLine mMetroLine;
+    private RailManager glonavinSdk;
     private byte mStartSID;
     private byte mEndSID;
-    private City city;
     private StationAdapter selectStartAdapter;
     private StationAdapter selectEndAdapter;
-    private LineAdapter selectLineAdapter;
+    private StationAdapter selectSkipAdapter;
+    private StationAdapter selectStopAdapter;
     private TextView editionTv;
+    private TextView selectLineTv;
     private Button btnSendDirection;
+    private Button btnSendLine;
+    private Button btnSendSkip;
+    private Button btnSendStop;
 
-    public SubwaySetupDialog(Context context) {
+    public RailwaySetupDialog(Context context) {
         super(context);
-        this.glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
+        this.glonavinSdk = (RailManager) GlonavinFactory.getManagerInstance();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         @SuppressLint("InflateParams")
-        View mView = getLayoutInflater().inflate(R.layout.subway_device_setup, null);
+        View mView = getLayoutInflater().inflate(R.layout.railway_device_setup, null);
         initView(mView);
         super.setView(mView);
         super.onCreate(savedInstanceState);
@@ -58,7 +60,11 @@ public class SubwaySetupDialog extends AlertDialog implements View.OnClickListen
 
     private void initView(View mView) {
         editionTv = mView.findViewById(R.id.editionTv);
+        selectLineTv = mView.findViewById(R.id.tv_selected_line);
         btnSendDirection = mView.findViewById(R.id.btn_send_start_end);
+        btnSendSkip = mView.findViewById(R.id.btn_send_skip);
+        btnSendStop = mView.findViewById(R.id.btn_send_stop);
+        btnSendLine = mView.findViewById(R.id.btn_send_line);
 
         Spinner selectStartSpinner = mView.findViewById(R.id.spinner_select_start);
         selectStartAdapter = new StationAdapter(getContext(), false);
@@ -70,16 +76,21 @@ public class SubwaySetupDialog extends AlertDialog implements View.OnClickListen
         selectEndSpinner.setAdapter(selectEndAdapter);
         selectEndSpinner.setOnItemSelectedListener(this);
 
-        Spinner selectLineSpinner = mView.findViewById(R.id.spinner_select_line);
-        selectLineAdapter = new LineAdapter(getContext());
-        selectLineSpinner.setAdapter(selectLineAdapter);
-        selectLineSpinner.setOnItemSelectedListener(this);
+        Spinner selectSkipSpinner = mView.findViewById(R.id.spinner_select_skip);
+        selectSkipAdapter = new StationAdapter(getContext(), true);
+        selectSkipSpinner.setAdapter(selectSkipAdapter);
 
+        Spinner selectStopSpinner = mView.findViewById(R.id.spinner_select_stop);
+        selectStopAdapter = new StationAdapter(getContext(), true);
+        selectStopSpinner.setAdapter(selectStopAdapter);
+
+        btnSendSkip.setOnClickListener(this);
+        btnSendStop.setOnClickListener(this);
+        btnSendLine.setOnClickListener(this);
         btnSendDirection.setOnClickListener(this);
         mView.findViewById(R.id.btn_exit_dialog).setOnClickListener(this);
         mView.findViewById(R.id.btn_send_mode).setOnClickListener(this);
         mView.findViewById(R.id.btn_select_line).setOnClickListener(this);
-        mView.findViewById(R.id.btn_send_line).setOnClickListener(this);
     }
 
     @Override
@@ -97,18 +108,11 @@ public class SubwaySetupDialog extends AlertDialog implements View.OnClickListen
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
         switch (adapterView.getId()) {
-            case R.id.spinner_select_line:
-                mMetroLine = city.getMetroLines().get(pos);
-                selectStartAdapter.setData(mMetroLine.getStations());
-                selectStartAdapter.notifyDataSetChanged();
-                selectEndAdapter.setData(mMetroLine.getStations());
-                selectEndAdapter.notifyDataSetChanged();
-                break;
             case R.id.spinner_select_start:
-                mStartSID = mMetroLine.getStations().get(pos).getSid();
+                mStartSID = glonavinSdk.getRailwayLine().getStations().get(pos).getSid();
                 break;
             case R.id.spinner_select_end:
-                mEndSID = mMetroLine.getStations().get(pos).getSid();
+                mEndSID = glonavinSdk.getRailwayLine().getStations().get(pos).getSid();
                 break;
             default:
         }
@@ -129,7 +133,13 @@ public class SubwaySetupDialog extends AlertDialog implements View.OnClickListen
                 sendTestMode();
                 break;
             case R.id.btn_select_line:
-                selectSubwayXml();
+                selectRailwayLine();
+                break;
+            case R.id.btn_send_skip:
+                sendSkipStation();
+                break;
+            case R.id.btn_send_stop:
+                sendStopStation();
                 break;
             case R.id.btn_send_line:
                 sendMetroLine();
@@ -141,7 +151,7 @@ public class SubwaySetupDialog extends AlertDialog implements View.OnClickListen
         }
     }
 
-    private void selectSubwayXml() {
+    private void selectRailwayLine() {
         DialogProperties newTaskProperties = new DialogProperties();
         newTaskProperties.selection_mode = DialogConfigs.SINGLE_MODE;
         newTaskProperties.selection_type = DialogConfigs.FILE_SELECT;
@@ -157,8 +167,13 @@ public class SubwaySetupDialog extends AlertDialog implements View.OnClickListen
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnComplete(() -> {
                     try {
-                        readSubwayXml(files[0]);
+                        readRailwayFile(files[0]);
                         showToast(getContext().getString(R.string.select_line_success));
+
+                        btnSendLine.setEnabled(true);
+                        btnSendSkip.setEnabled(true);
+                        btnSendStop.setEnabled(true);
+                        btnSendDirection.setEnabled(true);
                     } catch (Exception e) {
                         Log.e(e);
                         showToast(getContext().getString(R.string.select_line_failed));
@@ -177,7 +192,7 @@ public class SubwaySetupDialog extends AlertDialog implements View.OnClickListen
 
     private void sendTestMode() {
         findViewById(R.id.btn_send_mode).setEnabled(false);
-        boolean success = glonavinSdk.chooseMode();
+        boolean success = glonavinSdk.chooseMode(DeviceMode.Mode.Railway);
         findViewById(R.id.btn_send_mode).setEnabled(true);
         showToast("发送模式" + success);
     }
@@ -187,16 +202,30 @@ public class SubwaySetupDialog extends AlertDialog implements View.OnClickListen
     }
 
     private void sendMetroLine() {
-        boolean success = glonavinSdk.sendMetroLine(mMetroLine);
+        String name = glonavinSdk.getRailwayLine().getName();
+        boolean success = glonavinSdk.chooseLine(name);
         showToast("发送地铁路线" + success);
-        if (success) {
-            btnSendDirection.setEnabled(true);
-        }
     }
 
-    private void readSubwayXml(String path) throws Exception {
-        city = glonavinSdk.readSubwayLineFromXmlFile(path);
-        selectLineAdapter.setData(city.getMetroLines());
+    private void sendStopStation() {
+        byte[] ids = selectStopAdapter.getSelectedStationIds();
+        boolean success = glonavinSdk.tempStopStation(ids);
+        showToast("发送临停" + success);
+    }
+
+    private void sendSkipStation() {
+        byte[] ids = selectSkipAdapter.getSelectedStationIds();
+        boolean success = glonavinSdk.skipStation(ids);
+        showToast("发送跳站" + success);
+    }
+
+    private void readRailwayFile(String path) throws Exception {
+        RailwayLine line = glonavinSdk.readStationLineFile(path);
+        selectLineTv.setText(line.getName());
+        selectSkipAdapter.setData(line.getStations());
+        selectStopAdapter.setData(line.getStations());
+        selectStartAdapter.setData(line.getStations());
+        selectEndAdapter.setData(line.getStations());
     }
 
 
