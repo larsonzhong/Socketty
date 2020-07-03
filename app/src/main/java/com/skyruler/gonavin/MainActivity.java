@@ -153,6 +153,10 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     }
 
     private void showBleDeviceDialog() {
+        if (GlonavinFactory.getManagerInstance() == null) {
+            showToast("请先设置模式");
+            return;
+        }
         if (mDeviceDialog == null) {
             mDeviceDialog = new BluetoothDevicesDialog(this);
         }
