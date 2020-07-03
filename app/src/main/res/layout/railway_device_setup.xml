@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="10dp"
     android:orientation="vertical">
 
     <ImageView
@@ -21,7 +22,7 @@
         android:padding="5dp">
 
         <TextView
-            android:layout_width="88dp"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/select_mode" />
@@ -36,7 +37,7 @@
 
         <Button
             android:id="@+id/btn_send_mode"
-            android:layout_width="88dp"
+            android:layout_width="90dp"
             android:layout_height="30dp"
             android:background="@drawable/btn_shape"
             android:text="@string/send" />
@@ -51,7 +52,7 @@
 
         <Button
             android:id="@+id/btn_select_line"
-            android:layout_width="88dp"
+            android:layout_width="90dp"
             android:layout_height="30dp"
             android:background="@drawable/btn_shape"
             android:text="@string/select_line" />
@@ -66,7 +67,7 @@
 
         <Button
             android:id="@+id/btn_send_line"
-            android:layout_width="88dp"
+            android:layout_width="90dp"
             android:layout_height="30dp"
             android:background="@drawable/btn_shape"
             android:enabled="false"
@@ -89,7 +90,7 @@
 
         <Button
             android:id="@+id/btn_send_skip"
-            android:layout_width="88dp"
+            android:layout_width="90dp"
             android:layout_height="30dp"
             android:background="@drawable/btn_shape"
             android:enabled="false"
@@ -112,7 +113,7 @@
 
         <Button
             android:id="@+id/btn_send_stop"
-            android:layout_width="88dp"
+            android:layout_width="90dp"
             android:layout_height="30dp"
             android:background="@drawable/btn_shape"
             android:enabled="false"
@@ -134,7 +135,7 @@
             android:paddingBottom="10dp">
 
             <TextView
-                android:layout_width="88dp"
+                android:layout_width="90dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/select_start" />
@@ -156,7 +157,7 @@
             android:paddingBottom="10dp">
 
             <TextView
-                android:layout_width="88dp"
+                android:layout_width="90dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/select_end" />

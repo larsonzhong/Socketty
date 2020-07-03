@@ -22,9 +22,8 @@
         android:padding="5dp">
 
         <TextView
-            android:layout_width="0dp"
+            android:layout_width="90dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="start"
             android:text="@string/select_mode" />
 
@@ -37,9 +36,8 @@
 
         <Button
             android:id="@+id/btn_send_mode"
-            android:layout_width="0dp"
+            android:layout_width="90dp"
             android:layout_height="30dp"
-            android:layout_weight="1"
             android:background="@drawable/btn_shape"
             android:text="@string/send" />
     </LinearLayout>
@@ -53,9 +51,8 @@
 
         <Button
             android:id="@+id/btn_select_line"
-            android:layout_width="0dp"
+            android:layout_width="90dp"
             android:layout_height="30dp"
-            android:layout_weight="1"
             android:background="@drawable/btn_shape"
             android:text="@string/select_line" />
 
@@ -65,15 +62,19 @@
             android:layout_height="match_parent"
             android:layout_weight="2" />
 
-        <Button
-            android:id="@+id/btn_send_line"
-            android:layout_width="0dp"
-            android:layout_height="30dp"
-            android:layout_weight="1"
-            android:background="@drawable/btn_shape"
-            android:padding="5dp"
-            android:text="@string/send" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_send_line"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:background="@drawable/btn_shape"
+        android:enabled="false"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="@string/send" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -127,7 +128,8 @@
         android:id="@+id/btn_send_start_end"
         android:layout_width="match_parent"
         android:layout_height="38dp"
-        android:layout_margin="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
         android:background="@drawable/btn_shape"
         android:enabled="false"
         android:paddingTop="10dp"
