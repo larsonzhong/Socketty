@@ -157,6 +157,7 @@ public class RailwaySetupDialog extends AlertDialog implements View.OnClickListe
         newTaskProperties.selection_type = DialogConfigs.FILE_SELECT;
         newTaskProperties.root = new File(SD_ROOT_PATH);
         newTaskProperties.error_dir = new File(SD_ROOT_PATH);
+        newTaskProperties.extensions= new String[]{"csv"};
 
         final FilePickerDialog newTaskDialog = new FilePickerDialog(getContext(), newTaskProperties);
         newTaskDialog.setTitle(getContext().getString(R.string.select_line));
