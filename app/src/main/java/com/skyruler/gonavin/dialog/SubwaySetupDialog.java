@@ -40,6 +40,7 @@ public class SubwaySetupDialog extends AlertDialog implements View.OnClickListen
     private StationAdapter selectEndAdapter;
     private LineAdapter selectLineAdapter;
     private TextView editionTv;
+    private Button btnSenLine;
     private Button btnSendDirection;
 
     public SubwaySetupDialog(Context context) {
@@ -58,6 +59,7 @@ public class SubwaySetupDialog extends AlertDialog implements View.OnClickListen
 
     private void initView(View mView) {
         editionTv = mView.findViewById(R.id.editionTv);
+        btnSenLine = mView.findViewById(R.id.btn_send_line);
         btnSendDirection = mView.findViewById(R.id.btn_send_start_end);
 
         Spinner selectStartSpinner = mView.findViewById(R.id.spinner_select_start);
@@ -71,15 +73,15 @@ public class SubwaySetupDialog extends AlertDialog implements View.OnClickListen
         selectEndSpinner.setOnItemSelectedListener(this);
 
         Spinner selectLineSpinner = mView.findViewById(R.id.spinner_select_line);
-        selectLineAdapter = new LineAdapter(getContext());
+        selectLineAdapter = new LineAdapter(getContext(), R.layout.item_list_station);
         selectLineSpinner.setAdapter(selectLineAdapter);
         selectLineSpinner.setOnItemSelectedListener(this);
 
+        btnSenLine.setOnClickListener(this);
         btnSendDirection.setOnClickListener(this);
         mView.findViewById(R.id.btn_exit_dialog).setOnClickListener(this);
         mView.findViewById(R.id.btn_send_mode).setOnClickListener(this);
         mView.findViewById(R.id.btn_select_line).setOnClickListener(this);
-        mView.findViewById(R.id.btn_send_line).setOnClickListener(this);
     }
 
     @Override
@@ -103,6 +105,8 @@ public class SubwaySetupDialog extends AlertDialog implements View.OnClickListen
                 selectStartAdapter.notifyDataSetChanged();
                 selectEndAdapter.setData(mMetroLine.getStations());
                 selectEndAdapter.notifyDataSetChanged();
+
+                btnSenLine.setEnabled(true);
                 break;
             case R.id.spinner_select_start:
                 mStartSID = mMetroLine.getStations().get(pos).getSid();
@@ -147,7 +151,7 @@ public class SubwaySetupDialog extends AlertDialog implements View.OnClickListen
         newTaskProperties.selection_type = DialogConfigs.FILE_SELECT;
         newTaskProperties.root = new File(SD_ROOT_PATH);
         newTaskProperties.error_dir = new File(SD_ROOT_PATH);
-        newTaskProperties.extensions= new String[]{"xml"};
+        newTaskProperties.extensions = new String[]{"xml"};
 
         final FilePickerDialog newTaskDialog = new FilePickerDialog(getContext(), newTaskProperties);
         newTaskDialog.setTitle(getContext().getString(R.string.select_line));
@@ -197,7 +201,7 @@ public class SubwaySetupDialog extends AlertDialog implements View.OnClickListen
 
     private void readSubwayXml(String path) throws Exception {
         city = glonavinSdk.readSubwayLineFromXmlFile(path);
-        selectLineAdapter.setData(city.getMetroLines());
+        selectLineAdapter.addAll(city.getMetroLines());
     }
 
 

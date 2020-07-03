@@ -21,14 +21,12 @@ import com.skyruler.middleware.core.BaseManager;
 import com.skyruler.middleware.core.GlonavinFactory;
 import com.skyruler.middleware.core.RailManager;
 import com.skyruler.middleware.core.SubwayManager;
-import com.skyruler.middleware.parser.xml.model.MetroStation;
+import com.skyruler.middleware.parser.xml.model.Station;
 import com.skyruler.middleware.report.BaseReportData;
 import com.skyruler.middleware.report.IDataReporter;
 import com.skyruler.middleware.report.subway.SubwayReportData;
 
-import java.util.List;
-
-public class MainActivity extends AppCompatActivity implements IDataReporter, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements IDataReporter, View.OnClickListener, IBleStateListener {
     private static final String TAG = "MainActivity";
     private BluetoothDevicesDialog mDeviceDialog;
 
@@ -40,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     private TextView tvLatitude;
     private TextView tvLongitude;
     private TextView tvValidLoc;
-    private TextView tvSiteID;
+    private TextView tvSiteName;
     private TextView tvBattery;
 
     @Override
@@ -61,18 +59,12 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
         tvLongitude = findViewById(R.id.tvLongitude);
 
         tvValidLoc = findViewById(R.id.tvValidLoc);
-        tvSiteID = findViewById(R.id.tvSiteID);
+        tvSiteName = findViewById(R.id.tvSiteID);
         tvBattery = findViewById(R.id.tvBattery);
 
         findViewById(R.id.btnSkipStation).setOnClickListener(this);
         findViewById(R.id.btnTempStop).setOnClickListener(this);
         findViewById(R.id.btnGetEdition).setOnClickListener(this);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        initGlonavin();
     }
 
     @Override
@@ -143,31 +135,9 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
         builder.setTitle(getString(R.string.select_mode))
                 .setSingleChoiceItems(items, modeCode, (dialog, which) -> {
                     GlonavinFactory.setupMode(getApplicationContext(), which);
+                    GlonavinFactory.getManagerInstance().addConnectStateListener(this);
                     dialog.dismiss();
                 }).show();
-    }
-
-    private void initGlonavin() {
-        SubwayManager glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
-        if (glonavinSdk == null) {
-            return;
-        }
-        glonavinSdk.addConnectStateListener(new IBleStateListener() {
-            @Override
-            public void onScanResult(BluetoothDevice bluetoothDevice, boolean isConnected) {
-
-            }
-
-            @Override
-            public void onConnected(BluetoothDevice bluetoothDevice) {
-                glonavinSdk.listenerForReport(MainActivity.this);
-            }
-
-            @Override
-            public void onDisconnect(BluetoothDevice bluetoothDevice) {
-
-            }
-        });
     }
 
     private void startOrStop() {
@@ -196,8 +166,16 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
     @Override
     public void report(final BaseReportData baseReportData) {
         if (baseReportData instanceof SubwayReportData) {
+            SubwayManager manager = (SubwayManager) GlonavinFactory.getManagerInstance();
             SubwayReportData data = (SubwayReportData) baseReportData;
-            int index = getSubwayStationIndex(data);
+
+            int index = -1;
+            String stationName = "解析错误";
+            Station station = manager.getStation(data.getSiteID());
+            if (station != null) {
+                index = station.getSid();
+                stationName = station.getName();
+            }
 
             Log.d(TAG, index + "收到定位上报>>>" + data.toString());
             showText(tvDtState, data.getAccStateStr());
@@ -206,31 +184,9 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
             showText(tvLongitude, String.valueOf(data.getLongitude()));
 
             showText(tvValidLoc, getString(R.string.loc_valid, data.isValidLoc() + ""));
-            showText(tvSiteID, getString(R.string.site_id, parseSiteID(data.getSiteID())));
+            showText(tvSiteName, getString(R.string.site_id, stationName));
             showText(tvBattery, getString(R.string.battery, data.getBattery()));
         }
-    }
-
-    private String parseSiteID(byte siteID) {
-        List<MetroStation> stations = SubwayDataHolder.getInstance().getMetroLine().getStations();
-        for (MetroStation station : stations) {
-            if (station.getSid() == siteID - 1) {
-                return siteID + station.getName();
-            }
-        }
-        return "解析异常";
-    }
-
-    private int getSubwayStationIndex(SubwayReportData data) {
-        // 文档上说是Sid+1 = getSiteID();
-        int siteID = data.getSiteID() - 1;
-        List<MetroStation> stations = SubwayDataHolder.getInstance().getMetroLine().getStations();
-        for (int index = 0; index < stations.size(); index++) {
-            if (stations.get(index).getSid() == siteID) {
-                return index;
-            }
-        }
-        return -1;
     }
 
     @Override
@@ -261,5 +217,26 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
 
     private void showText(final TextView view, final String text) {
         runOnUiThread(() -> view.setText(text));
+    }
+
+    @Override
+    public void onScanResult(BluetoothDevice bluetoothDevice, boolean isConnected) {
+
+    }
+
+    @Override
+    public void onConnected(BluetoothDevice bluetoothDevice) {
+        SubwayManager glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
+        if (glonavinSdk != null) {
+            glonavinSdk.listenerForReport(MainActivity.this);
+        }
+    }
+
+    @Override
+    public void onDisconnect(BluetoothDevice bluetoothDevice) {
+        SubwayManager glonavinSdk = (SubwayManager) GlonavinFactory.getManagerInstance();
+        if (glonavinSdk != null) {
+            glonavinSdk.stopReport();
+        }
     }
 }

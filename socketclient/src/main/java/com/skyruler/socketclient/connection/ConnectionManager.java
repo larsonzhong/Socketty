@@ -78,7 +78,9 @@ public class ConnectionManager implements IConnectionManager {
 
     @Override
     public void disConnect() {
-        mConnection.disconnect();
+        if (mConnection != null) {
+            mConnection.disconnect();
+        }
     }
 
     @Override

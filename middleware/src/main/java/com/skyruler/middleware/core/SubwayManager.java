@@ -7,13 +7,13 @@ import com.skyruler.middleware.command.subway.DeviceModeCmd;
 import com.skyruler.middleware.command.subway.MetroLineCmd;
 import com.skyruler.middleware.command.subway.SkipStationCmd;
 import com.skyruler.middleware.command.subway.TempStopStationCmd;
-import com.skyruler.middleware.parser.xml.model.MetroStation;
-import com.skyruler.middleware.report.IDataReporter;
-import com.skyruler.middleware.report.subway.SubwayReportData;
+import com.skyruler.middleware.parser.xml.MetroParser;
 import com.skyruler.middleware.parser.xml.model.City;
 import com.skyruler.middleware.parser.xml.model.MetroData;
 import com.skyruler.middleware.parser.xml.model.MetroLine;
-import com.skyruler.middleware.parser.xml.MetroParser;
+import com.skyruler.middleware.parser.xml.model.Station;
+import com.skyruler.middleware.report.IDataReporter;
+import com.skyruler.middleware.report.subway.SubwayReportData;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
 
@@ -111,13 +111,18 @@ public class SubwayManager extends BaseManager {
         return metroData.getCities().get(0);
     }
 
-    public int getSubwayStationIndex(int siteID) {
-        List<MetroStation> stations = this.currentMetroLine.getStations();
-        for (int index = 0; index < stations.size(); index++) {
-            if (stations.get(index).getSid() == siteID) {
-                return index;
+    public Station getStation(int siteID) {
+        if (this.currentMetroLine == null) {
+            return null;
+        }
+        // 文档中的神逻辑，xml文件中的sid节点：sid+1 = siteID(上报);
+        int sid = siteID - 1;
+        List<Station> stations = this.currentMetroLine.getStations();
+        for (int i = 0; i < stations.size(); i++) {
+            if (stations.get(i).getSid() == sid) {
+                return stations.get(i);
             }
         }
-        return -1;
+        return null;
     }
 }

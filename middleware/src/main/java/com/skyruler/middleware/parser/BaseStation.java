@@ -1,11 +1,12 @@
 package com.skyruler.middleware.parser;
 
+import com.skyruler.middleware.parser.xml.model.ByteSerializable;
 import com.skyruler.middleware.parser.xml.model.SubItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BaseStation {
+public abstract class BaseStation implements ByteSerializable {
     protected byte mSid;
     protected String mName;
     protected List<SubItem> mSubItems = new ArrayList<>();

@@ -12,7 +12,7 @@ import java.util.List;
  * @email: luojun@skyruler.cn
  * @date: Created 2020/5/19 14:54
  */
-public class MetroStation  extends BaseStation implements ByteSerializable {
+public class Station extends BaseStation  {
     private static final int BYTES = 10;
     private float mLatitude;
     private float mLongitude;
@@ -69,7 +69,7 @@ public class MetroStation  extends BaseStation implements ByteSerializable {
 
     @Override
     public String toString() {
-        return "MetroStation{" +
+        return "Station{" +
                 "mName='" + mName + '\'' +
                 ", mLatitude=" + mLatitude +
                 ", mLongitude=" + mLongitude +

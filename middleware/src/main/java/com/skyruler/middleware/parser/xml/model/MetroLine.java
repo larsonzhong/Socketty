@@ -18,7 +18,7 @@ public class MetroLine implements ByteSerializable {
     private short mMaxSpeed;
     private String mStartTime;
     private String mEndTime;
-    private List<MetroStation> mStations;
+    private List<Station> mStations;
 
     public MetroLine() {
         mStations = new ArrayList<>();
@@ -72,11 +72,11 @@ public class MetroLine implements ByteSerializable {
         this.mEndTime = endTime;
     }
 
-    public List<MetroStation> getStations() {
+    public List<Station> getStations() {
         return mStations;
     }
 
-    public void setStations(List<MetroStation> stations) {
+    public void setStations(List<Station> stations) {
         this.mStations = stations;
     }
 
