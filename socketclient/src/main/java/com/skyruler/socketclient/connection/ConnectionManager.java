@@ -83,9 +83,11 @@ public class ConnectionManager implements IConnectionManager {
 
     @Override
     public void onDestroy() {
-        mConnection.disconnect();
-        mConnection.onDestroy();
-        mConnection = null;
+        if (mConnection != null) {
+            mConnection.disconnect();
+            mConnection.onDestroy();
+            mConnection = null;
+        }
     }
 
     @Override
