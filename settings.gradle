@@ -1,1 +1,3 @@
-include ':app', ':socketclient', ':logger', ':middleware'
+include ':libraryfilecheck'
+include ':appfilecheck'
+include ':appglonavin', ':socketclient', ':logger', ':libraryglonavin'
