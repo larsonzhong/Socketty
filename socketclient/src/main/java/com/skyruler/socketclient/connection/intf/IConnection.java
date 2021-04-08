@@ -6,6 +6,8 @@ import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
 
+import java.io.OutputStream;
+
 public interface IConnection {
 
     void connect(Context mContext, IStateListener listener);
@@ -25,5 +27,4 @@ public interface IConnection {
     void addMsgListener(IMessageListener listener, MessageFilter filter);
 
     void removeMsgListener(MessageFilter filter);
-
 }

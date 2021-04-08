@@ -3,12 +3,13 @@ package com.skyruler.filechecklibrary.connection;
 import com.skyruler.filechecklibrary.message.MessageStrategy;
 import com.skyruler.filechecklibrary.packet.PacketStrategy;
 import com.skyruler.socketclient.connection.intf.IConnectOption;
+import com.skyruler.socketclient.connection.socket.remote.RemoteSocketConfig;
 import com.skyruler.socketclient.message.IMessageStrategy;
 import com.skyruler.socketclient.message.IPacketStrategy;
 
 import static com.skyruler.socketclient.connection.intf.IConnectOption.ConnectionType.SOCKET;
 
-public class GlonavinConnectOption implements IConnectOption {
+public class FileCheckConnectOption extends RemoteSocketConfig {
 
 
     @Override
@@ -22,7 +23,7 @@ public class GlonavinConnectOption implements IConnectOption {
     }
 
     @Override
-    public ConnectionType getType() {
+    public IConnectOption.ConnectionType getType() {
         return SOCKET;
     }
 

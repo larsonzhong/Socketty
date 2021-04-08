@@ -9,7 +9,8 @@ import com.skyruler.socketclient.connection.intf.IConnectOption;
 import com.skyruler.socketclient.connection.intf.IConnection;
 import com.skyruler.socketclient.connection.intf.IConnectionManager;
 import com.skyruler.socketclient.connection.intf.IStateListener;
-import com.skyruler.socketclient.connection.socket.SocketConnection;
+import com.skyruler.socketclient.connection.socket.local.LocalSocketConnection;
+import com.skyruler.socketclient.connection.socket.remote.RemoteSocketConnection;
 import com.skyruler.socketclient.exception.ConnectionException;
 import com.skyruler.socketclient.exception.UnFormatMessageException;
 import com.skyruler.socketclient.filter.MessageFilter;
@@ -39,21 +40,21 @@ public class ConnectionManager implements IConnectionManager {
     }
 
     @Override
-    public void connect(IConnectOption bleConnectOption) {
+    public void connect(IConnectOption connectOption) {
         if (isConnected()) {
             return;
         }
-        if (bleConnectOption == null) {
+        if (connectOption == null) {
             throw new IllegalArgumentException("SocketConnection parameter is empty, please check connection parameters !!");
         }
-        mExecutor.execute(new ConnectTask(bleConnectOption));
+        mExecutor.execute(new ConnectTask(connectOption));
     }
 
     private class ConnectTask implements Runnable {
         private IConnectOption connectOption;
 
-        ConnectTask(IConnectOption bleConnectOption) {
-            this.connectOption = bleConnectOption;
+        ConnectTask(IConnectOption connectOption) {
+            this.connectOption = connectOption;
         }
 
         @Override
@@ -64,8 +65,11 @@ public class ConnectionManager implements IConnectionManager {
             if (connectOption.getType() == IConnectOption.ConnectionType.BLE) {
                 mConnection = new BLEConnection(connectOption);
                 mConnection.connect(mContext, stateListener);
-            } else if (connectOption.getType() == IConnectOption.ConnectionType.SOCKET) {
-                mConnection = new SocketConnection(connectOption);
+            } else if (connectOption.getType() == IConnectOption.ConnectionType.LOCAL_SOCKET) {
+                mConnection = new LocalSocketConnection(connectOption);
+                mConnection.connect(mContext, stateListener);
+            }else if(connectOption.getType() == IConnectOption.ConnectionType.SOCKET) {
+                mConnection = new RemoteSocketConnection(connectOption);
                 mConnection.connect(mContext, stateListener);
             }
         }

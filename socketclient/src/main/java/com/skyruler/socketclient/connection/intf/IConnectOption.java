@@ -12,6 +12,7 @@ public interface IConnectOption {
 
     enum ConnectionType {
         SOCKET,
+        LOCAL_SOCKET,
         BLE
     }
 }

@@ -40,6 +40,10 @@ class ManagerCore {
         });
     }
 
+    void connect(FileCheckConnectOption option) {
+        socketClient.connect(option);
+    }
+
 
     void addConnectStateListener(IStateListener listener) {
         if (connListeners == null) {

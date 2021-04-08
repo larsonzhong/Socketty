@@ -1,4 +1,4 @@
-package com.skyruler.socketclient.connection.socket;
+package com.skyruler.socketclient.connection.socket.local;
 
 import android.content.Context;
 import android.net.LocalSocket;
@@ -10,7 +10,10 @@ import com.skyruler.socketclient.connection.PacketReader;
 import com.skyruler.socketclient.connection.PacketRouter;
 import com.skyruler.socketclient.connection.intf.IConnectOption;
 import com.skyruler.socketclient.connection.intf.IConnection;
+import com.skyruler.socketclient.connection.intf.ISocketConnection;
 import com.skyruler.socketclient.connection.intf.IStateListener;
+import com.skyruler.socketclient.connection.socket.PacketWriter;
+import com.skyruler.socketclient.connection.socket.SocketConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.filter.MessageIdFilter;
 import com.skyruler.socketclient.message.IMessage;
@@ -36,13 +39,13 @@ import java.io.OutputStream;
  * @author Larsonzhong (larsonzhong@163.com)
  * @since 2017-12-07 11:14
  */
-public class SocketConnection implements IConnection {
-    private static final String TAG = "SocketConnection";
+public class LocalSocketConnection implements ISocketConnection {
+    private static final String TAG = "LocalSocketConnection";
     private boolean mConnected = false;
     /**
      * connect to server config
      */
-    private SocketConfig mConfig;
+    private LocalSocketConfig mConfig;
     /**
      * The socket which is used for this connection
      */
@@ -66,8 +69,8 @@ public class SocketConnection implements IConnection {
      *
      * @param cfg the configuration which is used to establish the connection
      */
-    public SocketConnection(IConnectOption cfg) {
-        mConfig = (SocketConfig) cfg;
+    public LocalSocketConnection(IConnectOption cfg) {
+        mConfig = (LocalSocketConfig) cfg;
         packetRouter = new PacketRouter();
     }
 
@@ -192,7 +195,8 @@ public class SocketConnection implements IConnection {
     }
 
 
-    void onSocketCloseUnexpected(Exception e) {
+    @Override
+    public void onSocketCloseUnexpected(Exception e) {
         if (connListener != null) {
             connListener.onDisconnect(e);
         }

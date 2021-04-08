@@ -56,6 +56,8 @@ class ManagerCore {
                 for (IBleStateListener listener : connListeners) {
                     if (device instanceof BluetoothGatt) {
                         listener.onDisconnect(((BluetoothGatt) device).getDevice());
+                    } else if (device instanceof Exception) {
+                        ((Exception) device).printStackTrace();
                     }
                 }
             }

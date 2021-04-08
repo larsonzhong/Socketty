@@ -3,6 +3,8 @@ package com.skyruler.socketclient.connection.socket;
 
 import android.util.Log;
 
+import com.skyruler.socketclient.connection.intf.ISocketConnection;
+import com.skyruler.socketclient.connection.socket.local.LocalSocketConnection;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IPacket;
 
@@ -28,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * ....'______________________________\|/______________________________`.
  * ..larsonzhong@163.com      created in 2018/8/15     @author : larsonzhong
  */
-class PacketWriter {
+public class PacketWriter {
     private static final String TAG = "PacketWriter";
     /**
      * 默认心跳时间间隔
@@ -36,7 +38,7 @@ class PacketWriter {
     private static final long DEFAULT_HEART_INTERVAL = 10 * 1000;
     private final BlockingQueue<IPacket> mQueue;
 
-    private SocketConnection mConnection;
+    private ISocketConnection mConnection;
     private final OutputStream mOutputStream;
     private Thread mWriteThread;
     private ScheduledExecutorService mTimeExecutor;
@@ -50,10 +52,10 @@ class PacketWriter {
      *
      * @param conn the connection
      */
-    PacketWriter(SocketConnection conn) {
+    public PacketWriter(LocalSocketConnection conn) {
         mQueue = new LinkedBlockingQueue<>();
         mConnection = conn;
-        mOutputStream = mConnection.getOutputStream();
+        mOutputStream = conn.getOutputStream();
         init();
     }
 
