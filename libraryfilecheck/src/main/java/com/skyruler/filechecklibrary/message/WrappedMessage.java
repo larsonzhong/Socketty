@@ -1,5 +1,6 @@
 package com.skyruler.filechecklibrary.message;
 
+import com.skyruler.filechecklibrary.packet.Packet;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.AckMode;
 import com.skyruler.socketclient.message.IMessage;
@@ -12,23 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WrappedMessage implements IWrappedMessage {
-    private static final int DEFAULT_MESSAGE_BODY_LIMIT = 1024;
+    private static final int DEFAULT_MESSAGE_BODY_LIMIT = 65535 - Packet.HEADER_LENGTH;
     private static final int DEFAULT_MESSAGE_TIMEOUT = 5000;
-    private final byte messageID;
     private final List<IMessage> messages;
-    private final int timeout;
-    private final AckMode ackMode;
     private final MessageFilter filter;
     private final MessageFilter resultHandler;
 
 
     private WrappedMessage(Builder builder) {
-        this.messageID = builder.msgId;
         this.messages = builder.messages;
-        this.timeout = builder.timeout;
         this.filter = builder.msgFilter;
         this.resultHandler = builder.resultHandler;
-        this.ackMode = builder.ackMode;
     }
 
     public List<IMessage> getMessages() {
@@ -44,46 +39,33 @@ public class WrappedMessage implements IWrappedMessage {
         return filter;
     }
 
+    @Override
     public int getTimeout() {
-        return timeout;
+        return DEFAULT_MESSAGE_TIMEOUT;
     }
 
+    @Override
     public AckMode getAckMode() {
-        return ackMode;
-    }
-
-    public byte getMessageID() {
-        return messageID;
+        return AckMode.PACKET;
     }
 
     public static class Builder {
         List<IMessage> messages;
-        byte[] body;
-        byte msgId;
-        private int timeout;
-        private AckMode ackMode;
-        private int limitBodyLength;
+        String command;
+        String data;
         private MessageFilter msgFilter;
         private MessageFilter resultHandler;
 
-        public Builder(byte msgId) {
-            this.msgId = msgId;
-            this.timeout = DEFAULT_MESSAGE_TIMEOUT;
-            this.limitBodyLength = DEFAULT_MESSAGE_BODY_LIMIT;
+        public Builder() {
         }
 
-        public Builder body(byte[] body) {
-            this.body = body;
+        public Builder command(String command) {
+            this.command = command;
             return this;
         }
 
-        public Builder limitBodyLength(int bodyLength) {
-            this.limitBodyLength = bodyLength;
-            return this;
-        }
-
-        public Builder ackMode(AckMode ackMode) {
-            this.ackMode = ackMode;
+        public Builder data(String data) {
+            this.data = data;
             return this;
         }
 
@@ -97,11 +79,6 @@ public class WrappedMessage implements IWrappedMessage {
             return this;
         }
 
-        public Builder timeout(int timeout) {
-            this.timeout = timeout;
-            return this;
-        }
-
         public WrappedMessage build() {
             messages = buildMessageList();
             return new WrappedMessage(this);
@@ -109,30 +86,31 @@ public class WrappedMessage implements IWrappedMessage {
 
         private List<IMessage> buildMessageList() {
             List<IMessage> messageList = new ArrayList<>();
-            boolean needSplit = body != null && body.length > limitBodyLength;
+            IMessage message = new Message.Builder()
+                    .command(command)
+                    .data(data)
+                    .build();
+            byte[] bytes = message.getBody();
+
+            boolean needSplit = bytes != null && bytes.length > DEFAULT_MESSAGE_BODY_LIMIT;
             if (!needSplit) {
-                IMessage msg = new Message.Builder(msgId).body(body).build();
-                messageList.add(msg);
+                messageList.add(message);
                 return messageList;
             }
 
-            List<byte[]> payloads = ArrayUtils.divide(body, limitBodyLength);
+            // TCP/IP 数据包最大为65535 Bytes。超过该大小的数据包，必须拆开发送
+            // 包拆分规则暂定为：将除length外的数据分割发送
+            List<byte[]> payloads = ArrayUtils.divide(bytes, DEFAULT_MESSAGE_BODY_LIMIT);
             for (short i = 0; i < payloads.size(); i++) {
-                if (ackMode == AckMode.PACKET) {
-                    // 需要再每一个body前加上包序号
-                    short seqNum = (short) (payloads.size() - i);
-                    byte[] data = ByteBuffer
-                            .allocate(limitBodyLength + 2)
-                            .order(ByteOrder.LITTLE_ENDIAN)
-                            .putShort(seqNum)
-                            .put(payloads.get(i))
-                            .array();
-                    IMessage msg = new Message.Builder(msgId).body(data).build();
-                    messageList.add(msg);
-                } else if (ackMode == AckMode.MESSAGE) {
-                    IMessage msg = new Message.Builder(msgId).body(payloads.get(i)).build();
-                    messageList.add(msg);
-                }
+                byte[] payload = payloads.get(i);
+                byte[] data = ByteBuffer
+                        .allocate(DEFAULT_MESSAGE_BODY_LIMIT + Packet.HEADER_LENGTH)
+                        .order(ByteOrder.LITTLE_ENDIAN)
+                        .putShort((short) payload.length)
+                        .put(payload)
+                        .array();
+                IMessage msg = new Message(data);
+                messageList.add(msg);
             }
             return messageList;
         }

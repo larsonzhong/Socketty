@@ -3,7 +3,8 @@ package com.skyruler.filechecklibrary.connection;
 import android.content.Context;
 
 import com.skyruler.filechecklibrary.command.AbsCommand;
-import com.skyruler.filechecklibrary.connection.intf.IConnectStateCallback;
+import com.skyruler.socketclient.connection.intf.IStateListener;
+import com.skyruler.socketclient.filter.MessageIdFilter;
 import com.skyruler.socketclient.message.IMessageListener;
 
 public abstract class BaseManager {
@@ -14,12 +15,11 @@ public abstract class BaseManager {
         managerCore.setup(context);
     }
 
-
-    public void addConnectStateListener(IConnectStateCallback listener) {
+    public void addConnectStateListener(IStateListener listener) {
         managerCore.addConnectStateListener(listener);
     }
 
-    public void removeConnectListener(IConnectStateCallback listener) {
+    public void removeConnectListener(IStateListener listener) {
         managerCore.removeConnectListener(listener);
     }
 
@@ -37,12 +37,8 @@ public abstract class BaseManager {
         managerCore = null;
     }
 
-    public boolean startTest(boolean start) {
-        return managerCore.startTest(start);
-    }
-
-    void addMessageListener(IMessageListener listener, byte msgID) {
-        this.managerCore.listenerForReport(listener, msgID);
+    void addMessageListener(IMessageListener listener, MessageIdFilter filter) {
+        this.managerCore.listenerForReport(listener, filter);
     }
 
     void removeMsgListener(byte msgID) {
