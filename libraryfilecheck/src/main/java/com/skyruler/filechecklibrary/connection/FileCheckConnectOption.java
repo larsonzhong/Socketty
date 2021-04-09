@@ -5,11 +5,11 @@ import com.skyruler.filechecklibrary.packet.PacketStrategy;
 import com.skyruler.socketclient.connection.socket.conf.SocketConnectOption;
 import com.skyruler.socketclient.connection.socket.remote.RemoteSocketConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
-import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
 import com.skyruler.socketclient.message.IMessageStrategy;
 import com.skyruler.socketclient.message.IPacketStrategy;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 
@@ -39,11 +39,40 @@ public class FileCheckConnectOption extends RemoteSocketConnectOption {
         return ConnectionType.SOCKET;
     }
 
-    public class Builder {
+    public static class Builder {
         private String host;
         private int port;
-        private IMessage heartBeat;
         private SocketConnectOption skSocketOption;
         private Map<MessageFilter, IMessageListener> mWrappers;
+
+        public Builder() {
+            mWrappers = new LinkedHashMap<>();
+        }
+
+        public Builder host(String host) {
+            this.host = host;
+            return this;
+        }
+
+        public Builder port(int port) {
+            this.port = port;
+            return this;
+        }
+
+        public Builder skSocketOption(SocketConnectOption option) {
+            this.skSocketOption = option;
+            return this;
+        }
+
+        public Builder addMessageListener(MessageFilter filter, IMessageListener listener) {
+            this.mWrappers.put(filter, listener);
+            return this;
+        }
+
+        public FileCheckConnectOption build() {
+            return new FileCheckConnectOption(this);
+        }
+
+
     }
 }

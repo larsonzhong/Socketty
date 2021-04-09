@@ -7,15 +7,15 @@ import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.filter.MessageIdFilter;
 import com.skyruler.socketclient.message.IMessageListener;
 
-public abstract class BaseManager {
+public class BaseManager {
     private ManagerCore managerCore;
 
-    BaseManager(Context context) {
+    public BaseManager(Context context) {
         managerCore = new ManagerCore();
         managerCore.setup(context);
     }
 
-    public void addConnectStateListener(IStateListener listener) {
+    public void addConnectStateListener(IConnectStateListener listener) {
         managerCore.addConnectStateListener(listener);
     }
 
@@ -23,6 +23,14 @@ public abstract class BaseManager {
         managerCore.removeConnectListener(listener);
     }
 
+    public void connect(String host, int port) {
+        FileCheckConnectOption option = new FileCheckConnectOption
+                .Builder()
+                .host(host)
+                .port(port)
+                .build();
+        managerCore.connect(option);
+    }
 
     public void disconnect() {
         managerCore.disconnect();
@@ -45,7 +53,7 @@ public abstract class BaseManager {
         this.managerCore.removeMsgListener(msgID);
     }
 
-    boolean sendMessage(AbsCommand cmd) {
+    public boolean sendMessage(AbsCommand cmd) {
         return this.managerCore.sendMessage(cmd);
     }
 

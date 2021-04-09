@@ -195,7 +195,8 @@ public class PacketWriter {
                 IPacket packet = nextPacket();
                 synchronized (mOutputStream) {
                     if (packet != null) {
-                        mOutputStream.write(packet.getBytes());
+                        // mOutputStream.write(packet.getBytes());
+                        mOutputStream.write(packet.getData());
                         mOutputStream.flush();
                     }
                 }

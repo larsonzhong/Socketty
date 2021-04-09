@@ -18,23 +18,34 @@ class ManagerCore {
     private static final String TAG = "ManagerCore";
     private SocketClient socketClient;
 
-    private CopyOnWriteArrayList<IStateListener> connListeners;
+    private CopyOnWriteArrayList<IConnectStateListener> connListeners;
 
 
     void setup(Context context) {
         this.socketClient = new SocketClient();
         this.socketClient.setup(context, new IStateListener() {
+
             @Override
             public void onDeviceConnect(Object device) {
-                for (IStateListener listener : connListeners) {
-                    listener.onDeviceConnect(device);
-                }
+                // ignore
             }
 
             @Override
             public void onDeviceDisconnect(Object device) {
-                for (IStateListener listener : connListeners) {
-                    listener.onDeviceDisconnect(device);
+                // ignore
+            }
+
+            @Override
+            public void onSocketConnected() {
+                for (IConnectStateListener listener : connListeners) {
+                    listener.onConnect();
+                }
+            }
+
+            @Override
+            public void onSocketDisconnect() {
+                for (IConnectStateListener listener : connListeners) {
+                    listener.onDisconnect();
                 }
             }
         });
@@ -45,7 +56,7 @@ class ManagerCore {
     }
 
 
-    void addConnectStateListener(IStateListener listener) {
+    void addConnectStateListener(IConnectStateListener listener) {
         if (connListeners == null) {
             connListeners = new CopyOnWriteArrayList<>();
         }
@@ -87,8 +98,7 @@ class ManagerCore {
                     .Builder()
                     .command(cmd.getCommand())
                     .data(cmd.getData())
-                    .msgFilter(cmd.getResultHandler())
-                    .resultHandler(cmd.getResultHandler())
+                    .msgFilter(cmd.getMessageFilter())
                     .build();
             boolean isSend = socketClient.sendMessage(message);
             Log.d(TAG, "sendMessage state=" + isSend);

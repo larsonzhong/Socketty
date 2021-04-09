@@ -19,5 +19,5 @@ public abstract class AbsCommand {
         return data;
     }
 
-    public abstract MessageFilter getResultHandler();
+    public abstract MessageFilter getMessageFilter();
 }

@@ -61,6 +61,16 @@ class ManagerCore {
                     }
                 }
             }
+
+            @Override
+            public void onSocketConnected() {
+                // ignore
+            }
+
+            @Override
+            public void onSocketDisconnect() {
+                // ignore
+            }
         });
     }
 

@@ -9,6 +9,7 @@ import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.connection.socket.BaseSocketConnection;
 import com.skyruler.socketclient.connection.socket.PacketReader;
 import com.skyruler.socketclient.connection.socket.PacketWriter;
+import com.skyruler.socketclient.connection.socket.conf.SocketConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
 
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class LocalSocketConnection extends BaseSocketConnection {
     private LocalSocket mSocket;
 
     /**
-     * Creates a new JT/T808 connection using the specified connection configuration.
+     * Creates a new connection using the specified connection configuration.
      * <p>
      * Note that SocketConnection constructors do not establish a connection to the server and you must call
      * {@link #connect(Context, IStateListener)}.
