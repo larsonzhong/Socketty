@@ -3,7 +3,7 @@ package com.skyruler.socketclient.connection.socket.local;
 import android.net.LocalSocketAddress;
 
 import com.skyruler.socketclient.connection.intf.IConnectOption;
-import com.skyruler.socketclient.connection.socket.SocketConnectOption;
+import com.skyruler.socketclient.connection.socket.conf.SocketConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;

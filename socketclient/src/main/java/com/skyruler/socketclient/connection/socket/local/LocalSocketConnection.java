@@ -4,12 +4,11 @@ import android.content.Context;
 import android.net.LocalSocket;
 import android.net.LocalSocketAddress;
 
-import com.skyruler.socketclient.connection.ble.BlePacketReader;
 import com.skyruler.socketclient.connection.intf.IConnectOption;
 import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.connection.socket.BaseSocketConnection;
+import com.skyruler.socketclient.connection.socket.PacketReader;
 import com.skyruler.socketclient.connection.socket.PacketWriter;
-import com.skyruler.socketclient.connection.socket.SocketConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
 
 import java.io.IOException;
@@ -83,7 +82,7 @@ public class LocalSocketConnection extends BaseSocketConnection {
         }
 
         mWriter = new PacketWriter(this);
-        mReader = new BlePacketReader(packetRouter);
+        mReader = new PacketReader(this, packetRouter);
 
         // Start the message writer
         mWriter.startup();
