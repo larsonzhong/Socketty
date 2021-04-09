@@ -52,7 +52,7 @@ public class PacketRouter {
         mRcvListeners.remove(filter);
     }
 
-    void onDataReceive(byte[] data) {
+    public void onDataReceive(byte[] data) {
         IPacket packet = packetConstructor.parse(data);
         if (packet == null) {
             Log.e(TAG, "packet parser <<< error,invalid packet :" + ArrayUtils.bytesToHex(data));

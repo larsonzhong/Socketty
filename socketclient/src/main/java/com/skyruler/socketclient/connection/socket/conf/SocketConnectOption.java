@@ -1,4 +1,4 @@
-package com.skyruler.socketclient.connection.socket;
+package com.skyruler.socketclient.connection.socket.conf;
 
 import com.skyruler.socketclient.exception.ConnectionException;
 import com.skyruler.socketclient.message.MessageSnBuilder;

@@ -11,7 +11,7 @@ import com.skyruler.socketclient.message.IMessageListener;
 import com.skyruler.socketclient.message.IWrappedMessage;
 
 public interface ISocketClient {
-    void setup(Context context,IStateListener listener);
+    void setup(Context context, IStateListener listener);
 
     void connect(IConnectOption option);
 

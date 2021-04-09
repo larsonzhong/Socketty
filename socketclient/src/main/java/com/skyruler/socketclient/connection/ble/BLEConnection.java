@@ -10,7 +10,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.skyruler.socketclient.connection.MessageCollector;
-import com.skyruler.socketclient.connection.PacketReader;
 import com.skyruler.socketclient.connection.PacketRouter;
 import com.skyruler.socketclient.connection.intf.IConnectOption;
 import com.skyruler.socketclient.connection.intf.IConnection;
@@ -26,7 +25,7 @@ public class BLEConnection implements IConnection {
     private final BLEConnectOption bleOption;
     private boolean mConnected = false;
     private String mLastBluetooth;
-    private PacketReader mReader;
+    private BlePacketReader mReader;
     private BlePacketWriter mWriter;
     private BluetoothGatt mBluetoothGatt;
     private IStateListener stateListener;
@@ -65,7 +64,7 @@ public class BLEConnection implements IConnection {
             this.mBluetoothGatt.connect();
         }
 
-        mReader = new PacketReader(packetRouter);
+        mReader = new BlePacketReader(packetRouter);
         mWriter = new BlePacketWriter(mBluetoothGatt);
         this.mLastBluetooth = address;
         mWriter.startup();
@@ -142,7 +141,7 @@ public class BLEConnection implements IConnection {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             if (newState == 2) {
-                stateListener.onConnect(gatt);
+                stateListener.onDeviceConnect(gatt);
                 try {
                     Thread.sleep(500);
                     mBluetoothGatt.discoverServices();
@@ -151,7 +150,7 @@ public class BLEConnection implements IConnection {
                     Log.e(TAG, e.toString());
                 }
             } else if (newState == 0) {
-                stateListener.onDisconnect(gatt);
+                stateListener.onDeviceDisconnect(gatt);
                 setConnected(false);
             }
         }
@@ -165,7 +164,7 @@ public class BLEConnection implements IConnection {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             // 收到数据
-            mReader.onDataReceive(characteristic);
+            mReader.onBleDataReceive(characteristic);
         }
 
     }
