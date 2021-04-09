@@ -1,8 +1,6 @@
 package com.skyruler.socketclient.connection;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 
 import com.skyruler.socketclient.connection.ble.BLEConnection;
 import com.skyruler.socketclient.connection.intf.IConnectOption;
@@ -25,7 +23,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class ConnectionManager implements IConnectionManager {
 
     private IConnection mConnection;
@@ -68,7 +65,7 @@ public class ConnectionManager implements IConnectionManager {
             } else if (connectOption.getType() == IConnectOption.ConnectionType.LOCAL_SOCKET) {
                 mConnection = new LocalSocketConnection(connectOption);
                 mConnection.connect(mContext, stateListener);
-            }else if(connectOption.getType() == IConnectOption.ConnectionType.SOCKET) {
+            } else if (connectOption.getType() == IConnectOption.ConnectionType.SOCKET) {
                 mConnection = new RemoteSocketConnection(connectOption);
                 mConnection.connect(mContext, stateListener);
             }

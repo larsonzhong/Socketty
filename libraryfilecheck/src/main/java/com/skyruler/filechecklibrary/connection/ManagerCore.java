@@ -25,16 +25,16 @@ class ManagerCore {
         this.socketClient = new SocketClient();
         this.socketClient.setup(context, new IStateListener() {
             @Override
-            public void onConnect(Object device) {
+            public void onDeviceConnect(Object device) {
                 for (IStateListener listener : connListeners) {
-                    listener.onConnect(device);
+                    listener.onDeviceConnect(device);
                 }
             }
 
             @Override
-            public void onDisconnect(Object device) {
+            public void onDeviceDisconnect(Object device) {
                 for (IStateListener listener : connListeners) {
-                    listener.onDisconnect(device);
+                    listener.onDeviceDisconnect(device);
                 }
             }
         });

@@ -52,7 +52,7 @@ public class PacketWriter {
      *
      * @param conn the connection
      */
-    public PacketWriter(LocalSocketConnection conn) {
+    public PacketWriter(ISocketConnection conn) {
         mQueue = new LinkedBlockingQueue<>();
         mConnection = conn;
         mOutputStream = conn.getOutputStream();

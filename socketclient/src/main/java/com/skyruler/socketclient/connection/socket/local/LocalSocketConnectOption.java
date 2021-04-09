@@ -22,7 +22,7 @@ import java.util.Map;
  * ....'______________________________\|/______________________________`.
  * ..larsonzhong@163.com      created in 2018/8/15     @author : larsonzhong
  */
-public abstract class LocalSocketConfig implements IConnectOption {
+public abstract class LocalSocketConnectOption implements IConnectOption {
     /**
      * 连接本地socket（{@link android.net.LocalSocket}）需要用到的Socket名字
      */
@@ -47,7 +47,7 @@ public abstract class LocalSocketConfig implements IConnectOption {
      */
     private final Map<MessageFilter, IMessageListener> mWrappers;
 
-    LocalSocketConfig(LocalSocketAddress.Namespace nameSpace, String socketName, SocketConnectOption skSocketOption
+    LocalSocketConnectOption(LocalSocketAddress.Namespace nameSpace, String socketName, SocketConnectOption skSocketOption
             , boolean isServer, Map<MessageFilter, IMessageListener> wrappers, IMessage heartBeat) {
         this.nameSpace = nameSpace == null ? LocalSocketAddress.Namespace.ABSTRACT : nameSpace;
         this.socketName = socketName;

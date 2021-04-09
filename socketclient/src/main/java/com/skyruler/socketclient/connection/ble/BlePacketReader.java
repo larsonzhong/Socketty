@@ -1,22 +1,24 @@
-package com.skyruler.socketclient.connection;
+package com.skyruler.socketclient.connection.ble;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.util.Log;
 
+import com.skyruler.socketclient.connection.PacketRouter;
 import com.skyruler.socketclient.util.ArrayUtils;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class PacketReader {
+public class BlePacketReader {
     private static final String TAG = "PacketReader";
+
     private PacketRouter packetRouter;
     private BlockingQueue<byte[]> mQueue;
     private Thread mDataRunnable;
     private AtomicBoolean mShutdown;
 
-    public PacketReader(PacketRouter packetRouter) {
+    public BlePacketReader(PacketRouter packetRouter) {
         this.packetRouter = packetRouter;
         this.mShutdown = new AtomicBoolean(false);
         this.mDataRunnable = new DataRunnable();
@@ -55,7 +57,7 @@ public class PacketReader {
     }
 
 
-    public void onDataReceive(BluetoothGattCharacteristic characteristic) {
+    public void onBleDataReceive(BluetoothGattCharacteristic characteristic) {
         byte[] received = characteristic.getValue();
         mQueue.add(received);
         Log.d(TAG, "read packet>>>" + ArrayUtils.bytesToHex(received));
