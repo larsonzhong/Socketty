@@ -37,7 +37,7 @@ public abstract class SocketConfig implements IConnectOption {
     /**
      * 是控制機還是測試機
      */
-    private boolean isServer;
+    private final boolean isServer;
 
     private final SocketConnectOption skSocketOption;
 

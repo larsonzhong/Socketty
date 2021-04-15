@@ -41,8 +41,8 @@ public class Packet implements IPacket {
 
 
     public static class Builder {
-        short length;
-        byte[] data;
+        final short length;
+        final byte[] data;
 
         public Builder(byte[] validData) {
             this.data = validData;

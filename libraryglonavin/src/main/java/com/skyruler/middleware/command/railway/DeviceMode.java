@@ -9,12 +9,12 @@ public class DeviceMode extends AbsCommand {
     private static final byte ID = 0x30;
     private static final byte RESP_ID = 0x31;
     private static final byte RESP_FILE_READ_SUCCESS = 0x01;
-    private static final byte RESP_FILE_NOT_EXIST = 0x02;
+    // private static final byte RESP_FILE_NOT_EXIST = 0x02;
 
     public enum Mode {
-        SelfCheck("自检模式", (byte) 0x03),
-        Railway("高铁模式", (byte) 0x04),
-        Road("公路模式", (byte) 0x05);
+        // SelfCheck("自检模式", (byte) 0x03),
+        // Road("公路模式", (byte) 0x05),
+        Railway("高铁模式", (byte) 0x04);
 
         private final String name;
         private final byte mode;
@@ -22,6 +22,14 @@ public class DeviceMode extends AbsCommand {
         Mode(String name, byte mode) {
             this.name = name;
             this.mode = mode;
+        }
+
+        @Override
+        public String toString() {
+            return "Mode{" +
+                    "name='" + name + '\'' +
+                    ", mode=" + mode +
+                    '}';
         }
     }
 
@@ -39,4 +47,5 @@ public class DeviceMode extends AbsCommand {
             }
         };
     }
+
 }

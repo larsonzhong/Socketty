@@ -11,8 +11,8 @@ import java.util.Arrays;
 public class CrcUtils {
     private static final int CRC16_BUF_MIN_SIZE = 3;
     public static int CRC16_XMODEM = 1;
-    public static int CRC16_CCITT = 2;
-    public static int CRC16_CCITT_FALSE = 3;
+    public static final int CRC16_CCITT = 2;
+    public static final int CRC16_CCITT_FALSE = 3;
 
     /**
      * 生成带crc校验核的数组

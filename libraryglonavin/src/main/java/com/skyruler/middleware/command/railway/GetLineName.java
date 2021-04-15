@@ -11,7 +11,7 @@ public class GetLineName extends AbsCommand {
 
     private static final byte ID = (byte) 0x80;
     private static final byte RESP_ID = (byte) 0x81;
-    private LineNameCallBack callBack;
+    private final LineNameCallBack callBack;
 
     public interface LineNameCallBack {
         void handleLineName(String lineName);

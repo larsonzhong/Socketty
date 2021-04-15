@@ -38,4 +38,5 @@
     <string name="battery">电池电量:%d</string>
     <string name="select_line_success">读取路线文件成功</string>
     <string name="select_line_failed">读取路线文件失败</string>
+    <string name="device_state">device state</string>
 </resources>

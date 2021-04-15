@@ -111,8 +111,8 @@ public class ArrayUtils {
     public static String bytesToHex(byte[] bytes) {
         String strHex;
         StringBuilder sb = new StringBuilder();
-        for (int n = 0; n < bytes.length; n++) {
-            strHex = Integer.toHexString(bytes[n] & 0xFF);
+        for (byte aByte : bytes) {
+            strHex = Integer.toHexString(aByte & 0xFF);
             //sb.append("0x");
             sb.append((strHex.length() == 1) ? "0" + strHex : strHex); // 每个字节由两个字符表示，位数不够，高位补0
             sb.append(", ");

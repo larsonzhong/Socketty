@@ -224,6 +224,6 @@ public class MetroParser implements XmlParser<MetroData> {
 
     @Override
     public String serialize(MetroData metroData) throws Exception {
-        return null;
+        throw new IllegalAccessException("暂未开放该功能");
     }
 }

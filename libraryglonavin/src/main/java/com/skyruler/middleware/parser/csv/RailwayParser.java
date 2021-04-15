@@ -55,8 +55,8 @@ public class RailwayParser {
                 }
 
                 SubItem subItem = new SubItem();
-                subItem.setLongitude(Float.valueOf(next[1]));
-                subItem.setLatitude(Float.valueOf(next[2]));
+                subItem.setLongitude(Float.parseFloat(next[1]));
+                subItem.setLatitude(Float.parseFloat(next[2]));
                 locList.add(subItem);
             }
         } finally {

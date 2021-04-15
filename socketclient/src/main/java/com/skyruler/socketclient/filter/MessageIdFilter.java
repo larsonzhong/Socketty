@@ -3,7 +3,7 @@ package com.skyruler.socketclient.filter;
 import com.skyruler.socketclient.message.IMessage;
 
 public class MessageIdFilter implements MessageFilter {
-    private byte mId;
+    private final byte mId;
 
     public MessageIdFilter(byte id) {
         mId = id;

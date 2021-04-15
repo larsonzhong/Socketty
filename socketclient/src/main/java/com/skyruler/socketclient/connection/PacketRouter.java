@@ -77,8 +77,8 @@ public class PacketRouter {
     }
 
     public static class ListenerWrapper {
-        private IMessageListener listener;
-        private MessageFilter filter;
+        private final IMessageListener listener;
+        private final MessageFilter filter;
 
         ListenerWrapper(MessageFilter filter, IMessageListener listener) {
             this.listener = listener;

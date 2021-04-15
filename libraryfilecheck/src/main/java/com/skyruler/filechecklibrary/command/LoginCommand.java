@@ -55,14 +55,12 @@ public class LoginCommand extends AbsCommand {
         }
 
         public LoginCommand build() {
-            commandStr = new StringBuilder()
-                    .append("[Request]").append("\r\n")
-                    .append("Command=").append(command).append("\r\n")
-                    .append("User=").append(imei).append("\r\n")
-                    .append("Pass=").append(pass).append("\r\n")
-                    .append("Sver=").append(sver).append("\r\n")
-                    .append("Cver=").append(cver).append("\r\n")
-                    .toString();
+            commandStr = "[Request]" + "\r\n" +
+                    "Command=" + command + "\r\n" +
+                    "User=" + imei + "\r\n" +
+                    "Pass=" + pass + "\r\n" +
+                    "Sver=" + sver + "\r\n" +
+                    "Cver=" + cver + "\r\n";
             dataStr = "";
             return new LoginCommand(this);
         }

@@ -4,7 +4,6 @@ package com.skyruler.socketclient.connection.socket;
 import android.util.Log;
 
 import com.skyruler.socketclient.connection.intf.ISocketConnection;
-import com.skyruler.socketclient.connection.socket.local.LocalSocketConnection;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IPacket;
 
@@ -37,9 +36,9 @@ public class PacketWriter {
      */
     private static final long DEFAULT_HEART_INTERVAL = 10 * 1000;
     private final BlockingQueue<IPacket> mQueue;
-
-    private ISocketConnection mConnection;
+    private final ISocketConnection mConnection;
     private final OutputStream mOutputStream;
+
     private Thread mWriteThread;
     private ScheduledExecutorService mTimeExecutor;
     /**

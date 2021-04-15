@@ -24,7 +24,7 @@ public abstract class RemoteSocketConnectOption implements IConnectOption {
     /**
      * 是终端还是服务器
      */
-    private boolean isServer;
+    private final boolean isServer;
     /**
      * 通讯配置
      */

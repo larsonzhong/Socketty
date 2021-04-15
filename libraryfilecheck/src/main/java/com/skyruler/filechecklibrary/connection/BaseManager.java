@@ -19,7 +19,7 @@ public class BaseManager {
         managerCore.addConnectStateListener(listener);
     }
 
-    public void removeConnectListener(IStateListener listener) {
+    public void removeConnectListener(IConnectStateListener listener) {
         managerCore.removeConnectListener(listener);
     }
 

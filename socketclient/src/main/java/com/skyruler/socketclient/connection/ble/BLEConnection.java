@@ -132,7 +132,7 @@ public class BLEConnection implements IConnection {
 
 
     class BleConnectionCallback extends BluetoothGattCallback {
-        private BLEConnectOption bleConnectOption;
+        private final BLEConnectOption bleConnectOption;
 
         BleConnectionCallback(BLEConnectOption bleConnectOption) {
             this.bleConnectOption = bleConnectOption;

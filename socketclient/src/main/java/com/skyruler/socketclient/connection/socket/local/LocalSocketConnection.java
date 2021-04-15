@@ -36,7 +36,7 @@ public class LocalSocketConnection extends BaseSocketConnection {
     /**
      * connect to server config
      */
-    private LocalSocketConnectOption mConfig;
+    private final LocalSocketConnectOption mConfig;
     /**
      * The socket which is used for this connection
      */

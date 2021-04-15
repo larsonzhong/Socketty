@@ -9,8 +9,8 @@ public class TestDirectionCmd extends AbsCommand {
     private static final byte RESP_ID = 0x35;
     private static final byte RESP_DATA_SUCCESS = 0x01;
 
-    private byte startIndex;
-    private byte endIndex;
+    private final byte startIndex;
+    private final byte endIndex;
 
     public TestDirectionCmd(byte start, byte end) {
         super(ID, RESP_ID, AckMode.MESSAGE);

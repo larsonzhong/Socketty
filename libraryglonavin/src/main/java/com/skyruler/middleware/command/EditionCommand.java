@@ -11,12 +11,12 @@ import java.nio.ByteOrder;
 public class EditionCommand extends AbsCommand {
     private static final byte ID = 0x60;
     private static final byte RESP_ID = 0x61;
-    private EditionCallBack callBack;
+    private final EditionCallBack callBack;
 
     public static class Edition {
-        private short softVersionName;
-        private short hardVersionName;
-        private short portoVersionName;
+        private final short softVersionName;
+        private final short hardVersionName;
+        private final short portoVersionName;
 
         Edition(short softVersionName, short hardVersionName, short portoVersionName) {
             this.softVersionName = softVersionName;
@@ -61,7 +61,7 @@ public class EditionCommand extends AbsCommand {
                 buffer.order(ByteOrder.LITTLE_ENDIAN);
                 buffer.rewind();
 
-                byte id = buffer.get();
+                // byte id = buffer.get();
                 short softVersion = buffer.getShort();
                 short hardVersion = buffer.getShort();
                 short protocolVersion = buffer.getShort();

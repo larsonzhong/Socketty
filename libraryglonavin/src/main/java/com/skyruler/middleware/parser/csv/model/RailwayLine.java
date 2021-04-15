@@ -5,7 +5,7 @@ import java.util.List;
 
 public class RailwayLine {
     private String name;
-    List<RailwayStation> stations = new ArrayList<>();
+    private final List<RailwayStation> stations = new ArrayList<>();
 
     public String getName() {
         return name;

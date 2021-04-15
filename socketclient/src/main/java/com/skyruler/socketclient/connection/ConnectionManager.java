@@ -26,9 +26,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ConnectionManager implements IConnectionManager {
 
     private IConnection mConnection;
-    private ExecutorService mExecutor;
+    private final ExecutorService mExecutor;
     private final Context mContext;
-    private IStateListener stateListener;
+    private final IStateListener stateListener;
 
     public ConnectionManager(Context context, IStateListener listener) {
         this.mContext = context;
@@ -48,7 +48,7 @@ public class ConnectionManager implements IConnectionManager {
     }
 
     private class ConnectTask implements Runnable {
-        private IConnectOption connectOption;
+        private final IConnectOption connectOption;
 
         ConnectTask(IConnectOption connectOption) {
             this.connectOption = connectOption;

@@ -43,7 +43,7 @@ public class FileCheckConnectOption extends RemoteSocketConnectOption {
         private String host;
         private int port;
         private SocketConnectOption skSocketOption;
-        private Map<MessageFilter, IMessageListener> mWrappers;
+        private final Map<MessageFilter, IMessageListener> mWrappers;
 
         public Builder() {
             mWrappers = new LinkedHashMap<>();

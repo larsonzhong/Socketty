@@ -28,9 +28,9 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
 public class RailwaySetupDialog extends AlertDialog implements View.OnClickListener, AdapterView.OnItemSelectedListener {
-    private String SD_ROOT_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
+    private final String SD_ROOT_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
 
-    private RailManager glonavinSdk;
+    private final RailManager glonavinSdk;
     private byte mStartSID;
     private byte mEndSID;
     private StationAdapter selectStartAdapter;
@@ -157,7 +157,7 @@ public class RailwaySetupDialog extends AlertDialog implements View.OnClickListe
         newTaskProperties.selection_type = DialogConfigs.FILE_SELECT;
         newTaskProperties.root = new File(SD_ROOT_PATH);
         newTaskProperties.error_dir = new File(SD_ROOT_PATH);
-        newTaskProperties.extensions= new String[]{"csv"};
+        newTaskProperties.extensions = new String[]{"csv"};
 
         final FilePickerDialog newTaskDialog = new FilePickerDialog(getContext(), newTaskProperties);
         newTaskDialog.setTitle(getContext().getString(R.string.select_line));

@@ -13,10 +13,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class BlePacketReader {
     private static final String TAG = "PacketReader";
 
-    private PacketRouter packetRouter;
+    private final PacketRouter packetRouter;
+    private final Thread mDataRunnable;
+    private final AtomicBoolean mShutdown;
     private BlockingQueue<byte[]> mQueue;
-    private Thread mDataRunnable;
-    private AtomicBoolean mShutdown;
 
     public BlePacketReader(PacketRouter packetRouter) {
         this.packetRouter = packetRouter;

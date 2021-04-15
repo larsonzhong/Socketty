@@ -21,21 +21,17 @@ import java.nio.ByteOrder;
 public class SocketConnectOption {
 
     /**
-     * 框架是否是调试模式
-     */
-    private boolean isDebug = true;
-    /**
      * 写入Socket管道中给服务器的字节序
      */
-    private ByteOrder mWriteOrder;
+    private final ByteOrder mWriteOrder;
     /**
      * 从Socket管道中读取字节序时的字节序
      */
-    private ByteOrder mReadByteOrder;
+    private final ByteOrder mReadByteOrder;
     /**
      * 脉搏频率单位是毫秒
      */
-    private long mPulseFrequency;
+    private final long mPulseFrequency;
     /**
      * 重连间隔，单位是毫秒
      */
@@ -45,13 +41,13 @@ public class SocketConnectOption {
      * 大于或等于丢失次数时将断开该通道的连接<br>
      * 抛出{@link ConnectionException}
      */
-    private int mReconnectMaxAttemptTimes;
+    private final int mReconnectMaxAttemptTimes;
     /**
      * 连接超时时间(毫秒)
      */
-    private int mSocketTimeout;
+    private final int mSocketTimeout;
 
-    private boolean isReconnectAllowed;
+    private final boolean isReconnectAllowed;
 
     private SocketConnectOption(Builder okOptions) {
         mPulseFrequency = okOptions.mPulseFrequency;
@@ -60,17 +56,12 @@ public class SocketConnectOption {
         mReadByteOrder = okOptions.mReadByteOrder;
         mReconnectMaxAttemptTimes = okOptions.mReconnectMaxAttemptTimes;
         isReconnectAllowed = okOptions.isReconnectAllowed;
-        isDebug = okOptions.isDebug;
         reconnectInterval = okOptions.mReconnectInterval;
     }
 
 
     public boolean isReconnectAllowed() {
         return isReconnectAllowed;
-    }
-
-    public boolean isDebug() {
-        return isDebug;
     }
 
     public ByteOrder getWriteOrder() {
@@ -128,10 +119,6 @@ public class SocketConnectOption {
          * 是否容许自动重连
          */
         private boolean isReconnectAllowed;
-        /**
-         * 是否调试模式
-         */
-        private boolean isDebug = true;
 
         public Builder(String clientID) throws Exception {
             MessageSnBuilder.getInstance().setClientKey(clientID);
@@ -181,8 +168,7 @@ public class SocketConnectOption {
          * @deprecated 请使用 {@link Builder#setWriteByteOrder(ByteOrder)}
          */
         public Builder setWriteOrder(ByteOrder writeOrder) {
-            setWriteByteOrder(writeOrder);
-            return this;
+            return setWriteByteOrder(writeOrder);
         }
 
 
@@ -226,16 +212,6 @@ public class SocketConnectOption {
          */
         public Builder setReconnectAllowed(boolean isAllow) {
             isReconnectAllowed = isAllow;
-            return this;
-        }
-
-        /**
-         * 开启调试模式
-         *
-         * @param debug 调试模式开关
-         */
-        public Builder setDebug(boolean debug) {
-            isDebug = debug;
             return this;
         }
 

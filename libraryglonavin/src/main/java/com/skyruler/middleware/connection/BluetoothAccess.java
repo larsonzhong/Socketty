@@ -100,11 +100,9 @@ public class BluetoothAccess {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("type: " + deviceType)
-                .append(" name: " + deviceName)
-                .append(" address: " + deviceAddress)
-                .append(" rssi: " + rssi);
-        return stringBuilder.toString();
+        return "type: " + deviceType +
+                " name: " + deviceName +
+                " address: " + deviceAddress +
+                " rssi: " + rssi;
     }
 }

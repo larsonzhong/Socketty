@@ -12,7 +12,7 @@ public class MessageCollector {
 
     private final PacketRouter packetRouter;
     private final MessageFilter filter;
-    private BlockingQueue<IMessage> mQueue;
+    private final BlockingQueue<IMessage> mQueue;
 
     private boolean mCancelled = false;
 

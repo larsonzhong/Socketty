@@ -8,11 +8,11 @@ import java.util.UUID;
 
 public abstract class BLEConnectOption implements IConnectOption {
     private final ConnectionType type;
-    private BluetoothDevice device;
-    private UUID uuidRead;
-    private UUID uuidWrite;
-    private UUID uuidService;
-    private UUID uuidDescriptor;
+    private final BluetoothDevice device;
+    private final UUID uuidRead;
+    private final UUID uuidWrite;
+    private final UUID uuidService;
+    private final UUID uuidDescriptor;
 
     public BLEConnectOption(BluetoothDevice device, UUID uuidRead, UUID uuidWrite, UUID uuidService, UUID uuidDescriptor) {
         this.type = ConnectionType.BLE;

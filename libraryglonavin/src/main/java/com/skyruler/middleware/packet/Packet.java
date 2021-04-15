@@ -45,9 +45,9 @@ public class Packet implements IPacket {
     // 0x24      0xD0    0x00      0x02     0x30     0x01     0x56
 
     public static class Builder {
-        byte pkgType;
-        short length;
-        byte[] data;
+        final byte pkgType;
+        final short length;
+        final byte[] data;
 
         public Builder(byte[] validData) {
             this.pkgType = (byte) 0xD0;

@@ -10,10 +10,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_gravity="center_vertical"
-        app:srcCompat="@drawable/ic_select" />
+        app:srcCompat="@drawable/ic_select"
+        android:contentDescription="@string/device_state" />
 
     <LinearLayout
         android:layout_width="match_parent"

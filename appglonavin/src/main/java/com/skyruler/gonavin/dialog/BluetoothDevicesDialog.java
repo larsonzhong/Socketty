@@ -20,13 +20,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.skyruler.android.logger.Log;
+import com.skyruler.gonavin.R;
 import com.skyruler.middleware.connection.BluetoothAccess;
 import com.skyruler.middleware.connection.IBleStateListener;
 import com.skyruler.middleware.core.BaseManager;
 import com.skyruler.middleware.core.GlonavinFactory;
 import com.skyruler.middleware.core.RailManager;
 import com.skyruler.middleware.core.SubwayManager;
-import com.skyruler.gonavin.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +37,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickListener,
         AdapterView.OnItemClickListener, DialogInterface.OnClickListener {
     private static final int SCAN_PERIOD = 10000;
-    private Handler mHandler;
     private Button btSearch;
     private ProgressBar progressBar;
     private List<BluetoothAccess> mListDevices;
     private BluetoothAccess mSelectedDevice;
     private ScanAdapter mScanAdapter;
-    private BaseManager baseManager;
-    private IBleStateListener listener = new IBleStateListener() {
+    private final Handler mHandler;
+    private final BaseManager baseManager;
+    private final IBleStateListener listener = new IBleStateListener() {
         @Override
         public void onScanResult(BluetoothDevice device, boolean isConnected) {
             Log.d(" device=" + device.getName() + " " + device.getAddress() + " " + device.getType());
@@ -200,7 +200,7 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
     }
 
 
-    public class ScanAdapter extends BaseAdapter {
+    public static class ScanAdapter extends BaseAdapter {
         private final Context mContext;
         private final List<BluetoothAccess> mLists;
 
@@ -214,7 +214,7 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
             ViewHolder viewHolder;
             if (convertView == null) {
                 viewHolder = new ViewHolder();
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.devices_item, null);
+                convertView = LayoutInflater.from(mContext).inflate(R.layout.devices_item, parent, false);
                 viewHolder.image = convertView.findViewById(R.id.itemImage);
                 viewHolder.title = convertView.findViewById(R.id.itemTitle);
                 viewHolder.summary = convertView.findViewById(R.id.itemSummary);

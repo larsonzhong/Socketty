@@ -23,7 +23,7 @@ public final class Log {
     }
 
     private static String mTag = "Logger";
-    private static AtomicBoolean isInitialized = new AtomicBoolean(false);
+    private static final AtomicBoolean isInitialized = new AtomicBoolean(false);
     private static boolean isReleaseLoggable = false;
     private static boolean isWriteFile = true;
 

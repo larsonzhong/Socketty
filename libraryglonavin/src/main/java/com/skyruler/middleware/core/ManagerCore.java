@@ -162,10 +162,7 @@ class ManagerCore {
             boolean isSend = socketClient.sendMessage(message);
             Log.d(TAG, "sendMessage state=" + isSend);
             return isSend;
-        } catch (ConnectionException e) {
-            Log.e(TAG, "sendMessage failed :" + e.getMessage());
-            return false;
-        } catch (UnFormatMessageException e) {
+        } catch (ConnectionException | UnFormatMessageException e) {
             Log.e(TAG, "sendMessage failed :" + e.getMessage());
             return false;
         }
@@ -206,7 +203,7 @@ class ManagerCore {
         }
     }
 
-    private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
+    private final BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice bluetoothDevice, int i, byte[] bytes) {
             onScanResult(bluetoothDevice, false);

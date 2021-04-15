@@ -15,7 +15,7 @@ import java.net.Socket;
 public class RemoteSocketConnection extends BaseSocketConnection {
     private static final String TAG = "LocalSocketConnection";
 
-    private RemoteSocketConnectOption mConfig;
+    private final RemoteSocketConnectOption mConfig;
 
     private Socket mSocket;
 

@@ -29,9 +29,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 
 
 public class SubwaySetupDialog extends AlertDialog implements View.OnClickListener, AdapterView.OnItemSelectedListener {
-    private String SD_ROOT_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
+    private final String SD_ROOT_PATH = Environment.getExternalStorageDirectory().getAbsolutePath();
 
-    private SubwayManager glonavinSdk;
+    private final SubwayManager glonavinSdk;
     private MetroLine mMetroLine;
     private byte mStartSID;
     private byte mEndSID;

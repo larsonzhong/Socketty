@@ -40,9 +40,9 @@ public class RailManager extends BaseManager {
     public boolean chooseLine(String lineName) {
         ChooseLine cmd = new ChooseLine(lineName);
         boolean success = super.sendMessage(cmd);
-        if (success) {
-            //this.lineName = lineName;
-        }
+        // if (success) {
+        //this.lineName = lineName;
+        // }
         Log.d(TAG, "send railway line :" + cmd.toString() + "," + success);
         return success;
     }

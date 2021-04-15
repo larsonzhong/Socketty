@@ -123,7 +123,7 @@ public class TxtLogStrategy implements LogStrategy {
                         Observable.empty().subscribeOn(Schedulers.io())
                                 .doOnComplete(new Action() {
                                     @Override
-                                    public void run() throws Exception {
+                                    public void run() {
                                         String logZipName = backupFile.getParent() + File.separatorChar + "log_" + copyTimeString + ".zip";
                                         try {
                                             Utils.zipFile(logZipName, backupFile, true);

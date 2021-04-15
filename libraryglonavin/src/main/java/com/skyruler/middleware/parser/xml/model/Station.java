@@ -4,15 +4,13 @@ import com.skyruler.middleware.parser.BaseStation;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author: Rony
  * @email: luojun@skyruler.cn
  * @date: Created 2020/5/19 14:54
  */
-public class Station extends BaseStation  {
+public class Station extends BaseStation {
     private static final int BYTES = 10;
     private float mLatitude;
     private float mLongitude;

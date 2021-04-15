@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.skyruler.filechecklibrary.command.AbsCommand;
 import com.skyruler.filechecklibrary.message.WrappedMessage;
+import com.skyruler.socketclient.ISocketClient;
 import com.skyruler.socketclient.SocketClient;
 import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.exception.ConnectionException;
@@ -16,7 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 class ManagerCore {
     private static final String TAG = "ManagerCore";
-    private SocketClient socketClient;
+    private ISocketClient socketClient;
 
     private CopyOnWriteArrayList<IConnectStateListener> connListeners;
 
@@ -65,7 +66,7 @@ class ManagerCore {
         }
     }
 
-    void removeConnectListener(IStateListener listener) {
+    void removeConnectListener(IConnectStateListener listener) {
         if (connListeners != null) {
             connListeners.remove(listener);
         }

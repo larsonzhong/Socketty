@@ -1,5 +1,6 @@
 package com.skyruler.gonavin.dialog;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StationAdapter extends BaseAdapter {
-    private ArrayList<BaseStation> stations = new ArrayList<>();
-    private ArrayList<BaseStation> selects = new ArrayList<>();
-    private LayoutInflater layoutInflater;
-    private boolean mutiSelect;
+    private final ArrayList<BaseStation> stations = new ArrayList<>();
+    private final ArrayList<BaseStation> selects = new ArrayList<>();
+    private final LayoutInflater layoutInflater;
+    private final boolean mutiSelect;
 
     StationAdapter(Context context, boolean mutiSelect) {
         this.mutiSelect = mutiSelect;
@@ -45,7 +46,7 @@ public class StationAdapter extends BaseAdapter {
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
 
-        View view = layoutInflater.inflate(R.layout.item_list_station, null);
+        View view = layoutInflater.inflate(R.layout.item_list_station, parent, false);
         TextView tvSid = view.findViewById(R.id.tv_station_id);
         TextView tvName = view.findViewById(R.id.tv_station_name);
         CheckBox cbStation = view.findViewById(R.id.cb_station_checkbox);
@@ -63,7 +64,8 @@ public class StationAdapter extends BaseAdapter {
     @NonNull
     @Override
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-        View view = layoutInflater.inflate(R.layout.item_list_station, null);
+        @SuppressLint("ViewHolder")
+        View view = layoutInflater.inflate(R.layout.item_list_station, parent, false);
         view.findViewById(R.id.tv_station_id).setVisibility(View.GONE);
         view.findViewById(R.id.cb_station_checkbox).setVisibility(View.GONE);
         TextView tvName = view.findViewById(R.id.tv_station_name);
