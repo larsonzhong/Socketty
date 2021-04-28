@@ -41,11 +41,13 @@ public abstract class BaseManager {
     }
 
     public void disconnect() {
-        managerCore.disconnect();
+        if (managerCore != null) {
+            managerCore.disconnect();
+        }
     }
 
     public boolean isConnected() {
-        return managerCore.isConnected();
+        return managerCore != null && managerCore.isConnected();
     }
 
     public void onDestroy() {

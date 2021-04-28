@@ -8,7 +8,7 @@ import com.skyruler.socketclient.message.IMessage;
 public class GetTmpStopSids extends AbsCommand {
     private static final byte ID = (byte) 0x82;
     private static final byte RESP_ID = (byte) 0x83;
-    private final TmpStopSidCallBack callBack;
+    private TmpStopSidCallBack callBack;
 
     public interface TmpStopSidCallBack {
         /**

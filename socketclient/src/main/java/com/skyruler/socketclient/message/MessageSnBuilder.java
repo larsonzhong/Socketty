@@ -12,8 +12,9 @@ import com.skyruler.socketclient.util.CrcUtils;
 
 public class MessageSnBuilder {
     private static MessageSnBuilder instance;
-    private int sn;
+    private long sn;
     private short mClientKey;
+    private int autoResetNo;
 
     private MessageSnBuilder() {
         sn = 0;
@@ -33,14 +34,26 @@ public class MessageSnBuilder {
     }
 
     /**
-     * 获取命令序列号
+     * 获取命令序列号，如果有设置截断，则到达接断序号从0开始
+     * 否则一直自增
      *
      * @return 命令序列号
      */
-    short getNextSn() {
-        sn = (sn + 1) % 0x10000;
-        sn = (sn == 0 ? 1 : sn);
-        return (short) sn;
+    public long getNextSn() {
+        if (autoResetNo > 0) {
+            sn = (sn + 1) % autoResetNo;
+            sn = (sn == 0 ? 1 : sn);
+        } else {
+            sn = sn + 1;
+        }
+        return sn;
+    }
+
+    /**
+     * 遇到一些情况需要重置SN
+     */
+    public void resetSn() {
+        sn = 0;
     }
 
     /**
@@ -61,10 +74,15 @@ public class MessageSnBuilder {
      * @param clientKey Imei+deviceid+...
      * @throws Exception 返回异常
      */
-    public void setClientKey(String clientKey) throws Exception {
+    public MessageSnBuilder setClientKey(String clientKey) throws Exception {
         if (TextUtils.isEmpty(clientKey)) {
             throw new Exception("Client key is null!");
         }
         mClientKey = (short) CrcUtils.crc16Ccitt(CrcUtils.CRC16_CCITT, clientKey.getBytes());
+        return this;
+    }
+
+    public void autoResetNum(int resetNo) {
+        this.autoResetNo = resetNo;
     }
 }

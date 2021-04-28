@@ -1,7 +1,6 @@
 package com.skyruler.middleware.parser.csv;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.skyruler.middleware.parser.csv.model.RailwayLine;
 import com.skyruler.middleware.parser.csv.model.RailwayStation;
@@ -15,12 +14,14 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.skyruler.logger.Log;
+
 
 public class RailwayParser {
     private static final String TAG = "RailwayParser";
 
     public RailwayLine parseLine(String path) throws IOException {
-        Log.d(TAG, "start parse railway line file:" + path);
+        Log.i(TAG, "start parse railway line file:" + path);
 
         RailwayLine line = new RailwayLine();
         String fileName = getFileName(path);
@@ -71,7 +72,7 @@ public class RailwayParser {
                 e.printStackTrace();
             }
         }
-        Log.d(TAG, "parse railway line end.");
+        Log.i(TAG, "parse railway line end.");
         return line;
     }
 

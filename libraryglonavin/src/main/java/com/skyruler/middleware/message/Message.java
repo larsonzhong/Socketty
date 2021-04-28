@@ -32,7 +32,7 @@ public class Message implements IMessage {
     }
 
     static class Builder {
-        final byte messageID;
+        byte messageID;
         byte[] body = EMPTY_BODY;
 
         Builder(byte msgId) {

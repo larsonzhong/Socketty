@@ -1,6 +1,8 @@
 package com.skyruler.middleware.parser.csv;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -10,10 +12,10 @@ import java.io.InputStreamReader;
  */
 class CSVParser {
     private static final String DEFAULT_CHARSET = "utf8";
-    private final BufferedReader br;
+    private BufferedReader br;
     private boolean hasNext = true;
-    private final char separator;
-    private final int skipLines;
+    private char separator;
+    private int skipLines;
     private boolean linesSkiped;
 
     /**

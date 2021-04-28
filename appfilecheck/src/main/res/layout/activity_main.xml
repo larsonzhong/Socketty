@@ -13,6 +13,63 @@
         android:onClick="connectServer"
         android:text="Connect" />
 
+    <Button
+        android:id="@+id/disconnectBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="disconnectServer"
+        android:enabled="false"
+        android:text="Disconnect" />
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:onClick="login"
+        android:text="login" />
+
+    <Button
+        android:id="@+id/btn_logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:onClick="logout"
+        android:text="logout" />
+
+    <Button
+        android:id="@+id/btn_report_first"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:onClick="startReportFirst"
+        android:text="startReportFirst" />
+
+    <Button
+        android:id="@+id/btn_ReportMoStart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:onClick="startReportMoStart"
+        android:text="ReportMoStart" />
+
+    <Button
+        android:id="@+id/startReportMoEnd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:onClick="startReportMoEnd"
+        android:text="startReportMoEnd" />
+
+    <Button
+        android:id="@+id/btn_ReportLast"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:onClick="startReportLast"
+        android:text="startReportLast" />
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -21,14 +78,14 @@
             android:id="@+id/inputEt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="input here" />
+            android:layout_weight="1" />
 
         <Button
             android:id="@+id/sendBtn"
-            android:onClick="sendMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:enabled="false"
+            android:onClick="sendMsg"
             android:text="Send" />
 
 

@@ -37,14 +37,14 @@ public class ConnectionManager implements IConnectionManager {
     }
 
     @Override
-    public void connect(IConnectOption connectOption) {
+    public void connect(IConnectOption iConnectOption) {
         if (isConnected()) {
             return;
         }
-        if (connectOption == null) {
+        if (iConnectOption == null) {
             throw new IllegalArgumentException("SocketConnection parameter is empty, please check connection parameters !!");
         }
-        mExecutor.execute(new ConnectTask(connectOption));
+        mExecutor.execute(new ConnectTask(iConnectOption));
     }
 
     private class ConnectTask implements Runnable {
@@ -99,7 +99,8 @@ public class ConnectionManager implements IConnectionManager {
     }
 
     @Override
-    public IMessage sendSyncMessage(IMessage msgDataBean, MessageFilter filter, long timeout) throws ConnectionException, UnFormatMessageException {
+    public IMessage sendSyncMessage(IMessage msgDataBean, MessageFilter filter, long timeout)
+            throws ConnectionException, UnFormatMessageException {
         if (filter == null || timeout < 0) {
             throw new UnFormatMessageException("can not send sync IMessage without filter or timeout");
         }

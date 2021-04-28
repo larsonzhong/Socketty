@@ -4,47 +4,65 @@ import android.content.Context;
 import android.util.Log;
 
 import com.skyruler.filechecklibrary.command.AbsCommand;
+import com.skyruler.filechecklibrary.command.HeartCommand;
+import com.skyruler.filechecklibrary.command.LoginCommand;
+import com.skyruler.filechecklibrary.command.LogoutCommand;
+import com.skyruler.filechecklibrary.command.result.Session;
 import com.skyruler.filechecklibrary.message.WrappedMessage;
 import com.skyruler.socketclient.ISocketClient;
 import com.skyruler.socketclient.SocketClient;
 import com.skyruler.socketclient.connection.intf.IStateListener;
+import com.skyruler.socketclient.connection.socket.conf.SocketConnectOption;
 import com.skyruler.socketclient.exception.ConnectionException;
 import com.skyruler.socketclient.exception.UnFormatMessageException;
+import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.filter.MessageIdFilter;
+import com.skyruler.socketclient.message.AckMode;
+import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
+import com.skyruler.socketclient.message.MessageSnBuilder;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-class ManagerCore {
+public class ManagerCore {
     private static final String TAG = "ManagerCore";
     private ISocketClient socketClient;
+    private FileCheckConnectOption connectOption;
+    private Session loginResult;
+    private static ManagerCore instance = new ManagerCore();
 
     private CopyOnWriteArrayList<IConnectStateListener> connListeners;
 
+    public static ManagerCore getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("socketClient 未初始化");
+        }
+        return instance;
+    }
 
-    void setup(Context context) {
+    private ManagerCore() {
+    }
+
+    public void setup(Context context) {
         this.socketClient = new SocketClient();
         this.socketClient.setup(context, new IStateListener() {
 
             @Override
-            public void onDeviceConnect(Object device) {
-                // ignore
-            }
-
-            @Override
-            public void onDeviceDisconnect(Object device) {
-                // ignore
-            }
-
-            @Override
-            public void onSocketConnected() {
+            public void onConnected(Object device) {
                 for (IConnectStateListener listener : connListeners) {
                     listener.onConnect();
                 }
             }
 
             @Override
-            public void onSocketDisconnect() {
+            public void onConnectFailed(String reason) {
+                for (IConnectStateListener listener : connListeners) {
+                    listener.onConnectFailed(reason);
+                }
+            }
+
+            @Override
+            public void onDisconnect(Object device) {
                 for (IConnectStateListener listener : connListeners) {
                     listener.onDisconnect();
                 }
@@ -52,12 +70,26 @@ class ManagerCore {
         });
     }
 
-    void connect(FileCheckConnectOption option) {
-        socketClient.connect(option);
+    public void connect(String host, int port) {
+        SocketConnectOption option = new SocketConnectOption.Builder()
+                .setConnectTimeout(5000)            // 连接超时（毫秒）
+                .setPulseFrequency(30 * 1000)       // 心跳频率（毫秒）
+                .setReadTimeout(3000)               // 读取超时（毫秒）
+                .setReconnectAllowed(true)          // 容许重连
+                .setReconnectInterval(3000)         // 重连间隔
+                .setReconnectMaxAttemptTimes(5)     // 重连重试次数
+                .build();
+
+        connectOption = new FileCheckConnectOption
+                .Builder()
+                .host(host)
+                .port(port)
+                .skSocketOption(option)
+                .build();
+        socketClient.connect(connectOption);
     }
 
-
-    void addConnectStateListener(IConnectStateListener listener) {
+    public void addConnectStateListener(IConnectStateListener listener) {
         if (connListeners == null) {
             connListeners = new CopyOnWriteArrayList<>();
         }
@@ -72,19 +104,19 @@ class ManagerCore {
         }
     }
 
-    void listenerForReport(IMessageListener listener, MessageIdFilter filter) {
+    void addMessageListener(MessageIdFilter filter, IMessageListener listener) {
         this.socketClient.addMessageListener(listener, filter);
     }
 
-    void removeMsgListener(byte msgID) {
-        this.socketClient.removeMessageListener(new MessageIdFilter(msgID));
+    void removeMsgListener(MessageFilter filter) {
+        this.socketClient.removeMessageListener(filter);
     }
 
-    boolean isConnected() {
+    public boolean isConnected() {
         return socketClient.isConnected();
     }
 
-    void disconnect() {
+    public void disconnect() {
         socketClient.disConnect();
     }
 
@@ -93,13 +125,100 @@ class ManagerCore {
         socketClient = null;
     }
 
-    boolean sendMessage(AbsCommand cmd) {
+    /**
+     * Log in to the remote server and process the log-in result information returned by the server
+     * 登录需要保存SessionID
+     *
+     * @return 消息是否发送
+     */
+    public boolean login(String imei, String password, String softVersion, String configVersion) {
+        LoginCommand.LoginCallback loginCallback = new LoginCommand.LoginCallback() {
+
+            @Override
+            public void onLoginResponse(Session session) {
+                loginResult = session;
+                MessageSnBuilder.getInstance().resetSn();
+                updateHeartbeat(session.getSession());
+                for (IConnectStateListener listener : connListeners) {
+                    listener.onLogged(loginResult);
+                }
+            }
+
+            @Override
+            public void onLoginTimeout() {
+                for (IConnectStateListener listener : connListeners) {
+                    listener.onLoginTimeout();
+                }
+            }
+        };
+
+        LoginCommand command = new LoginCommand.Builder(loginCallback)
+                .imei(imei)
+                .pass(password)
+                .sver(softVersion)
+                .cver(configVersion)
+                .build();
+        boolean send = this.sendMessage(command, true);
+        Log.i(TAG, "larson:login,send = " + send);
+        return send;
+    }
+
+    public Session getLoginResult() {
+        return loginResult;
+    }
+
+    public boolean logout() {
+        LogoutCommand command = new LogoutCommand.Builder()
+                .session(loginResult.getSession())
+                .build();
+        boolean send = this.sendMessage(command, true);
+
+        // 重新session和心跳
+        updateHeartbeat(null);
+        loginResult = null;
+        // 目前不管服务器返回什么结果，只要是用户调用了登出就表示登出成功
+        for (IConnectStateListener listener : connListeners) {
+            listener.onLogout();
+        }
+        Log.i(TAG, "larson:logout,send = " + send);
+        return send;
+    }
+
+    /**
+     * 由于上报心跳需要先登录拿到session，所以拿到session需要更新发送的心跳包
+     *
+     * @param session session
+     */
+    private void updateHeartbeat(String session) {
+        // 如果是登出则需要停止心跳上报
+        if (session == null) {
+            connectOption.updateHeartBeat(null);
+            return;
+        }
+
+        // 登陆成功，开始心跳上报
+        HeartCommand heartCommand = new HeartCommand.Builder()
+                .session(session)
+                .build();
+
+        IMessage heartBeat = new WrappedMessage
+                .Builder()
+                .command(heartCommand.getCommand())
+                .ackMode(AckMode.NON)
+                .data(heartCommand.getData())
+                .build().getMessages().get(0);
+        connectOption.updateHeartBeat(heartBeat);
+    }
+
+    public boolean sendMessage(AbsCommand cmd, boolean hasReply) {
         try {
             WrappedMessage message = new WrappedMessage
                     .Builder()
                     .command(cmd.getCommand())
                     .data(cmd.getData())
+                    .ackMode(hasReply ? AckMode.MESSAGE : AckMode.NON)
                     .msgFilter(cmd.getMessageFilter())
+                    .resultHandler(cmd.getResultHandler())
                     .build();
             boolean isSend = socketClient.sendMessage(message);
             Log.d(TAG, "sendMessage state=" + isSend);
@@ -109,5 +228,4 @@ class ManagerCore {
             return false;
         }
     }
-
 }

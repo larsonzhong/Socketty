@@ -9,14 +9,14 @@ public class TestDirectionCmd extends AbsCommand {
     private static final byte RESP_ID = 0x35;
     private static final byte RESP_DATA_SUCCESS = 0x01;
 
-    private final byte startIndex;
-    private final byte endIndex;
+    private byte startSid;
+    private byte endSid;
 
-    public TestDirectionCmd(byte start, byte end) {
+    public TestDirectionCmd(byte startSid, byte endSid) {
         super(ID, RESP_ID, AckMode.MESSAGE);
-        this.startIndex = (byte) (start + 1);
-        this.endIndex = (byte) (end + 1);
-        super.body = new byte[]{startIndex, endIndex};
+        this.startSid = startSid;
+        this.endSid = endSid;
+        super.body = new byte[]{this.startSid, this.endSid};
     }
 
     @Override
@@ -35,8 +35,8 @@ public class TestDirectionCmd extends AbsCommand {
     @Override
     public String toString() {
         return "TestDirectionCmd{" +
-                "startIndex=" + startIndex +
-                ", endIndex=" + endIndex +
+                "startIndex=" + startSid +
+                ", endIndex=" + endSid +
                 '}';
     }
 }

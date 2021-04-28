@@ -71,6 +71,11 @@ public class BluetoothDevicesDialog extends AlertDialog implements View.OnClickL
         }
 
         @Override
+        public void onConnectFailed(String reason) {
+            Log.e("larson:ble connect failed ,reason=" + reason);
+        }
+
+        @Override
         public void onDisconnect(BluetoothDevice bluetoothDevice) {
             updateDeviceState(bluetoothDevice, false);
         }

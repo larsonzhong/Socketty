@@ -1,7 +1,6 @@
 package com.skyruler.middleware.core;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.skyruler.middleware.command.railway.ChooseLine;
 import com.skyruler.middleware.command.railway.DeviceMode;
@@ -17,6 +16,8 @@ import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IMessageListener;
 
 import java.io.IOException;
+
+import cn.skyruler.logger.Log;
 
 public class RailManager extends BaseManager {
     private static final String TAG = "RailManager";
@@ -40,17 +41,14 @@ public class RailManager extends BaseManager {
     public boolean chooseLine(String lineName) {
         ChooseLine cmd = new ChooseLine(lineName);
         boolean success = super.sendMessage(cmd);
-        // if (success) {
-        //this.lineName = lineName;
-        // }
-        Log.d(TAG, "send railway line :" + cmd.toString() + "," + success);
+        Log.i(TAG, "send railway line :" + cmd.toString() + "," + success);
         return success;
     }
 
     public boolean chooseMode(DeviceMode.Mode mode) {
         DeviceMode cmd = new DeviceMode(mode);
         boolean success = super.sendMessage(cmd);
-        Log.d(TAG, "choose railway mode :" + cmd.toString() + "," + success);
+        Log.i(TAG, "choose railway mode :" + cmd.toString() + "," + success);
         return success;
     }
 
@@ -64,7 +62,7 @@ public class RailManager extends BaseManager {
     public boolean skipStation(byte[] siteIds) {
         SkipStation cmd = new SkipStation(siteIds);
         boolean success = super.sendMessage(cmd);
-        Log.d(TAG, "skip railway station :" + cmd.toString() + "," + success);
+        Log.i(TAG, "skip railway station :" + cmd.toString() + "," + success);
         return success;
     }
 
@@ -77,7 +75,7 @@ public class RailManager extends BaseManager {
     public boolean tempStopStation(byte[] siteIds) {
         TempStop cmd = new TempStop(siteIds);
         boolean success = super.sendMessage(cmd);
-        Log.d(TAG, "temp stop station :" + cmd.toString() + "," + success);
+        Log.i(TAG, "temp stop station :" + cmd.toString() + "," + success);
         return success;
     }
 
@@ -108,7 +106,7 @@ public class RailManager extends BaseManager {
     void getLineName(GetLineName.LineNameCallBack callBack) {
         GetLineName cmd = new GetLineName(callBack);
         boolean success = sendMessage(cmd);
-        Log.d(TAG, "get line name  :" + cmd.toString() + "," + success);
+        Log.i(TAG, "get line name  :" + cmd.toString() + "," + success);
     }
 
     public RailwayLine readStationLineFile(String path) throws IOException {

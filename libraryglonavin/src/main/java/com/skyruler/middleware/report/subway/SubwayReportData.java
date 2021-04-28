@@ -77,10 +77,11 @@ public class SubwayReportData extends BaseReportData {
     @Override
     public String toString() {
         return "SubwayReportData{" +
+                "msgID" + REPORT_ID +
                 ", seqNum=" + seqNum +
                 ", siteID=" + siteID +
                 ", isValidLoc=" + isValidLoc +
-                ", accState=" + getAccStateStr() +
+                ", accState=" + accState + getAccStateStr() +
                 ", longitude=" + longitude +
                 ", latitude=" + latitude +
                 ", battery=" + battery +

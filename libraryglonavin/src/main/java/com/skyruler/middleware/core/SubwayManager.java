@@ -1,7 +1,6 @@
 package com.skyruler.middleware.core;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.skyruler.middleware.command.subway.DeviceModeCmd;
 import com.skyruler.middleware.command.subway.MetroLineCmd;
@@ -21,6 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
+
+import cn.skyruler.logger.Log;
 
 import static com.skyruler.middleware.command.subway.DeviceModeCmd.MODE_SUBWAY;
 
@@ -60,7 +61,7 @@ public class SubwayManager extends BaseManager {
     public boolean chooseMode() {
         DeviceModeCmd cmd = new DeviceModeCmd(MODE_SUBWAY);
         boolean success = super.sendMessage(cmd);
-        Log.d(TAG, "choose mode :" + cmd.toString() + "," + success);
+        Log.i(TAG, "choose mode :" + cmd.toString() + "," + success);
         return success;
     }
 
@@ -70,29 +71,29 @@ public class SubwayManager extends BaseManager {
         if (success) {
             currentMetroLine = mMetroLine;
         }
-        Log.d(TAG, "send subway line :" + cmd.toString() + "," + success);
+        Log.i(TAG, "send subway line :" + cmd.toString() + "," + success);
         return success;
     }
 
     public boolean skipStation() {
         if (!isTestStart()) {
-            Log.d(TAG, "test did not start yet!!");
+            Log.i(TAG, "test did not start yet!!");
             return false;
         }
         SkipStationCmd cmd = new SkipStationCmd();
         boolean success = super.sendMessage(cmd);
-        Log.d(TAG, "skip subway station :" + cmd.toString() + "," + success);
+        Log.i(TAG, "skip subway station :" + cmd.toString() + "," + success);
         return success;
     }
 
     public boolean tempStopStation() {
         if (!isTestStart()) {
-            Log.d(TAG, "test did not start yet!!");
+            Log.i(TAG, "test did not start yet!!");
             return false;
         }
         TempStopStationCmd cmd = new TempStopStationCmd();
         boolean success = super.sendMessage(cmd);
-        Log.d(TAG, "temp stop station :" + cmd.toString() + "," + success);
+        Log.i(TAG, "temp stop station :" + cmd.toString() + "," + success);
         return success;
     }
 
@@ -102,7 +103,7 @@ public class SubwayManager extends BaseManager {
         MetroData metroData = parser.parse(is);
         is.close();
         if (metroData != null) {
-            Log.d(TAG, metroData.toString());
+            Log.i(TAG, metroData.toString());
         }
         if (metroData == null || metroData.getCities() == null) {
             throw new IllegalStateException("xml file parseLine failed,metroData is null");

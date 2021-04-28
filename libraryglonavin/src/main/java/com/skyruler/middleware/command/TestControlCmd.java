@@ -10,7 +10,7 @@ public class TestControlCmd extends AbsCommand {
     private static final byte MODE_START = 0x00;
     private static final byte MODE_STOP = 0x01;
 
-    private final byte startMode;
+    private byte startMode;
 
     public TestControlCmd(boolean isStart) {
         super(ID, RESP_ID, AckMode.MESSAGE);

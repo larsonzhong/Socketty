@@ -6,6 +6,7 @@ import com.skyruler.socketclient.connection.PacketRouter;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
@@ -61,6 +62,7 @@ public class PacketReader {
         mDataRunnable = new DataRunnable();
     }
 
+
     private ExecutorService newExecutor() {
         //设置核心池大小
         int corePoolSize = 10;
@@ -98,16 +100,23 @@ public class PacketReader {
         public Boolean call() {
             try {
                 while (!bExit.get()) {
-                    byte[] buffer = new byte[4096];
-                    int num = mInputStream.read(buffer);
-                    if (num <= 0) {
-                        continue;
+                    try {
+                        byte[] buffer = new byte[4096];
+                        int num = mInputStream.read(buffer);
+                        if (num == 0) {
+                            continue;
+                        } else if (num < 0) {
+                            throw new IOException("和远程服务器的连接断开");
+                        }
+                        byte[] bytes = new byte[num];
+                        System.arraycopy(buffer, 0, bytes, 0, num);
+                        mQueue.add(bytes);
+                    } catch (SocketTimeoutException e) {
+                        //ignore
                     }
-                    byte[] bytes = new byte[num];
-                    System.arraycopy(buffer, 0, bytes, 0, num);
-                    mQueue.add(bytes);
                 }
             } catch (IOException e) {
+                e.printStackTrace();
                 mConnection.onSocketCloseUnexpected(e);
             }
 

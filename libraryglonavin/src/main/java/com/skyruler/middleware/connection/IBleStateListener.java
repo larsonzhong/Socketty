@@ -7,5 +7,7 @@ public interface IBleStateListener {
 
     void onConnected(BluetoothDevice bluetoothDevice);
 
+    void onConnectFailed(String reason);
+
     void onDisconnect(BluetoothDevice bluetoothDevice);
 }

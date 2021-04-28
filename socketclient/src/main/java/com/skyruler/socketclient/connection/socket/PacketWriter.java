@@ -4,6 +4,7 @@ package com.skyruler.socketclient.connection.socket;
 import android.util.Log;
 
 import com.skyruler.socketclient.connection.intf.ISocketConnection;
+import com.skyruler.socketclient.connection.socket.conf.SocketConnectOption;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.IPacket;
 
@@ -31,10 +32,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class PacketWriter {
     private static final String TAG = "PacketWriter";
-    /**
-     * 默认心跳时间间隔
-     */
-    private static final long DEFAULT_HEART_INTERVAL = 10 * 1000;
     private final BlockingQueue<IPacket> mQueue;
     private final ISocketConnection mConnection;
     private final OutputStream mOutputStream;
@@ -121,14 +118,16 @@ public class PacketWriter {
      * <p>
      * Starts the keep alive process. An empty message (aka heartbeat) is going to be sent to the
      * server every 30 seconds (by default) since the last packet was sent to the server.
+     *
+     * @param mConfig Connection Config
      */
-    public void keepAlive(long keepAliveInterval, final IMessage heartBeat) {
+    public void keepAlive(final BaseSocketConnectOption mConfig) {
         // Schedule a keep-alive task to run if the feature is enabled, will write out a empty
         // message each time it runs to keep the TCP/IP connection open
-
-        if (keepAliveInterval <= 0) {
-            keepAliveInterval = DEFAULT_HEART_INTERVAL;
-            Log.e(TAG, "read config error:keepAliveInterval=" + keepAliveInterval);
+        long keepAliveInterval = SocketConnectOption.DEFAULT_HEART_INTERVAL;
+        SocketConnectOption socketOption = mConfig.getSkSocketOption();
+        if (socketOption != null) {
+            keepAliveInterval = socketOption.getPulseFrequency();
         }
 
         if (mTimeExecutor != null && !mTimeExecutor.isShutdown()) {
@@ -145,7 +144,11 @@ public class PacketWriter {
         mTimeExecutor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                sendHeartbeatMsg(heartBeat);
+                // 由于某些场景需要在登陆后才发心跳包，因此放在这里
+                IMessage heartBeat = mConfig.getHeartBeat();
+                if (heartBeat != null) {
+                    sendHeartbeatMsg(heartBeat);
+                }
             }
         }, 0, keepAliveInterval, TimeUnit.MILLISECONDS);
     }
@@ -195,8 +198,9 @@ public class PacketWriter {
                 synchronized (mOutputStream) {
                     if (packet != null) {
                         // mOutputStream.write(packet.getBytes());
-                        mOutputStream.write(packet.getData());
+                        mOutputStream.write(packet.getBytes());
                         mOutputStream.flush();
+                        Log.i("larson", "write regular packet >> " + new String(packet.getData()));
                     }
                 }
             }
@@ -221,7 +225,7 @@ public class PacketWriter {
                 try {
                     mQueue.wait();
                 } catch (InterruptedException e) {
-                    Log.i(TAG, e.getMessage());
+                    // ignore
                 }
             }
         }
@@ -232,12 +236,9 @@ public class PacketWriter {
         try {
             synchronized (mOutputStream) {
                 for (IPacket packet : msg.getPackets()) {
-                    if (mOutputStream != null) {
-                        mOutputStream.write(packet.getBytes());
-                        mOutputStream.flush();
-                    } else {
-                        Log.e(TAG, "illegal current outputStream state:null !!!");
-                    }
+                    mOutputStream.write(packet.getBytes());
+                    mOutputStream.flush();
+                    Log.i("larson", "write heart packet >> " + new String(packet.getData()));
                 }
             }
         } catch (Exception e) {

@@ -49,7 +49,7 @@ public class Packet implements IPacket {
             this.length = (short) validData.length;
         }
 
-        Builder(short length, byte[] data) {
+        public Builder(short length, byte[] data) {
             this.length = length;
             this.data = data;
         }

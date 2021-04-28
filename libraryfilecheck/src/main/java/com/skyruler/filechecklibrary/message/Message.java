@@ -1,17 +1,46 @@
 package com.skyruler.filechecklibrary.message;
 
+import android.text.TextUtils;
+
 import com.skyruler.filechecklibrary.packet.Packet;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.util.ArrayUtils;
 
-import java.nio.charset.StandardCharsets;
+import static com.skyruler.filechecklibrary.command.AbsCommand.COMMAND_SPLIT_STR;
 
 public class Message implements IMessage {
-    private static final byte[] EMPTY_BODY = new byte[0];
     private final byte[] payload;
+    private final String command;
+    private final String data;
 
     public Message(byte[] payload) {
         this.payload = payload;
+        String[] strings = readCommandStrs(payload);
+        command = strings.length > 0 ? strings[0] : null;
+        data = strings.length > 1 ? strings[1] : null;
+    }
+
+    public Message(Builder builder) {
+        this.payload = builder.payload;
+        this.command = builder.command;
+        this.data = builder.data;
+    }
+
+    private String[] readCommandStrs(byte[] payload) {
+        // 通常情况下，服务器返回一个packet足够
+        String s1 = new String(payload);
+        if (TextUtils.isEmpty(s1)) {
+            return new String[]{};
+        }
+        return s1.split(COMMAND_SPLIT_STR);
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
+    public String getData() {
+        return data;
     }
 
     @Override
@@ -31,17 +60,18 @@ public class Message implements IMessage {
         return new Packet[]{packet};
     }
 
-    static class Builder {
-        byte[] commandInBytes;
-        byte[] data;
+    public static class Builder {
+        String command;
+        String data;
+        byte[] payload;
 
-        Builder command(String command) {
-            this.commandInBytes = command.getBytes(StandardCharsets.UTF_8);
+        public Builder command(String command) {
+            this.command = command;
             return this;
         }
 
-        Builder data(String data) {
-            this.data = data == null ? EMPTY_BODY : data.getBytes(StandardCharsets.UTF_8);
+        public Builder data(String data) {
+            this.data = data;
             return this;
         }
 
@@ -51,10 +81,12 @@ public class Message implements IMessage {
          * 分隔符  空行
          * 数据    数据，可以为空
          */
-        IMessage build() {
+        public IMessage build() {
+            byte[] commandInBytes = command.getBytes();
+            byte[] dataInBytes = data.getBytes();
             byte[] splitBytes = "\r\n".getBytes();
-            byte[] payload = ArrayUtils.concatBytes(commandInBytes, splitBytes, data);
-            return new Message(payload);
+            payload = ArrayUtils.concatBytes(commandInBytes, splitBytes, dataInBytes);
+            return new Message(this);
         }
     }
 

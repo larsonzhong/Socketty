@@ -22,6 +22,7 @@ import java.util.UUID;
 
 public class BLEConnection implements IConnection {
     private static final String TAG = "BLEConnection";
+
     private final BLEConnectOption bleOption;
     private boolean mConnected = false;
     private String mLastBluetooth;
@@ -51,25 +52,30 @@ public class BLEConnection implements IConnection {
     public void connect(Context context, IStateListener stateListener) {
         this.stateListener = stateListener;
 
-        packetRouter.setPacketConstructor(bleOption.getPacketConstructor());
-        packetRouter.setMessageConstructor(bleOption.getMessageConstructor());
+        try {
+            packetRouter.setPacketConstructor(bleOption.getPacketConstructor());
+            packetRouter.setMessageConstructor(bleOption.getMessageConstructor());
 
-        BluetoothDevice device = bleOption.getDevice();
-        String address = device.getAddress();
+            BluetoothDevice device = bleOption.getDevice();
+            String address = device.getAddress();
 
-        if (this.mBluetoothGatt == null) {
-            BluetoothGattCallback gattCallback = new BleConnectionCallback(bleOption);
-            this.mBluetoothGatt = device.connectGatt(context, false, gattCallback);
-        } else if (address.equals(mLastBluetooth)) {
-            this.mBluetoothGatt.connect();
+            if (this.mBluetoothGatt == null) {
+                BluetoothGattCallback gattCallback = new BleConnectionCallback(bleOption);
+                this.mBluetoothGatt = device.connectGatt(context, false, gattCallback);
+            } else if (address.equals(mLastBluetooth)) {
+                this.mBluetoothGatt.connect();
+            }
+
+            mReader = new BlePacketReader(packetRouter);
+            mWriter = new BlePacketWriter(mBluetoothGatt);
+            this.mLastBluetooth = address;
+            mWriter.startup();
+            mReader.startup();
+            setConnected(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            stateListener.onConnectFailed(e.toString());
         }
-
-        mReader = new BlePacketReader(packetRouter);
-        mWriter = new BlePacketWriter(mBluetoothGatt);
-        this.mLastBluetooth = address;
-        mWriter.startup();
-        mReader.startup();
-        setConnected(true);
     }
 
     @Override
@@ -141,7 +147,7 @@ public class BLEConnection implements IConnection {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             if (newState == 2) {
-                stateListener.onDeviceConnect(gatt);
+                stateListener.onConnected(gatt);
                 try {
                     Thread.sleep(500);
                     mBluetoothGatt.discoverServices();
@@ -150,7 +156,7 @@ public class BLEConnection implements IConnection {
                     Log.e(TAG, e.toString());
                 }
             } else if (newState == 0) {
-                stateListener.onDeviceDisconnect(gatt);
+                stateListener.onDisconnect(gatt);
                 setConnected(false);
             }
         }

@@ -18,11 +18,13 @@ public class WrappedMessage implements IWrappedMessage {
     private final List<IMessage> messages;
     private final MessageFilter filter;
     private final MessageFilter resultHandler;
+    private final AckMode ackMode;
 
 
     private WrappedMessage(Builder builder) {
         this.messages = builder.messages;
         this.filter = builder.msgFilter;
+        this.ackMode = builder.ackMode;
         this.resultHandler = builder.resultHandler;
     }
 
@@ -46,13 +48,14 @@ public class WrappedMessage implements IWrappedMessage {
 
     @Override
     public AckMode getAckMode() {
-        return AckMode.PACKET;
+        return ackMode;
     }
 
     public static class Builder {
         List<IMessage> messages;
         String command;
         String data;
+        AckMode ackMode = AckMode.MESSAGE;
         private MessageFilter msgFilter;
         private MessageFilter resultHandler;
 
@@ -76,6 +79,11 @@ public class WrappedMessage implements IWrappedMessage {
 
         public Builder resultHandler(MessageFilter filter) {
             this.resultHandler = filter;
+            return this;
+        }
+
+        public Builder ackMode(AckMode mode) {
+            this.ackMode = mode;
             return this;
         }
 

@@ -7,6 +7,7 @@ import android.net.LocalSocketAddress;
 import com.skyruler.socketclient.connection.intf.IConnectOption;
 import com.skyruler.socketclient.connection.intf.IStateListener;
 import com.skyruler.socketclient.connection.socket.BaseSocketConnection;
+import com.skyruler.socketclient.connection.socket.ConnectState;
 import com.skyruler.socketclient.connection.socket.PacketReader;
 import com.skyruler.socketclient.connection.socket.PacketWriter;
 import com.skyruler.socketclient.connection.socket.conf.SocketConnectOption;
@@ -31,7 +32,6 @@ import java.io.IOException;
  * @since 2017-12-07 11:14
  */
 public class LocalSocketConnection extends BaseSocketConnection {
-    private static final String TAG = "LocalSocketConnection";
 
     /**
      * connect to server config
@@ -51,6 +51,7 @@ public class LocalSocketConnection extends BaseSocketConnection {
      * @param cfg the configuration which is used to establish the connection
      */
     public LocalSocketConnection(IConnectOption cfg) {
+        super(((LocalSocketConnectOption) cfg).getSkSocketOption());
         mConfig = (LocalSocketConnectOption) cfg;
     }
 
@@ -65,39 +66,8 @@ public class LocalSocketConnection extends BaseSocketConnection {
     @Override
     public void connect(Context context, IStateListener listener) {
         this.connListener = listener;
-        mSocket = new LocalSocket();
 
-        try {
-            //int timeout =  mConfig.getSkSocketOption().getConnectTimeoutSecond()*1000;
-            mSocket.connect(new LocalSocketAddress(mConfig.getSocketName()));
-            mSocket.setSoTimeout(3000);
-            // Set the input stream and output stream instance variables
-            mInputStream = mSocket.getInputStream();
-            mOutputStream = mSocket.getOutputStream();
-        } catch (IOException ioe) {
-            // An exception occurred in setting up the connection. Make sure we shut down the input
-            // stream and output stream and close the socket
-            disconnect();
-            setConnected(false);
-            listener.onDeviceDisconnect(null);
-        }
-
-        mWriter = new PacketWriter(this);
-        mReader = new PacketReader(this, packetRouter);
-
-        // Start the message writer
-        mWriter.startup();
-        // Start the message reader, the startup() method will block until we get a packet from server
-        mReader.startup();
-
-        mWriter.keepAlive(mConfig.getSkSocketOption().getPulseFrequency(), mConfig.getHeartBeat());
-
-        // Make note of the fact that we're now connected
-        setConnected(true);
-
-        if (connListener != null) {
-            connListener.onDeviceConnect(null);
-        }
+        performConnect(false);
 
         addCustomerReceiveListeners();
     }
@@ -112,8 +82,40 @@ public class LocalSocketConnection extends BaseSocketConnection {
     }
 
     @Override
+    public void performConnect(boolean reconnect) {
+        mSocket = new LocalSocket();
+
+        try {
+            //int timeout =  mConfig.getSkSocketOption().getConnectTimeoutSecond()*1000;
+            mSocket.connect(new LocalSocketAddress(mConfig.getSocketName()));
+            mSocket.setSoTimeout(3000);
+            // Set the input stream and output stream instance variables
+            mInputStream = mSocket.getInputStream();
+            mOutputStream = mSocket.getOutputStream();
+        } catch (IOException ioe) {
+            // An exception occurred in setting up the connection. Make sure we shut down the input
+            // stream and output stream and close the socket
+            releaseSocketResource();
+            onConnectStateChange(reconnect ? ConnectState.RECONNECT_TIMEOUT : ConnectState.CONNECT_TIMEOUT, ioe);
+        }
+
+        mWriter = new PacketWriter(this);
+        mReader = new PacketReader(this, packetRouter);
+
+        // Start the message writer
+        mWriter.startup();
+        // Start the message reader, the startup() method will block until we get a packet from server
+        mReader.startup();
+
+        mWriter.keepAlive(mConfig);
+
+        onConnectStateChange(ConnectState.CONNECT_SUCCESSFUL, null);
+    }
+
+    @Override
     public void disconnect() {
-        super.disconnect();
+        super.releaseSocketResource();
+        onConnectStateChange(ConnectState.CLOSE_SUCCESSFUL, null);
         if (mSocket != null) {
             try {
                 mSocket.close();

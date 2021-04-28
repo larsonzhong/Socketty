@@ -21,37 +21,78 @@ import java.nio.ByteOrder;
 public class SocketConnectOption {
 
     /**
+     * Socket默认连接超时时间，当没有配置时使用该值
+     */
+    public static final int DEFAULT_CONNECT_TIMEOUT = 5000;
+
+    /**
+     * Socket默认读取超时时间，当没有配置时使用该值
+     */
+    public static final int DEFAULT_READ_TIMEOUT = 3000;
+
+    /**
+     * Socket默认心跳间隔，当没有配置时使用该值
+     */
+    public static final int DEFAULT_HEART_INTERVAL = 30000;
+
+    /**
+     * Socket默认最小重连间隔时间，当没有配置时使用该值
+     */
+    public static final int DEFAULT_RECONNECT_INTERVAL = 5000;
+
+    /**
+     * Socket默认最大重连次数，当没有配置时使用该值
+     */
+    public static final int DEFAULT_RECONNECT_MAX_ATTEMPT = 5;
+
+    /**
      * 写入Socket管道中给服务器的字节序
      */
     private final ByteOrder mWriteOrder;
+
     /**
      * 从Socket管道中读取字节序时的字节序
      */
     private final ByteOrder mReadByteOrder;
+
     /**
      * 脉搏频率单位是毫秒
      */
     private final long mPulseFrequency;
+
     /**
      * 重连间隔，单位是毫秒
      */
     private final long reconnectInterval;
+
     /**
      * 脉搏丢失次数<br>
      * 大于或等于丢失次数时将断开该通道的连接<br>
      * 抛出{@link ConnectionException}
      */
     private final int mReconnectMaxAttemptTimes;
+
     /**
      * 连接超时时间(毫秒)
+     * 设置连接超时可以防止Socket阻塞无法退出
      */
-    private final int mSocketTimeout;
+    private final int mConnectTimeout;
 
+    /**
+     * 读取超时时间(毫秒)
+     * 设置读取超时可以防止Socket阻塞无法退出
+     */
+    private final int mReadTimeout;
+
+    /**
+     * 是否容许重连
+     */
     private final boolean isReconnectAllowed;
 
     private SocketConnectOption(Builder okOptions) {
         mPulseFrequency = okOptions.mPulseFrequency;
-        mSocketTimeout = okOptions.mSocketTimeout;
+        mConnectTimeout = okOptions.mConnectTimeout;
+        mReadTimeout = okOptions.mReadTimeout;
         mWriteOrder = okOptions.mWriteOrder;
         mReadByteOrder = okOptions.mReadByteOrder;
         mReconnectMaxAttemptTimes = okOptions.mReconnectMaxAttemptTimes;
@@ -73,19 +114,23 @@ public class SocketConnectOption {
     }
 
     public long getPulseFrequency() {
-        return mPulseFrequency;
+        return mPulseFrequency > 0 ? mPulseFrequency : DEFAULT_HEART_INTERVAL;
     }
 
     public long getReconnectInterval() {
-        return reconnectInterval;
+        return reconnectInterval > 0 ? reconnectInterval : DEFAULT_RECONNECT_INTERVAL;
     }
 
     public int getReconnectMaxAttemptTimes() {
-        return mReconnectMaxAttemptTimes;
+        return mReconnectMaxAttemptTimes > 0 ? mReconnectMaxAttemptTimes : DEFAULT_RECONNECT_MAX_ATTEMPT;
     }
 
-    public int getSocketTimeout() {
-        return mSocketTimeout;
+    public int getConnectTimeout() {
+        return mConnectTimeout > 0 ? mConnectTimeout : DEFAULT_CONNECT_TIMEOUT;
+    }
+
+    public int getReadTimeout() {
+        return mReadTimeout > 0 ? mReadTimeout : DEFAULT_READ_TIMEOUT;
     }
 
     public static class Builder {
@@ -100,7 +145,11 @@ public class SocketConnectOption {
         /**
          * 连接超时时间(毫秒)
          */
-        private int mSocketTimeout;
+        private int mConnectTimeout;
+        /**
+         * 读取超时时间(毫秒)
+         */
+        private int mReadTimeout;
         /**
          * 写入Socket管道中给服务器的字节序
          */
@@ -120,8 +169,12 @@ public class SocketConnectOption {
          */
         private boolean isReconnectAllowed;
 
+        public Builder() {
+
+        }
+
         public Builder(String clientID) throws Exception {
-            MessageSnBuilder.getInstance().setClientKey(clientID);
+            MessageSnBuilder.getInstance().setClientKey(clientID).autoResetNum(10000);
         }
 
         /**
@@ -195,13 +248,22 @@ public class SocketConnectOption {
         }
 
         /**
-         * 设置Socket超时时间,连接和读取的超时时间
+         * 设置Socket连接超时时间
          *
          * @param socketTimeout 注意单位是毫秒
-         * @return
          */
-        public Builder setSocketTimeout(int socketTimeout) {
-            mSocketTimeout = socketTimeout;
+        public Builder setConnectTimeout(int socketTimeout) {
+            mConnectTimeout = socketTimeout;
+            return this;
+        }
+
+        /**
+         * 设置Socket读取超时时间
+         *
+         * @param socketTimeout 注意单位是毫秒
+         */
+        public Builder setReadTimeout(int socketTimeout) {
+            mConnectTimeout = socketTimeout;
             return this;
         }
 

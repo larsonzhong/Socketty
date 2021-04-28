@@ -8,7 +8,7 @@ import com.skyruler.socketclient.message.IMessageListener;
 
 public interface IConnectionManager {
 
-    void connect(IConnectOption bleConnectOption);
+    void connect(IConnectOption iConnectOption);
 
     boolean isConnected();
 

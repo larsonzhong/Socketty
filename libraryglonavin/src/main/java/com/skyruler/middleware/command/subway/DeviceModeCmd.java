@@ -13,7 +13,7 @@ public class DeviceModeCmd extends AbsCommand {
     public static final byte MODE_RAILWAY = 0x02;
     private static final byte RESP_DATA_SUCCESS = 0x01;
 
-    private final byte modeCode;
+    private byte modeCode;
 
     public DeviceModeCmd(byte modeCode) {
         super(ID, RESP_ID, AckMode.MESSAGE);

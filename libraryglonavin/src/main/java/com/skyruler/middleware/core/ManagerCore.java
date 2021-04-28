@@ -43,7 +43,7 @@ class ManagerCore {
         this.socketClient = new SocketClient();
         this.socketClient.setup(context, new IStateListener() {
             @Override
-            public void onDeviceConnect(Object device) {
+            public void onConnected(Object device) {
                 for (IBleStateListener listener : connListeners) {
                     if (device instanceof BluetoothGatt) {
                         listener.onConnected(((BluetoothGatt) device).getDevice());
@@ -52,7 +52,14 @@ class ManagerCore {
             }
 
             @Override
-            public void onDeviceDisconnect(Object device) {
+            public void onConnectFailed(String reason) {
+                for (IBleStateListener listener : connListeners) {
+                    listener.onConnectFailed(reason);
+                }
+            }
+
+            @Override
+            public void onDisconnect(Object device) {
                 for (IBleStateListener listener : connListeners) {
                     if (device instanceof BluetoothGatt) {
                         listener.onDisconnect(((BluetoothGatt) device).getDevice());
@@ -62,15 +69,6 @@ class ManagerCore {
                 }
             }
 
-            @Override
-            public void onSocketConnected() {
-                // ignore
-            }
-
-            @Override
-            public void onSocketDisconnect() {
-                // ignore
-            }
         });
     }
 

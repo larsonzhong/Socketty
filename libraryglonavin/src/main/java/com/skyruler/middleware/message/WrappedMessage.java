@@ -14,7 +14,7 @@ import java.util.List;
 public class WrappedMessage implements IWrappedMessage {
     private static final int DEFAULT_MESSAGE_BODY_LIMIT = 1024;
     private static final int DEFAULT_MESSAGE_TIMEOUT = 5000;
-    // private final byte messageID;
+    private final byte messageID;
     private final List<IMessage> messages;
     private final int timeout;
     private final AckMode ackMode;
@@ -23,7 +23,7 @@ public class WrappedMessage implements IWrappedMessage {
 
 
     private WrappedMessage(Builder builder) {
-        // this.messageID = builder.msgId;
+        this.messageID = builder.msgId;
         this.messages = builder.messages;
         this.timeout = builder.timeout;
         this.filter = builder.msgFilter;
@@ -52,14 +52,14 @@ public class WrappedMessage implements IWrappedMessage {
         return ackMode;
     }
 
-    /*public byte getMessageID() {
+    public byte getMessageID() {
         return messageID;
-    }*/
+    }
 
     public static class Builder {
         List<IMessage> messages;
         byte[] body;
-        final byte msgId;
+        byte msgId;
         private int timeout;
         private AckMode ackMode;
         private int limitBodyLength;

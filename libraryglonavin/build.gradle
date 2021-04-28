@@ -6,7 +6,7 @@ android {
 
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 1
         versionName "1.0.2"
@@ -27,4 +27,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(path: ':socketclient')
+    implementation project(path: ':logger')
+    //implementation 'cn.skyruler:logger:1.0.7'
 }

@@ -2,11 +2,10 @@ package com.skyruler.socketclient.connection.intf;
 
 public interface IStateListener {
 
-    void onDeviceConnect(Object device);
+    void onConnected(Object device);
 
-    void onDeviceDisconnect(Object device);
+    void onConnectFailed(String reason);
 
-    void onSocketConnected();
+    void onDisconnect(Object device);
 
-    void onSocketDisconnect();
 }

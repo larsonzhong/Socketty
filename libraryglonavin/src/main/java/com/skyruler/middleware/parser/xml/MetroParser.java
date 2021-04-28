@@ -9,8 +9,12 @@ import com.skyruler.middleware.parser.xml.model.Station;
 import com.skyruler.middleware.parser.xml.model.SubItem;
 
 import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
+import org.xmlpull.v1.XmlSerializer;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +24,6 @@ import java.util.List;
  * @date: Created 2020/5/19 15:10
  */
 public class MetroParser implements XmlParser<MetroData> {
-    private static final String TAG = "MetroParser";
 
     private void parseMetroData(XmlPullParser parser, MetroData metroData) {
         switch (parser.getName()) {
@@ -224,6 +227,67 @@ public class MetroParser implements XmlParser<MetroData> {
 
     @Override
     public String serialize(MetroData metroData) throws Exception {
-        throw new IllegalAccessException("暂未开放该功能");
+        StringWriter stringWriter = new StringWriter();
+
+        // 1.初始化并生成头部节点数据
+        XmlSerializer xs = XmlPullParserFactory.newInstance().newSerializer();
+        xs.setOutput(stringWriter);
+        xs.startDocument("UTF-8", true);
+        xs.startTag(null, "MetroDataManager");
+
+        // 2. 初始化对象数据及子属性
+        List<City> cities = metroData.getCities();
+        serializeCities(cities, xs);
+
+        // 3. 结束节点
+        xs.endTag(null, "MetroDataManager");
+        xs.endDocument();
+        return xs.toString();
+    }
+
+    private void serializeCities(List<City> cities, XmlSerializer xs) throws IOException {
+        for (City city : cities) {
+            xs.startTag(null, "City")
+                    .attribute(null, "Name", city.getName());
+            List<MetroLine> metroLines = city.getMetroLines();
+            serializeMetroLines(metroLines, xs);
+            xs.endTag(null, "City");
+        }
+    }
+
+    private void serializeMetroLines(List<MetroLine> metroLines, XmlSerializer xs) throws IOException {
+        for (MetroLine line : metroLines) {
+            xs.startTag(null, "MetroLine")
+                    .attribute(null, "EndTime", line.getEndTime())
+                    .attribute(null, "LID", "" + line.getLid())
+                    .attribute(null, "MaxSpeed_KMperH", "" + line.getMaxSpeed())
+                    .attribute(null, "Name", line.getName())
+                    .attribute(null, "Speed_KMperH", "" + line.getAvgSpeed())
+                    .attribute(null, "StartTime", line.getStartTime());
+
+            List<Station> stations = line.getStations();
+            for (Station station : stations) {
+                xs.startTag(null, "Station")
+                        .attribute(null, "Latitude", "" + station.getLatitude())
+                        .attribute(null, "Longitude", "" + station.getLongitude())
+                        .attribute(null, "Name", station.getName())
+                        .attribute(null, "SID", "" + station.getSid())
+                        .attribute(null, "StationTime", "" + station.getStationTime())
+                        .endTag(null, "Station");
+
+                List<SubItem> subItems = station.getSubItems();
+                xs.startTag(null, "SubItems");
+                for (SubItem subItem : subItems) {
+                    xs.startTag(null, "SubItem")
+                            .attribute(null, "Latitude", "" + subItem.getLatitude())
+                            .attribute(null, "Longitude", "" + subItem.getLongitude())
+                            .endTag(null, "SubItem");
+                }
+                xs.endTag(null, "SubItems");
+            }
+
+            xs.endTag(null, "MetroLine");
+        }
+
     }
 }

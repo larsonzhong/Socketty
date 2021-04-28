@@ -26,7 +26,8 @@ import com.skyruler.middleware.report.BaseReportData;
 import com.skyruler.middleware.report.IDataReporter;
 import com.skyruler.middleware.report.subway.SubwayReportData;
 
-public class MainActivity extends AppCompatActivity implements IDataReporter, View.OnClickListener, IBleStateListener {
+public class MainActivity extends AppCompatActivity implements IDataReporter
+        , View.OnClickListener, IBleStateListener {
     private static final String TAG = "MainActivity";
     private BluetoothDevicesDialog mDeviceDialog;
 
@@ -234,6 +235,11 @@ public class MainActivity extends AppCompatActivity implements IDataReporter, Vi
         if (glonavinSdk != null) {
             glonavinSdk.listenerForReport(MainActivity.this);
         }
+    }
+
+    @Override
+    public void onConnectFailed(String reason) {
+        showToast(reason);
     }
 
     @Override

@@ -90,7 +90,7 @@ public class RailwayReport extends BaseReportData {
         return loc;
     }
 
-    public static class State {
+    public class State {
         boolean locValid;
         boolean reachLastStation;
         boolean lineLocError;

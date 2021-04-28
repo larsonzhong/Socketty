@@ -2,7 +2,7 @@ package com.skyruler.middleware.core;
 
 import android.content.Context;
 
-class IndoorManager extends BaseManager {
+public class IndoorManager extends BaseManager {
     public static final String DEVICE_NAME = "FootSensor";
 
     IndoorManager(Context context) {

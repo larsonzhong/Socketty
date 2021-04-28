@@ -6,6 +6,7 @@ import com.skyruler.socketclient.connection.MessageCollector;
 import com.skyruler.socketclient.connection.PacketRouter;
 import com.skyruler.socketclient.connection.intf.ISocketConnection;
 import com.skyruler.socketclient.connection.intf.IStateListener;
+import com.skyruler.socketclient.connection.socket.conf.SocketConnectOption;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.filter.MessageIdFilter;
 import com.skyruler.socketclient.message.IMessage;
@@ -14,6 +15,8 @@ import com.skyruler.socketclient.message.IMessageListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import static com.skyruler.socketclient.connection.socket.ConnectState.RECONNECT_LIMIT;
 
 public abstract class BaseSocketConnection implements ISocketConnection {
 
@@ -27,20 +30,25 @@ public abstract class BaseSocketConnection implements ISocketConnection {
     protected PacketWriter mWriter;
     protected IStateListener connListener;
 
+    private final ReconnectManager mReconnectManager;
     /**
-     * 包分发器，因为控制端会收到不同的客户端发过来的包，需要对这些包进行分包路由，
-     * 为了避免代码臃肿，新开一类专门用来处理packet路由
+     * The packet distributor, because the control end will receive the packets sent by
+     * different clients, these packets need to be sub-packaged and routed.
+     * In order to avoid code bloat, a new type is opened to handle packet routing.
      */
     protected PacketRouter packetRouter;
 
-    public BaseSocketConnection() {
-        packetRouter = new PacketRouter();
+    public BaseSocketConnection(SocketConnectOption connectOption) {
+        this.packetRouter = new PacketRouter();
+        this.mReconnectManager = new ReconnectManager(connectOption);
+
+        mReconnectManager.attach(this);
         Log.d(TAG, "BaseSocketConnection construct end .");
     }
 
+    protected abstract void performConnect(boolean reconnect);
 
-    @Override
-    public void disconnect() {
+    public void releaseSocketResource() {
         if (mWriter != null) {
             mWriter.shutdown();
             mWriter = null;
@@ -65,17 +73,46 @@ public abstract class BaseSocketConnection implements ISocketConnection {
             }
             mOutputStream = null;
         }
+    }
 
-        if (packetRouter != null) {
-            packetRouter.clear();
-            packetRouter = null;
+    protected void onConnectStateChange(ConnectState state, Exception e) {
+        if (connListener == null) {
+            return;
         }
-        connListener = null;
+        if (state == ConnectState.CLOSE_UNEXPECTED) {
+            setConnected(false);
+            connListener.onDisconnect(e);
+        } else if (state == ConnectState.CLOSE_SUCCESSFUL) {
+            connListener.onDisconnect(null);
+            setConnected(false);
+        } else if (state == ConnectState.CONNECT_SUCCESSFUL) {
+            // Make note of the fact that we're now connected
+            setConnected(true);
+            connListener.onConnected(null);
+        } else if (state == ConnectState.CONNECT_TIMEOUT) {
+            setConnected(false);
+            connListener.onConnectFailed("Connect Timeout");
+        } else if (state == ConnectState.RECONNECT_TIMEOUT) {
+            setConnected(false);
+        } else if (state == ConnectState.RECONNECT_LIMIT) {
+            setConnected(false);
+            connListener.onConnectFailed("达到最大重连次数，放弃重连");
+            mReconnectManager.detach();
+            return;
+        }
+
+        // Abnormal disconnection needs to notify the reconnection manager
+        mReconnectManager.onConnectStateChange(state, e);
     }
 
     @Override
     public void onDestroy() {
-        disconnect();
+        mReconnectManager.detach();
+        releaseSocketResource();
+        if (packetRouter != null) {
+            packetRouter.clear();
+            packetRouter = null;
+        }
     }
 
     public InputStream getInputStream() {
@@ -97,16 +134,22 @@ public abstract class BaseSocketConnection implements ISocketConnection {
 
     @Override
     public void onSocketCloseUnexpected(Exception e) {
-        if (connListener != null) {
-            connListener.onDeviceDisconnect(e);
-        }
+        onConnectStateChange(ConnectState.CLOSE_UNEXPECTED, e);
+        // Abnormal disconnection, supposedly should stop the connection
+        releaseSocketResource();
+    }
+
+    public void onMaxReconnectTimeReached(Exception e) {
+        onConnectStateChange(RECONNECT_LIMIT, e);
+        // Abnormal disconnection, supposedly should stop the connection
+        releaseSocketResource();
     }
 
     /**
-     * 通过writer将消息写出去
+     * Write the message through the writer
      * write message to server
      *
-     * @param msg 要发送的消息
+     * @param msg Message to send
      */
     @Override
     public void sendMessage(IMessage msg) {
@@ -134,7 +177,7 @@ public abstract class BaseSocketConnection implements ISocketConnection {
 
         mWriter.sendMessage(msg);
 
-        //创造一个filter过滤不属于该ClientID的消息
+        //Create a filter to filter messages that do not belong to the ClientID
         MessageFilter idFilter = new MessageIdFilter((byte) msg.getMsgId());
         MessageCollector collector = packetRouter.createMessageCollector(idFilter);
         IMessage retMsg = collector.nextResult(timeOut);
@@ -153,6 +196,7 @@ public abstract class BaseSocketConnection implements ISocketConnection {
             return null;
         }
         mWriter.sendMessage(msg);
+
         MessageCollector collector = packetRouter.createMessageCollector(filter);
         IMessage retMsg = collector.nextResult(timeOut);
         collector.cancel();
@@ -168,7 +212,7 @@ public abstract class BaseSocketConnection implements ISocketConnection {
     }
 
     /**
-     * 添加监听等待服务端发过来的消息
+     * Add a listener waiting for the message sent by the server
      *
      * @param filter  filter
      * @param timeOut timeout
