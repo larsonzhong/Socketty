@@ -67,6 +67,7 @@ public class PacketRouter {
     }
 
     private void handlerMessage(IMessage message) {
+        Log.i("larson", mCollectors.size() + "read regular packet << " + new String(message.getPackets()[0].getData()));
         for (MessageCollector collector : mCollectors) {
             collector.processMessage(message);
         }

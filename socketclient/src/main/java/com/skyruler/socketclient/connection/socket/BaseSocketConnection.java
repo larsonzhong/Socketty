@@ -83,20 +83,23 @@ public abstract class BaseSocketConnection implements ISocketConnection {
             setConnected(false);
             connListener.onDisconnect(e);
         } else if (state == ConnectState.CLOSE_SUCCESSFUL) {
-            connListener.onDisconnect(null);
             setConnected(false);
+            connListener.onDisconnect(null);
         } else if (state == ConnectState.CONNECT_SUCCESSFUL) {
-            // Make note of the fact that we're now connected
             setConnected(true);
-            connListener.onConnected(null);
+            connListener.onConnected(false);
+            // Make note of the fact that we're now connected
         } else if (state == ConnectState.CONNECT_TIMEOUT) {
             setConnected(false);
             connListener.onConnectFailed("Connect Timeout");
         } else if (state == ConnectState.RECONNECT_TIMEOUT) {
             setConnected(false);
+        } else if (state == ConnectState.RECONNECT_SUCCESSFUL) {
+            setConnected(true);
+            connListener.onConnected(true);
         } else if (state == ConnectState.RECONNECT_LIMIT) {
             setConnected(false);
-            connListener.onConnectFailed("达到最大重连次数，放弃重连");
+            connListener.onDisconnect("达到最大重连次数，放弃重连");
             mReconnectManager.detach();
             return;
         }
@@ -175,11 +178,12 @@ public abstract class BaseSocketConnection implements ISocketConnection {
             return null;
         }
 
-        mWriter.sendMessage(msg);
-
         //Create a filter to filter messages that do not belong to the ClientID
         MessageFilter idFilter = new MessageIdFilter((byte) msg.getMsgId());
         MessageCollector collector = packetRouter.createMessageCollector(idFilter);
+
+        // Send Message When Collector Added
+        mWriter.sendMessage(msg);
         IMessage retMsg = collector.nextResult(timeOut);
         collector.cancel();
         return retMsg;

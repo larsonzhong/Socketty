@@ -174,7 +174,7 @@ public class SocketConnectOption {
         }
 
         public Builder(String clientID) throws Exception {
-            MessageSnBuilder.getInstance().setClientKey(clientID).autoResetNum(10000);
+            MessageSnBuilder.getInstance(clientID).setClientKey(clientID).autoResetNum(10000);
         }
 
         /**

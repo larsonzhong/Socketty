@@ -6,7 +6,8 @@ public enum ConnectState {
     CLOSE_SUCCESSFUL(3, "断开成功"),
     CONNECT_TIMEOUT(4, "连接超时"),
     RECONNECT_TIMEOUT(5, "重连超时"),
-    RECONNECT_LIMIT(6, "达到重连次数");
+    RECONNECT_LIMIT(6, "达到重连次数"),
+    RECONNECT_SUCCESSFUL(7, "重连成功");
 
     final int stateCode;
     final String hint;

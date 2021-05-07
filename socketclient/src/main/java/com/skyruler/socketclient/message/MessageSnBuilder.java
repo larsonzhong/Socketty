@@ -4,6 +4,9 @@ import android.text.TextUtils;
 
 import com.skyruler.socketclient.util.CrcUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * @author Rony
@@ -11,7 +14,7 @@ import com.skyruler.socketclient.util.CrcUtils;
  */
 
 public class MessageSnBuilder {
-    private static MessageSnBuilder instance;
+    private static Map<String, MessageSnBuilder> instance = new HashMap<>();
     private long sn;
     private short mClientKey;
     private int autoResetNo;
@@ -21,16 +24,11 @@ public class MessageSnBuilder {
         mClientKey = 0;
     }
 
-    public static MessageSnBuilder getInstance() {
-        if (instance == null) {
-            synchronized (MessageSnBuilder.class) {
-                if (instance == null) {
-                    instance = new MessageSnBuilder();
-                }
-            }
+    public static MessageSnBuilder getInstance(String id) {
+        if (!instance.containsKey(id)) {
+            instance.put(id, new MessageSnBuilder());
         }
-
-        return instance;
+        return instance.get(id);
     }
 
     /**

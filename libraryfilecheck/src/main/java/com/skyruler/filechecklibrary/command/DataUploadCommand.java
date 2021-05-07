@@ -1,7 +1,5 @@
 package com.skyruler.filechecklibrary.command;
 
-import com.skyruler.filechecklibrary.command.result.Session;
-import com.skyruler.filechecklibrary.connection.ManagerCore;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.IMessage;
 import com.skyruler.socketclient.message.MessageSnBuilder;
@@ -81,6 +79,7 @@ public class DataUploadCommand extends AbsCommand {
 
 
     public static class Builder {
+        private String session;
         long index;
         /**
          * 标记通信数据包类型，对于新生成的数据（包括触发数据切割规则产生的新数据），需要在此处添加“first”标签；
@@ -102,9 +101,10 @@ public class DataUploadCommand extends AbsCommand {
         double maxLng;
         List<FileInfo> fileInfo = new ArrayList<>();
 
-        public Builder(String tag) {
+        public Builder(String tag, String session) {
             this.tag = tag;
-            this.index = MessageSnBuilder.getInstance().getNextSn();
+            this.session = session;
+            this.index = MessageSnBuilder.getInstance(session).getNextSn();
             this.isLastReport = TAG_FILE_SWITCH.equals(tag);
         }
 
@@ -186,16 +186,13 @@ public class DataUploadCommand extends AbsCommand {
 
                 // 打包成json Data之后外面还要包一层spevent(文档是这样的)
                 JSONObject jsonWrap = new JSONObject();
-                jsonWrap.put("spevent",jsonObj);
+                jsonWrap.put("spevent", jsonObj);
                 String jsonData = jsonWrap.toString();
 
                 //start combine
-                Session loginResult = ManagerCore.getInstance().getLoginResult();
-                StringBuilder builder = new StringBuilder()
-                        .append("Command=").append(COMMAND).append("\r\n")
-                        .append("Session=").append(loginResult.getSession()).append("\r\n");
-                builder.append("Data=").append(jsonData).append("\r\n");
-                commandStr = builder.toString();
+                commandStr = "Command=" + COMMAND + "\r\n" +
+                        "Session=" + session + "\r\n" +
+                        "Data=" + jsonData + "\r\n";
                 dataStr = "";
             } catch (JSONException e) {
                 e.printStackTrace();
