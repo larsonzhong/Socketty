@@ -16,12 +16,6 @@ import java.util.Locale;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 
-/**
- * @author: Rony
- * @email: luojun@skyruler.cn
- * @date: Created 2019/2/13 17:33
- */
-
 public class TxtFormatStrategy implements FormatStrategy {
     private static final String NEW_LINE = System.getProperty("line.separator");
     private static final String SEPARATOR = ":";

@@ -18,12 +18,6 @@ import static com.orhanobut.logger.Logger.INFO;
 import static com.orhanobut.logger.Logger.VERBOSE;
 import static com.orhanobut.logger.Logger.WARN;
 
-/**
- * @author: Rony
- * @email: luojun@skyruler.cn
- * @date: Created 2019/2/13 16:46
- */
-
 public class Utils {
     private final static int MAX_BUFFER_SIZE = 10240;
 

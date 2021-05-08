@@ -20,12 +20,6 @@ import io.reactivex.functions.Action;
 import io.reactivex.schedulers.Schedulers;
 
 
-/**
- * @author: Rony
- * @email: luojun@skyruler.cn
- * @date: Created 2019/2/13 17:44
- */
-
 public class TxtLogStrategy implements LogStrategy {
     @NonNull
     private final Handler handler;

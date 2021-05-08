@@ -10,12 +10,6 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.annotations.Nullable;
 
 
-/**
- * @author: Rony
- * @email: luojun@skyruler.cn
- * @date: Created 2019/2/13 16:37
- */
-
 public class CustomerFormatStrategy implements FormatStrategy {
 
     /**

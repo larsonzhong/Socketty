@@ -13,10 +13,6 @@ import io.reactivex.annotations.Nullable;
 
 /**
  * 日志输出 输出到标准Log的同时，写到一个文件方便在非调试模式查看
- *
- * @author: Rony
- * @email: luojun@skyruler.cn
- * @date: Created 2019/2/13 16:32
  */
 public final class Log {
     private Log() {
