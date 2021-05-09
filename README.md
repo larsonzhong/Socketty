@@ -203,10 +203,10 @@ public interface IPacket {
 
 有三种消息发送模式，分别是异步消息、同步消息、等待超时消息，分别代表的消息类型如下：
 
-- 洪水消息：调用了发送就不管了的消息，也不管消息是否发送成功；
-- 异步消息：发送之后不需要关心发送结果只需要发送出去就算成功；
-- 同步消息：需要关心发送后服务端返回结果，并对返回结果进行判定，如果服务器返回消息中没有想要的消息，则提示发送超时，有责根据服务器中的返回结果进行相应业务处理；在发送消息前需要对消息添加消息拦截器`msgFilter`和`resultFilter`；
-- 等待超时消息：就是不发消息，直接等服务器发送对应的消息，如果拦截到对应的消息则返回成功；
+- 洪水消息(`AckMode.NON`)：调用了发送就不管了的消息，也不管消息是否发送成功；
+- 异步消息(`AckMode.PACKET`)：发送之后不需要关心发送结果只需要发送出去就算成功,如果没有发送成功则按照配置的重发次数重发；
+- 同步消息(`AckMode.MESSAGE`)：需要关心发送后服务端返回结果，并对返回结果进行判定，如果服务器返回消息中没有想要的消息，则提示发送超时，有责根据服务器中的返回结果进行相应业务处理；在发送消息前需要对消息添加消息拦截器`msgFilter`和`resultFilter`；
+- 等待超时消息(`AckMode.WAIT_MESSAGE`)：就是不发消息，直接等服务器发送对应的消息，如果拦截到对应的消息则返回成功；
 
 #### 构建消息包
 
@@ -262,7 +262,7 @@ WrappedMessage message = new WrappedMessage
 
 #### 发送消息
 
-发送消息调用`sendMessage`方法：
+发送消息统一调用`sendMessage`方法：
 
 ```
 boolean isSend = socketClient.sendMessage(message);
@@ -271,28 +271,121 @@ boolean isSend = socketClient.sendMessage(message);
 #### 处理服务器返回
 服务端的返回结果回调在`resultHandler`中，用户可在构建这个拦截器的时候实现对应的业务；
 
-### 读取数据
-由于读取设备信息基本每次的通道都不一样，所以这里与上面收发数据有点不一样，每次读取数据都需要绑定一次通道，使用示例如下：
+### 构建示例消息
+以登录消息构建为例，通常情况下，建议每一条接口协议的实现使用一个单独的类来封装，这样有利于代码解耦，登陆消息的一般流程是发送出去希望服务器返回登录信息比如session，客户端需要处理这个登录信息：
 ```
-BluetoothGattChannel bluetoothGattChannel = new BluetoothGattChannel.Builder()
-        .setBluetoothGatt(deviceMirror.getBluetoothGatt())
-        .setPropertyType(PropertyType.PROPERTY_READ)
-        .setServiceUUID(serviceUUID)
-        .setCharacteristicUUID(characteristicUUID)
-        .setDescriptorUUID(descriptorUUID)
-        .builder();
-deviceMirror.bindChannel(new IBleCallback() {
-    @Override
-    public void onSuccess(byte[] data, BluetoothGattChannel bluetoothGattChannel, BluetoothLeDevice bluetoothLeDevice) {
+public class LoginCommand extends AbsCommand {
 
+    private static final String COMMAND_HEADER = "Login";
+    private LoginCallback loginCallback;
+
+    LoginCommand(Builder builder) {
+        super(builder.commandStr, builder.dataStr);
+        this.loginCallback = builder.loginCallback;
     }
 
     @Override
-    public void onFailure(BleException exception) {
+    public MessageFilter getMessageFilter() {
+        return new MessageFilter() {
+            @Override
+            public boolean accept(IMessage msg) {
+                String command = readCommandHeader(msg);
+                return COMMAND_HEADER.equals(command);
+            }
+        };
+    }
+
+    @Override
+    public MessageFilter getResultHandler() {
+        return new MessageFilter() {
+            @Override
+            public boolean accept(IMessage msg) {
+                if (msg == null) {
+                    loginCallback.onLoginTimeout();
+                    return false;
+                }
+
+                String commandStr = ((Message) msg).getCommand();
+                String[] strings = commandStr.split("\r\n");
+
+
+                String session = strings[1].split("=")[1];
+                //AC/NAC#代表Request处理结果,Accept和Not accept
+                boolean logged = strings[2] != null && strings[2].split("=")[1].equals("AC");
+                String code = logged ? null : strings[3].split("=")[1];
+                boolean updateSoftware = strings[4] != null && strings[4].split("=")[1].equals("Y");
+                boolean updateConfig = strings[5] != null && strings[5].split("=")[1].equals("Y");
+
+                Session loginResult = new Session(logged, session, code, updateSoftware, updateConfig);
+                loginCallback.onLoginResponse(loginResult);
+                Log.i("LoginCommand", "login result :" + session);
+                return true;
+            }
+        };
+    }
+
+    public interface LoginCallback {
+        /**
+         * on server return login state
+         *
+         * @param loginResult logged Session
+         */
+        void onLoginResponse(Session loginResult);
+
+        /**
+         * return null when login timeout
+         */
+        void onLoginTimeout();
+    }
+
+    public static class Builder {
+        String command;
+        String imei;
+        String pass;
+        String sver;
+        String cver;
+
+        String commandStr;
+        String dataStr;
+        private LoginCallback loginCallback;
+
+        public Builder(LoginCallback loginCallback) {
+            this.command = COMMAND_HEADER;
+            this.loginCallback = loginCallback;
+        }
+
+        public Builder imei(String user) {
+            this.imei = user;
+            return this;
+        }
+
+        public Builder pass(String pass) {
+            this.pass = pass;
+            return this;
+        }
+
+        public Builder sver(String sver) {
+            this.sver = sver;
+            return this;
+        }
+
+        public Builder cver(String cver) {
+            this.cver = cver;
+            return this;
+        }
+
+        public LoginCommand build() {
+            commandStr = "Command=" + command + "\r\n" +
+                    "User=" + imei + "\r\n" +
+                    "Pass=" + pass + "\r\n" +
+                    "Sver=" + sver + "\r\n" +
+                    "Cver=" + cver + "\r\n";
+            dataStr = "";
+            return new LoginCommand(this);
+        }
 
     }
-}, bluetoothGattChannel);
-deviceMirror.readData();
+}
 ```
 
 ## 总结
