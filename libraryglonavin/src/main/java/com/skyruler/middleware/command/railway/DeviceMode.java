@@ -1,7 +1,5 @@
 package com.skyruler.middleware.command.railway;
 
-import androidx.annotation.NonNull;
-
 import com.skyruler.middleware.command.AbsCommand;
 import com.skyruler.socketclient.filter.MessageFilter;
 import com.skyruler.socketclient.message.AckMode;
@@ -34,7 +32,6 @@ public class DeviceMode extends AbsCommand {
         this.name = locMode.name;
     }
 
-    @NonNull
     @Override
     public String toString() {
         return "DeviceMode{" +

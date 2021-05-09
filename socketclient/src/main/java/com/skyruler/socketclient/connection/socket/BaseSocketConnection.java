@@ -222,6 +222,7 @@ public abstract class BaseSocketConnection implements ISocketConnection {
      * @param timeOut timeout
      * @return msg from server
      */
+    @Override
     public IMessage waitForMessage(MessageFilter filter, long timeOut) {
         if (null == packetRouter) {
             return null;

@@ -136,6 +136,16 @@ public class BLEConnection implements IConnection {
         return retMsg;
     }
 
+    @Override
+    public IMessage waitForMessage(MessageFilter filter, long timeOut) {
+        if (!mConnected) {
+            return null;
+        }
+        MessageCollector collector = packetRouter.createMessageCollector(filter);
+        IMessage retMsg = collector.nextResult(timeOut);
+        collector.cancel();
+        return retMsg;
+    }
 
     class BleConnectionCallback extends BluetoothGattCallback {
         private final BLEConnectOption bleConnectOption;

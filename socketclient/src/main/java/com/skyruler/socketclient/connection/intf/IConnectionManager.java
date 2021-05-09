@@ -20,6 +20,8 @@ public interface IConnectionManager {
 
     IMessage sendSyncMessage(IMessage msgDataBean, MessageFilter filter, long timeout) throws ConnectionException, UnFormatMessageException;
 
+    IMessage waitForMessage(MessageFilter filter, long timeout) throws UnFormatMessageException, ConnectionException;
+
     void addMessageListener(IMessageListener listener, MessageFilter filter);
 
     void removeMessageListener(MessageFilter filter);

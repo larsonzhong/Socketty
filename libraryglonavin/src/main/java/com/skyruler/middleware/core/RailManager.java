@@ -2,6 +2,7 @@ package com.skyruler.middleware.core;
 
 import android.content.Context;
 
+import com.skyruler.android.logger.Log;
 import com.skyruler.middleware.command.railway.ChooseLine;
 import com.skyruler.middleware.command.railway.DeviceMode;
 import com.skyruler.middleware.command.railway.GetLineName;
@@ -17,7 +18,6 @@ import com.skyruler.socketclient.message.IMessageListener;
 
 import java.io.IOException;
 
-import cn.skyruler.logger.Log;
 
 public class RailManager extends BaseManager {
     private static final String TAG = "RailManager";

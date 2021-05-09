@@ -12,5 +12,9 @@ public enum AckMode {
     /**
      * 可能分包发送，发送后等待确认模式
      */
-    MESSAGE
+    MESSAGE,
+    /**
+     * 超时等待消息，规定时间内收到指定消息返回true
+     */
+    WAIT_MESSAGE
 }

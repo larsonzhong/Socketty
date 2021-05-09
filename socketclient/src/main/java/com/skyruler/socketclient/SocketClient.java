@@ -69,6 +69,9 @@ public class SocketClient implements ISocketClient {
                     sendSyncMessage(msg, msgFilter, resultFilter, timeout, 0);
                 }
                 break;
+            case WAIT_MESSAGE:
+                IMessage timeMsg = mConnMgr.waitForMessage(msgFilter, timeout);
+                return resultFilter.accept(timeMsg);
             default:
         }
         return true;
@@ -79,7 +82,7 @@ public class SocketClient implements ISocketClient {
      */
     private void sendSyncMessage(IMessage msg, MessageFilter msgFilter, MessageFilter resultFilter, int timeout, int retryTimes)
             throws ConnectionException, UnFormatMessageException {
-         IMessage iMessage = mConnMgr.sendSyncMessage(msg, msgFilter, timeout);
+        IMessage iMessage = mConnMgr.sendSyncMessage(msg, msgFilter, timeout);
         SystemClock.sleep(20);
         if (iMessage == null || !resultFilter.accept(iMessage)) {
             retryTimes++;

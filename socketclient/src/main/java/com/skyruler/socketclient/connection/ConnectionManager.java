@@ -105,9 +105,20 @@ public class ConnectionManager implements IConnectionManager {
             throw new UnFormatMessageException("can not send sync IMessage without filter or timeout");
         }
         if (mConnection == null) {
-            throw new ConnectionException("设备未连接，请连接设备");
+            throw new ConnectionException("未连接，请先连接");
         }
         return mConnection.sendSyncMessage(msgDataBean, filter, timeout);
+    }
+
+    @Override
+    public IMessage waitForMessage(MessageFilter filter, long timeout) throws UnFormatMessageException, ConnectionException {
+        if (filter == null || timeout < 0) {
+            throw new UnFormatMessageException("can not send sync IMessage without filter or timeout");
+        }
+        if (mConnection == null) {
+            throw new ConnectionException("未连接，请先连接");
+        }
+        return mConnection.waitForMessage(filter, timeout);
     }
 
     @Override

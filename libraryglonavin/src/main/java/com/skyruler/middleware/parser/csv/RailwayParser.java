@@ -2,6 +2,7 @@ package com.skyruler.middleware.parser.csv;
 
 import android.text.TextUtils;
 
+import com.skyruler.android.logger.Log;
 import com.skyruler.middleware.parser.csv.model.RailwayLine;
 import com.skyruler.middleware.parser.csv.model.RailwayStation;
 import com.skyruler.middleware.parser.xml.model.SubItem;
@@ -14,7 +15,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.skyruler.logger.Log;
 
 
 public class RailwayParser {

@@ -2,6 +2,7 @@ package com.skyruler.middleware.core;
 
 import android.content.Context;
 
+import com.skyruler.android.logger.Log;
 import com.skyruler.middleware.command.subway.DeviceModeCmd;
 import com.skyruler.middleware.command.subway.MetroLineCmd;
 import com.skyruler.middleware.command.subway.SkipStationCmd;
@@ -21,7 +22,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 
-import cn.skyruler.logger.Log;
 
 import static com.skyruler.middleware.command.subway.DeviceModeCmd.MODE_SUBWAY;
 

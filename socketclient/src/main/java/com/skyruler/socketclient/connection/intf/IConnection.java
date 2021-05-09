@@ -22,6 +22,8 @@ public interface IConnection {
 
     IMessage sendSyncMessage(IMessage msgDataBean, MessageFilter filter, long timeout);
 
+    IMessage waitForMessage(MessageFilter filter, long timeOut);
+
     void addMsgListener(IMessageListener listener, MessageFilter filter);
 
     void removeMsgListener(MessageFilter filter);
